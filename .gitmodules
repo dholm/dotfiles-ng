@@ -9,3 +9,15 @@
 [submodule ".zsh.d/zplug"]
 	path = .zsh.d/zplug
 	url = https://github.com/zplug/zplug
+[submodule ".tmux/vendor/tmux-colors-solarized"]
+	path = .tmux/vendor/tmux-colors-solarized
+	url = https://github.com/seebi/tmux-colors-solarized.git
+	branch = master
+[submodule ".tmux/vendor/tmuxifier"]
+	path = .tmux/vendor/tmuxifier
+	url = https://github.com/jimeh/tmuxifier.git
+	branch = master
+[submodule ".tmux/plugins/tpm"]
+	path = .tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+	branch = master
