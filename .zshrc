@@ -6,20 +6,18 @@ fi
 . "${HOME}/.shellrc"
 
 
-zshrc::zplug() {
-    ###
-    # Setup zplug.
-    export ZPLUG_HOME="${HOME}/.zsh.d/zplug"
-    export ZPLUG_CACHE_DIR="${HOME}/.cache/zplug"
-    export ZPLUG_REPOS="${HOME}/.local/share/zplug"
-    export ZPLUG_BIN="${HOME}/.local/bin"
-    $(shell::source "${ZPLUG_HOME}/init.zsh")
+zshrc::zinit() {
+    local zinit_home="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+    if [[ ! -d "${zinit_home}" ]]; then
+         mkdir -p "$(dirname "${zinit_home}")"
+         if [[ ! -d "${zinit_home}/.git" ]]; then
+             git clone https://github.com/zdharma-continuum/zinit.git "${zinit_home}"
+         fi
+    fi
 
-    # Enable self management.
-    zplug 'zplug/zplug', hook-build:'zplug --self-manage'
+    source "${zinit_home}/zinit.zsh"
 }
-shell::is_dumb || shell::eval zshrc::zplug
-
+zshrc::zinit
 
 zshrc::history() {
     # Set path to history file.
@@ -77,53 +75,54 @@ zshrc::bookmarks() {
 shell::is_dumb || shell::eval zshrc::bookmarks
 
 
-zplug "zsh-users/zsh-completions", if:"! shell::is_dumb"
+shell::is_dumb || zinit light zsh-users/zsh-completions
 
 
-zshrc::zplug_bundles() {
-    zplug "plugins/command-not-found",  from:oh-my-zsh
-    zplug "plugins/battery",            from:oh-my-zsh
-    zplug "plugins/extract",            from:oh-my-zsh
-    zplug "plugins/dircycle",           from:oh-my-zsh
-    zplug "plugins/gnu-utils",          from:oh-my-zsh
+zshrc::zinit_bundles() {
+    zinit snippet OMZP::command-not-found
+    zinit snippet OMZP::battery
+    zinit snippet OMZP::extract
+    zinit snippet OMZP::dircycle
+    zinit snippet OMZP::gnu-utils
 
     local binaries=(brew cp cpanm docker-compose docker emacs fasd gem
                     helm node keychain kubectl man minikube mosh nmap
                     node npm perl pip python redis-cli rsync ruby sbt
                     scala ssh-agent sudo svn systemd)
     for binary in "${binaries[@]}"; do
-        path::has_binary "${binary}" && zplug "plugins/${binary}", from:oh-my-zsh
+        path::has_binary "${binary}" && zinit snippet OMZP::${binary}
     done
 
     if path::has_binary go; then
-        zplug "plugins/go", from:oh-my-zsh
-        zplug "plugins/golang", from:oh-my-zsh
+        zinit snippet OMZP::go
+        zinit snippet OMZP::golang
     fi
 
     if path::has_binary tmux; then
-        zplug "plugins/tmux", from:oh-my-zsh
-        zplug "plugins/tmuxinator", from:oh-my-zsh
+        zinit snippet OMZP::tmux
+        zinit snippet OMZP::tmuxinator
     fi
 
     if path::has_binary git; then
-        zplug "plugins/git", from:oh-my-zsh
-        zplug "plugins/git-remote-branch", from:oh-my-zsh
-        zplug "plugins/github", from:oh-my-zsh
-        zplug "plugins/gitignore", from:oh-my-zsh
+        zinit snippet OMZP::git
+        zinit snippet OMZP::git-remote-branch
+        zinit snippet OMZP::github
+        zinit snippet OMZP::gitignore
     fi
 
     if path::has_binary hg; then
-        zplug "plugins/mercurial", from:oh-my-zsh
+        zinit snippet OMZP::mercurial
     fi
 
-    zplug "plugins/osx", from:oh-my-zsh, if:"os::is_darwin"
+    os::is_darwin && zinit snippet OMZP::osx
 }
-shell::is_dumb || shell::eval zshrc::zplug_bundles
+shell::is_dumb || shell::eval zshrc::zinit_bundles
 
 
 zshrc::prompt() {
-    zplug mafredri/zsh-async, from:github
-    zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
+    zinit light mafredri/zsh-async
+    zinit ice pick"pure.zsh" as"theme"
+    zinit light sindresorhus/pure
 
     # Single line prompt.
     export prompt_newline='%666v'
@@ -132,7 +131,7 @@ zshrc::prompt() {
 shell::is_dumb || shell::eval zshrc::prompt
 
 
-zplug "zsh-users/zsh-syntax-highlighting", if:"! shell::is_dumb", defer:2
+shell::is_dumb || zinit light zsh-users/zsh-syntax-highlighting
 
 
 zshrc::dumb_terminal() {
@@ -170,6 +169,3 @@ $(shell::source "${HOME}/.zshrc.local")
 $(shell::source "${HOME}/.zsh_aliases.local")
 
 
-###
-# Load zplug plugins.
-shell::is_dumb || zplug load
