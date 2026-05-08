@@ -1,0 +1,140 @@
+_shellrc_lib="${HOME}/.local/lib/sh"
+_shellrc_libexec="${HOME}/.local/libexec/sh"
+
+. "${_shellrc_lib}/print.sh"
+. "${_shellrc_lib}/shell.sh"
+. "${_shellrc_lib}/os.sh"
+shell::is_bash && . "${_shellrc_lib}/profile.sh"
+. "${_shellrc_lib}/fn.sh"
+. "${_shellrc_lib}/array.sh"
+. "${_shellrc_lib}/compat.sh"
+. "${_shellrc_lib}/alist.sh"
+. "${_shellrc_lib}/file.sh"
+. "${_shellrc_lib}/string.sh"
+. "${_shellrc_lib}/path.sh"
+. "${_shellrc_lib}/keyboard.sh"
+. "${_shellrc_lib}/service.sh"
+. "${_shellrc_lib}/mount.sh"
+. "${_shellrc_lib}/alias.sh"
+. "${_shellrc_lib}/url.sh"
+
+shellrc::module::load() {
+    local module="${1}"
+
+    shell::is_dumb || echo eval " \
+    \$(shell::source ${_shellrc_libexec}/${module}.sh); \
+    "
+}
+
+shellrc::path_setup() {
+    path::prepend /usr/local/bin
+    path::prepend /usr/local/sbin
+
+    path::prepend "/opt/cabal/bin"
+
+    path::prepend "${HOME}/.local/bin"
+    path::prepend "${HOME}/.cask/bin"
+    path::prepend "${HOME}/.cabal/bin"
+    path::prepend "${HOME}/bin"
+}
+shell::eval shellrc::path_setup
+
+shellrc::coding_setup() {
+    local locale; locale="en_US.UTF-8"
+    local measurement; measurement=( en_DK.UTF-8 en_IE.UTF-8 ${locale} C )
+
+    local locales; locales=( $(shell::exec locale -a) )
+    measurement=( $(fn::filter 'array::find $(shell::as_array locales) $1 >/dev/null' ${measurement[@]}) )
+
+    ###
+    # Standard settings.
+    # Default locale.
+    export LANG="${locale}"
+    # Character handling rules.
+    export LC_CTYPE="${locale}"
+    # Messages and menus.
+    export LC_MESSAGES="${locale}"
+    # Monetary formatting.
+    export LC_MONETARY="${locale}"
+    # Non-monetary numeric formatting.
+    export LC_NUMERIC="${locale}"
+    # Keep the default sort order (e.g. files starting with a '.' should appear
+    # at the start of a directory listing.)
+    export LC_COLLATE="C"
+    # Set the short date to ISO 8601 (YYYY-MM-DD, test with "date +%c") but use
+    # English names.
+    export LC_TIME="${measurement[1]}"
+
+    ###
+    # GNU extensions.
+    # Units of measurement.
+    export LC_MEASUREMENT="${measurement[1]}"
+    # Telephone numbers.
+    export LC_TELEPHONE="${measurement[1]}"
+    # Address formatting.
+    export LC_ADDRESS="${measurement[1]}"
+    # Paper size.
+    export LC_PAPER="${measurement[1]}"
+    # Person name formatting.
+    export LC_NAME="${locale}"
+
+    ###
+    # Prevent global overrides.
+    export LC_ALL=""
+}
+shell::eval shellrc::coding_setup
+
+shellrc::terminal_setup() {
+    if [ "$TERM" = "xterm" ]; then
+        export TERM="xterm-256color"
+    fi
+}
+shell::eval shellrc::terminal_setup
+
+shellrc::alias_setup() {
+    local alias_file="${HOME}/.shell_aliases"
+    $(shell::source "${alias_file}")
+}
+shell::eval shellrc::alias_setup
+
+if os::is_linux; then
+    $(shellrc::module::load linux)
+elif os::is_darwin; then
+    $(shellrc::module::load darwin)
+fi
+path::has_binary brew && $(shellrc::module::load homebrew)
+
+$(shellrc::module::load editor)
+$(shellrc::module::load connect)
+$(shellrc::module::load compiler)
+$(shellrc::module::load network)
+$(shellrc::module::load package)
+$(shellrc::module::load process)
+
+path::has_binary R && $(shellrc::module::load R)
+path::has_binary dircolors && $(shellrc::module::load dircolors)
+path::has_binary fc-list && $(shellrc::module::load fontconfig)
+path::has_binary git && $(shellrc::module::load git)
+path::has_binary go && $(shellrc::module::load go)
+path::has_binary less && $(shellrc::module::load less)
+path::has_binary node && $(shellrc::module::load nodejs)
+path::has_binary ocaml && $(shellrc::module::load ocaml)
+path::has_binary perl && $(shellrc::module::load perl)
+path::has_binary python && $(shellrc::module::load python)
+path::has_binary ruby && $(shellrc::module::load ruby)
+path::has_binary ssh && $(shellrc::module::load ssh)
+path::has_binary tmux && $(shellrc::module::load tmux)
+
+shellrc::dumb_terminal() {
+    PS1='$ '
+}
+shell::is_dumb && shell::eval shellrc::dumb_terminal
+
+###
+# Load local configuration.
+$(shell::source "${HOME}/.shellrc.local")
+$(shell::source "${HOME}/.shell_aliases.local")
+
+# Local Variables:
+# mode: shell-script
+# End:

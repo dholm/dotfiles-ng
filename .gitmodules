@@ -2,3 +2,10 @@
 	path = .local/libexec/gdb/voidwalker
 	url = https://github.com/dholm/voidwalker.git
 	branch = master
+[submodule ".bash.d/bash_it"]
+	path = .bash.d/bash_it
+	url = https://github.com/revans/bash-it.git
+	branch = master
+[submodule ".zsh.d/zplug"]
+	path = .zsh.d/zplug
+	url = https://github.com/zplug/zplug

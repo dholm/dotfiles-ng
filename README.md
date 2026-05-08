@@ -1,4 +1,0 @@
-dotmisc
-=======
-
-Miscellaneous configuration files
