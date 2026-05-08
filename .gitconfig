@@ -60,7 +60,7 @@
     prompt = no
     tool = "emacs"
 [difftool "ediff"]
-    cmd = $HOME/.dotfiles/misc/bin/ediff.sh "$LOCAL" "$REMOTE" "$MERGED"
+    cmd = $HOME/.local/bin/ediff.sh "$LOCAL" "$REMOTE" "$MERGED"
 [difftool "emacs"]
     cmd = emacs -Q -nw -l ~/.emacs.d/basic.el --difftool $LOCAL $REMOTE
 
@@ -78,7 +78,7 @@
 [mergetool "emacs"]
     cmd = emacs -Q -nw -l ~/.emacs.d/basic.el --mergetool $LOCAL $REMOTE $BASE $MERGED
 [mergetool "ediff"]
-    cmd = $HOME/.dotfiles/misc/bin/ediff.sh "$LOCAL" "$REMOTE" "$MERGED" "$BASE"
+    cmd = $HOME/.local/bin/ediff.sh "$LOCAL" "$REMOTE" "$MERGED" "$BASE"
     trustExitCode = true
 
 [rerere]
