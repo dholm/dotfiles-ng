@@ -105,7 +105,6 @@ zshrc::zinit_bundles() {
 
     if path::has_binary git; then
         zinit snippet OMZP::git
-        zinit snippet OMZP::git-remote-branch
         zinit snippet OMZP::github
         zinit snippet OMZP::gitignore
     fi
@@ -167,5 +166,3 @@ $(shell::source "${HOME}/.zshrc.local")
 # shellcheck source=../../.zsh_aliases.local
 # shellcheck disable=SC2091
 $(shell::source "${HOME}/.zsh_aliases.local")
-
-
