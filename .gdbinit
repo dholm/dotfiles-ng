@@ -51,20 +51,6 @@ document init_python
 Initialize GDB's embedded Python library.
 end
 
-define load_voidwalker
-    init_python
-
-    # Install (void)walker.
-    python
-import os.path
-sys.path.insert(0, os.path.expanduser('~/.local/libexec/gdb/voidwalker'))
-from voidwalker import voidwalker
-    end
-end
-document load_voidwalker
-Load (void)walker low-level debugger.
-end
-
 
 ###
 # Configuration options specific to local machine. This file should never go
