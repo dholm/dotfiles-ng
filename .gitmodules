@@ -2,8 +2,5 @@
 	path = .bash.d/bash_it
 	url = https://github.com/revans/bash-it.git
 	branch = master
-[submodule ".tmux/vendor/tmux-colors-solarized"]
-	path = .tmux/vendor/tmux-colors-solarized
-	url = https://github.com/seebi/tmux-colors-solarized.git
-	branch = master
+
 

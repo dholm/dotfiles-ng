@@ -3,5 +3,6 @@
 # Install Zinit for zsh.
 env NO_EDIT=1 bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 
-# Install the Tmux Plugin Manager.
+# Install the Tmux Plugin Manager and solarized theme.
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+git clone https://github.com/seebi/tmux-colors-solarized.git .tmux/vendor/tmux-colors-solarized
