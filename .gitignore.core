@@ -1,0 +1,68 @@
+###
+# Core gitignore file
+
+
+###
+# Emacs
+*~
+\#*\#
+.\#*
+.tramp_history
+
+
+# Flycheck
+flycheck_*
+
+
+###
+# Vim
+*.swp
+
+
+###
+# CScope
+cscope.out
+
+
+###
+# Compilation database
+compile_commands.json
+/.ccls-cache
+
+
+###
+# GNU GLOBAL
+GPATH
+GRTAGS
+GTAGS
+GSYMS
+
+
+###
+# GNU idutils
+ID
+
+
+###
+# [ce]tags
+TAGS
+
+
+###
+# Python
+*.pyc
+
+
+###
+# ÒSX
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+
+###
+# Local Variables:
+# mode: conf
+# End:
