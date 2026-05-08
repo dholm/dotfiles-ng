@@ -6,7 +6,4 @@
 	path = .tmux/vendor/tmux-colors-solarized
 	url = https://github.com/seebi/tmux-colors-solarized.git
 	branch = master
-[submodule ".tmux/vendor/tmuxifier"]
-	path = .tmux/vendor/tmuxifier
-	url = https://github.com/jimeh/tmuxifier.git
-	branch = master
+
