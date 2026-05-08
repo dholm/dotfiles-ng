@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install Bash-it for bash.
+git clone https://github.com/revans/bash-it.git .bash.d/bash_it
+
 # Install Zinit for zsh.
 env NO_EDIT=1 bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 
