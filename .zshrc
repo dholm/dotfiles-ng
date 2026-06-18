@@ -120,7 +120,7 @@ shell::is_dumb || shell::eval zshrc::zinit_bundles
 
 zshrc::prompt() {
     zinit light mafredri/zsh-async
-    zinit ice pick"pure.zsh" as"theme"
+    zinit ice pick"async.zsh" src"pure.zsh"
     zinit light sindresorhus/pure
 
     # Single line prompt.
