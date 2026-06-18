@@ -62,7 +62,6 @@
     (define-key magit-status-mode-map (kbd "W")
       'user/magit-toggle-whitespace)
 
-    (use-package magit-gerrit)
     (use-package magithub
       :disabled
       :pin "MELPA"
