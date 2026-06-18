@@ -85,16 +85,15 @@ zshrc::zinit_bundles() {
     zinit snippet OMZP::dircycle
     zinit snippet OMZP::gnu-utils
 
-    local binaries=(brew cp cpanm docker-compose docker emacs fasd gem
-                    helm node keychain kubectl man minikube mosh nmap
-                    node npm perl pip python redis-cli rsync ruby sbt
-                    scala ssh-agent sudo svn systemd)
+    local binaries=(brew cp cpanm fasd gem helm node keychain kubectl
+                    man minikube mosh nmap node npm perl pip podman
+                    python redis-cli rsync ruby sbt scala ssh-agent
+                    sudo svn systemd)
     for binary in "${binaries[@]}"; do
         path::has_binary "${binary}" && zinit snippet OMZP::${binary}
     done
 
     if path::has_binary go; then
-        zinit snippet OMZP::go
         zinit snippet OMZP::golang
     fi
 
