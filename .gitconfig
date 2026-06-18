@@ -252,6 +252,7 @@
     gerrit-push = "!f() { local branch=$(git current-branch); git push -u ${3:-origin} ${2:-HEAD}:$(git config branch.${branch}.merge | sed -e "s@refs/heads/@refs/${1}/@")/${4:-${branch}}; }; f"
     gerrit-publish = !git gerrit-push for
     gerrit-draft = !git gerrit-push drafts
+    gerrit-fetch-config = fetch origin refs/meta/config:config
 
     ###
     # Enclosed (subshelled) repositories.
