@@ -166,3 +166,7 @@ $(shell::source "${HOME}/.zshrc.local")
 # shellcheck source=../../.zsh_aliases.local
 # shellcheck disable=SC2091
 $(shell::source "${HOME}/.zsh_aliases.local")
+
+if ((PROFILE)); then
+    zprof
+fi
