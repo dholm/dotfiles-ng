@@ -5,7 +5,6 @@ fi
 # shellcheck source=../../.shellrc
 . "${HOME}/.shellrc"
 
-
 zshrc::zinit() {
     local zinit_home="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
     if [[ ! -d "${zinit_home}" ]]; then
@@ -21,7 +20,10 @@ zshrc::zinit
 
 zshrc::history() {
     # Set path to history file.
-    export HISTFILE=~/.zsh_history
+    HISTFILE=~/.zsh_history
+    # Ensure HISTFILE does not end up in the environment and
+    # accidentally used by another shell, such as Bash.
+    typeset +x HISTFILE
     # Increase length of history.
     export HISTSIZE=100000
     export SAVEHIST=${HISTSIZE}
@@ -64,7 +66,6 @@ zshrc::history() {
 }
 shell::eval zshrc::history
 
-
 zshrc::bookmarks() {
     setopt cd_able_vars
     if [[ -r "${HOME}/.zsh_bookmarks" ]]; then
@@ -74,9 +75,7 @@ zshrc::bookmarks() {
 }
 shell::is_dumb || shell::eval zshrc::bookmarks
 
-
 shell::is_dumb || zinit light zsh-users/zsh-completions
-
 
 zshrc::zinit_bundles() {
     zinit snippet OMZP::command-not-found
@@ -98,7 +97,6 @@ zshrc::zinit_bundles() {
     fi
 
     if path::has_binary tmux; then
-        zinit snippet OMZP::tmux
         zinit snippet OMZP::tmuxinator
     fi
 
@@ -116,7 +114,6 @@ zshrc::zinit_bundles() {
 }
 shell::is_dumb || shell::eval zshrc::zinit_bundles
 
-
 zshrc::prompt() {
     zinit light mafredri/zsh-async
     zinit ice pick"async.zsh" src"pure.zsh"
@@ -128,9 +125,7 @@ zshrc::prompt() {
 }
 shell::is_dumb || shell::eval zshrc::prompt
 
-
 shell::is_dumb || zinit light zsh-users/zsh-syntax-highlighting
-
 
 zshrc::dumb_terminal() {
     # Fallback for dumb terminals (i.e. when running under Emacs Tramp).
@@ -142,7 +137,6 @@ zshrc::dumb_terminal() {
     shell::has_function preexec && unfunction preexec
 }
 shell::is_dumb && shell::eval zshrc::dumb_terminal
-
 
 zshrc::darwin_setup() {
     if [ -d "/usr/share/zsh/help" ]; then
@@ -157,7 +151,6 @@ zshrc::darwin_setup() {
     fi
 }
 os::is_darwin && shell::eval zshrc::darwin_setup
-
 
 # shellcheck source=../../.zshrc.local
 # shellcheck disable=SC2091
