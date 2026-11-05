@@ -4,12 +4,6 @@
 [feature]
     manyFiles = true
 
-[color]
-    ui = auto
-    diff = auto
-    status = auto
-    branch = auto
-    interactive = auto
 [color "branch"]
     current = yellow reverse
     local = yellow
@@ -24,10 +18,8 @@
 
 [core]
     pager = "less -RXMi"
-    autocrlf = false
     editor = "vim --noplugin"
     whitespace = cr-at-eol,trailing-space,space-before-tab,tabwidth=8
-    preloadindex = true
     excludesfile = ~/.gitignore.core
 
 [format]
@@ -41,9 +33,6 @@
 
 [grep]
     patternType = extended
-
-[branch]
-    autosetupmerge = true
 
 [push]
     default = simple
@@ -68,7 +57,6 @@
     log = true
     verbosity = 1
     tool = "emacs"
-    stat = true
 
 [mergetool]
     prompt = no
