@@ -31,7 +31,7 @@
     excludesfile = ~/.gitignore.core
 
 [format]
-    pretty = format:%C(blue)%cd%C(reset) %x09%C(yellow)%h%C(green)%d%C(reset) %C(blue)%s %C(magenta) [%an]%C(reset)
+    pretty = tformat:%C(blue)%cd%C(reset) %x09%C(yellow)%h%C(green)%d%C(reset) %C(blue)%s%C(magenta) [%an]%C(reset)
 
 [advice]
     statusHints = false
