@@ -26,7 +26,7 @@
     pager = "less -RXMi"
     autocrlf = false
     editor = "vim --noplugin"
-    whitespace = cr-at-eol,trailiing-space,space-before-tab,tabwidth=8
+    whitespace = cr-at-eol,trailing-space,space-before-tab,tabwidth=8
     preloadindex = true
     excludesfile = ~/.gitignore.core
 
@@ -40,7 +40,7 @@
     follow = true
 
 [grep]
-    extendedRegexp = true
+    patternType = extended
 
 [branch]
     autosetupmerge = true
@@ -65,7 +65,7 @@
     cmd = emacs -Q -nw -l ~/.emacs.d/basic.el --difftool $LOCAL $REMOTE
 
 [merge]
-    summary = true
+    log = true
     verbosity = 1
     tool = "emacs"
     stat = true
