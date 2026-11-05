@@ -123,11 +123,11 @@
 
     ###
     # Updating repository.
-    checkout-recurse = !bash -c 'git checkout $1 && git submodule update --recursive' -
+    checkout-recurse = !bash -c 'git checkout $1 && git submodule update --init --recursive' -
     clean-all = clean --force -x -d
     fetch-all = fetch --all --prune --tags --recurse-submodules --progress
     pull-unclean = pull --autostash
-    submodule-update = !git submodule sync && git submodule update --init
+    submodule-update = !git submodule sync --recursive && git submodule update --init --recursive
 
     ###
     # Finding refspecs.
@@ -233,9 +233,9 @@
 
     ###
     # Archiving.
-    tar = "!f() { local ref=${2:-$(git head)}; git archive --format tar --output ${1:-${ref}.tar} ${ref}; }; f"
-    tar-xz = "!f() { local ref=${2:-$(git head)}; git archive ${ref} | xz >${1:-${ref}.tar.xz}; }; f"
-    zip = "!f() { local ref=${2:-$(git head)}; git archive --format zip --output ${1:-${ref}.zip} ${ref}; }; f"
+    tar = "!f() { local ref=${2:-$(git head)}; \"$HOME/.local/bin/git-archive-recursive\" tar \"${1:-${ref}.tar}\" \"${ref}\"; }; f"
+    tar-xz = "!f() { local ref=${2:-$(git head)}; \"$HOME/.local/bin/git-archive-recursive\" tar.xz \"${1:-${ref}.tar.xz}\" \"${ref}\"; }; f"
+    zip = "!f() { local ref=${2:-$(git head)}; \"$HOME/.local/bin/git-archive-recursive\" zip \"${1:-${ref}.zip}\" \"${ref}\"; }; f"
 
     ###
     # Importing.

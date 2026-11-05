@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#
+# Like git archive, but also includes the content of submodules (recursively),
+# which git archive leaves out.
+#
+# Usage: git-archive-recursive tar|tar.xz|zip OUTPUT [COMMIT]
+#
+# Every submodule recorded in COMMIT must be checked out and contain the
+# commit recorded for it. Without submodules the output is the same as from
+# git archive.
+
+set -euo pipefail
+
+usage() {
+    echo 1>&2 "Usage: ${0##*/} tar|tar.xz|zip OUTPUT [COMMIT]"
+    exit 1
+}
+
+# Print "<commit> <path>" for each submodule recorded in commit $2 of the
+# repository in directory $1.
+gitlinks() {
+    git -C "${1}" -c core.quotePath=false ls-tree -r "${2}" |
+        awk -F '\t' '$1 ~ /^160000 / { split($1, f, " "); print f[3] " " $2 }'
+}
+
+# Add the tar stream on stdin to the archive being built.
+sink() {
+    if [ "${format}" = zip ]; then
+        tar -x -C "${tmp}/root" -f -
+    elif [ -e "${tmp}/archive.tar" ]; then
+        cat >"${tmp}/part.tar"
+        tar --concatenate --file="${tmp}/archive.tar" "${tmp}/part.tar"
+    else
+        cat >"${tmp}/archive.tar"
+    fi
+}
+
+# Add commit $2 of the repository in directory $1 under prefix $3, then
+# recurse into its submodules.
+add_tree() {
+    local repo=${1} commit=${2} prefix=${3}
+    local links sha path
+
+    git -C "${repo}" archive --format=tar --prefix="${prefix}" "${commit}" | sink
+    links=$(gitlinks "${repo}" "${commit}")
+    while read -r sha path; do
+        [ -n "${sha}" ] || continue
+        if [ ! -e "${repo}/${path}/.git" ]; then
+            echo 1>&2 "${prefix}${path}: submodule is not checked out"
+            exit 1
+        fi
+        add_tree "${repo}/${path}" "${sha}" "${prefix}${path}/"
+    done <<<"${links}"
+}
+
+[ ${#} -ge 2 ] && [ ${#} -le 3 ] || usage
+format=${1}
+output=${2}
+ref=${3:-HEAD}
+case "${format}" in
+    tar|tar.xz|zip) ;;
+    *) usage ;;
+esac
+
+# OUTPUT is relative to the current directory, but the archive always covers
+# the whole repository.
+case "${output}" in
+    /*) ;;
+    *) output=${PWD}/${output} ;;
+esac
+cd "$(git rev-parse --show-toplevel)"
+if ! git rev-parse --quiet --verify "${ref}^{commit}" >/dev/null; then
+    echo 1>&2 "${ref}: not a valid commit"
+    exit 1
+fi
+
+# Build next to OUTPUT so that the final rename stays on one file system.
+tmp=$(mktemp -d "$(dirname -- "${output}")/.git-archive-recursive.XXXXXX")
+trap 'rm -rf "${tmp}"' EXIT
+
+if [ "${format}" = zip ] && [ -z "$(gitlinks . "${ref}")" ]; then
+    git archive --format=zip --output="${tmp}/out.zip" "${ref}"
+elif [ "${format}" = zip ]; then
+    mkdir "${tmp}/root"
+    add_tree . "${ref}" ""
+    (cd "${tmp}/root" && zip -qrXy "${tmp}/out.zip" .)
+else
+    add_tree . "${ref}" ""
+    if [ "${format}" = tar.xz ]; then
+        xz -c "${tmp}/archive.tar" >"${tmp}/out.tar.xz"
+    else
+        mv "${tmp}/archive.tar" "${tmp}/out.tar"
+    fi
+fi
+mv "${tmp}/out.${format}" "${output}"
