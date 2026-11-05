@@ -190,9 +190,9 @@
     add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
     ls-assume = !git ls-files -v | grep ^h | cut -c 3-
     assume = update-index --assume-unchanged
-    assume-all = !git st -s | awk {'print $2'} | xargs git assume
+    assume-all = "!git ls-files -z -m | xargs -0 -r git update-index --assume-unchanged --"
     unassume = update-index --no-assume-unchanged
-    unassume-all = !git assumed | xargs git update-index --no-assume-unchanged
+    unassume-all = "!git ls-assume | xargs -d '\\n' -r git update-index --no-assume-unchanged --"
     record = !bash -c '(git add -p -- $@ && git commit) || git reset' --
     untrack = rm --cache --
     ignore = "!f() { for p in \"$@\"; do printf '%s\\n' \"$p\" >> .gitignore; done; }; f"
