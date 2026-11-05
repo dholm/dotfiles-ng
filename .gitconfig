@@ -186,7 +186,7 @@
     ###
     # Manipulating file states.
     unmerge = checkout -m
-    edit-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; ${EDITOR} `f`"
+    edit-unmerged = "!f() { IFS='\n'; set -f; set -- $(git diff --name-only --diff-filter=U); [ $# -eq 0 ] || eval \"$(git var GIT_EDITOR)\" '\"$@\"'; }; f"
     add-unmerged = "!f() { git diff --name-status --diff-filter=U | cut -f2 ; }; git add `f`"
     ls-assume = !git ls-files -v | grep ^h | cut -c 3-
     assume = update-index --assume-unchanged
