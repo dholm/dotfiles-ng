@@ -256,7 +256,7 @@
 
     ###
     # Enclosed (subshelled) repositories.
-    deactivate = !bash -c 'kill -9 $(ps -o ppid= -p ${PPID})'
+    deactivate = "!f() { kill -HUP $(ps -o ppid= -p $PPID); }; f"
 
     ###
     # Server commands.
