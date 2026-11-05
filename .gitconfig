@@ -60,7 +60,7 @@
     prompt = no
     tool = "emacs"
 [difftool "ediff"]
-    cmd = $HOME/.local/bin/ediff.sh "$LOCAL" "$REMOTE" "$MERGED"
+    cmd = $HOME/.local/bin/ediff.sh "$LOCAL" "$REMOTE"
 [difftool "emacs"]
     cmd = emacs -Q -nw -l ~/.emacs.d/basic.el --difftool $LOCAL $REMOTE
 
@@ -72,9 +72,9 @@
 
 [mergetool]
     prompt = no
+    keepbackup = false
 [mergetool "vim"]
     cmd = vim -f -c 'Gdiff' $MERGED
-    keepbackup = false
 [mergetool "emacs"]
     cmd = emacs -Q -nw -l ~/.emacs.d/basic.el --mergetool $LOCAL $REMOTE $BASE $MERGED
 [mergetool "ediff"]
