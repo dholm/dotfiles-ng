@@ -46,7 +46,7 @@
     autosetupmerge = true
 
 [push]
-    default = tracking
+    default = simple
 
 [diff]
     mnemonicprefix = true
