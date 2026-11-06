@@ -40,7 +40,7 @@
     ((ruby-mode-hook . robe-mode)
      (robe-mode-hook . user--robe-mode-hook))
     :config
-    (eval-after-load 'company
+    (with-eval-after-load 'company
       (push 'company-robe company-backends)))
   (use-package inf-ruby)
   (use-package yari
