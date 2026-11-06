@@ -29,7 +29,7 @@
 
 (use-package make-mode
   :defer
-  :mode ("\.\(mak\|mif\|wat\)$" . makefile-mode)
+  :mode ("\\.\\(mak\\|mif\\|wat\\)\\'" . makefile-mode)
   :init
   (add-hook 'makefile-mode-hook 'user--makefile-mode-hook)
   :config

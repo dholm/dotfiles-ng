@@ -32,7 +32,6 @@
 (use-package rst
   :ensure nil
   :defer
-  :mode ("\.\(rst\|rest\)$" . rst-mode)
   :hook ((rst-adjust-hook . rst-toc-update)
          (rst-mode-hook . user--rst-mode-hook))
   :config

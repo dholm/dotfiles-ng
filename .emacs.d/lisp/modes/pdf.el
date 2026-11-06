@@ -13,7 +13,7 @@
     :ensure nil
     :if window-system
     :hook (pdf-view-mode-hook . user--pdf-view-mode-hook)
-    :mode ("\.pdf$" . pdf-view-mode)
+    :mode ("\\.pdf\\'" . pdf-view-mode)
     :config
     (validate-setq
      ;; Fit page to view by default.

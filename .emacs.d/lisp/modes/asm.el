@@ -39,7 +39,7 @@
 
 (use-package asm-mode
   :defer
-  :mode "\.[ia]65$"
+  :mode "\\.[ia]65\\'"
   :init
   (add-hook 'asm-mode-hook 'user--asm-mode-hook)
   :config

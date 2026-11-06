@@ -49,7 +49,7 @@
     :quelpa (sln-mode
              :fetcher github
              :repo "sensorflo/sln-mode")
-    :mode "\.sln$"))
+    :mode "\\.sln\\'"))
 
 
 (provide 'modes/csharp)

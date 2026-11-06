@@ -60,9 +60,8 @@
 (use-package ess
   :if (executable-find "R")
   :defer
-  :mode (("\.R$" . R-mode)
-         ("\.Rd$" . Rd-mode)
-         ("\.Rnw$" . Rnw-mode))
+  :mode (("\\.R\\'" . R-mode)
+         ("\\.Rd\\'" . Rd-mode))
   :bind (:map ess-mode-map
               ;; Workaround issue with ess yank.
               ([remap yank] . yank))

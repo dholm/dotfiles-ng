@@ -42,7 +42,7 @@
 
 (use-package js2-mode
   :defer
-  :mode "\.js$"
+  :mode "\\.js\\'"
   :magic "#!/usr/bin/env node"
   :hook (js2-mode-hook . user--js2-mode-hook)
   :config

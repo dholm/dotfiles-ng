@@ -4,7 +4,7 @@
 
 (use-package crontab-mode
   :defer
-  :mode (("\\.?cron\\(tab\\)?\\'" . crontab-mode)))
+  :mode (("/\\.?cron\\(tab\\)?\\'" . crontab-mode)))
 
 
 (provide 'modes/crontab)

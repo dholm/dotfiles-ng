@@ -27,7 +27,7 @@
 (use-package python
   :if (or (executable-find "python3") (executable-find "python"))
   :defer
-  :mode ("SCon\(struct\|script\)$" . python-mode)
+  :mode ("/SCon\\(struct\\|script\\)\\'" . python-mode)
   :interpreter ("python[0-9.]*" . python-mode)
   :hook
   (python-mode-hook . user--python-mode-hook)

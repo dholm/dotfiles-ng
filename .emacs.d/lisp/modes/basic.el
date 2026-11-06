@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package basic-mode
-  :mode "\.bas$")
+  :mode "\\.bas\\'")
 
 
 (provide 'modes/basic)

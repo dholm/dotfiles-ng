@@ -61,7 +61,8 @@
 
 (use-package nxml
   :defer
-  :mode ("\.\(xml\|xsd\|xslts\|rss\|svg\|plist\|rng\|rnc\)$" . nxml-mode)
+  ;; SVG files are left to image-mode, where C-c C-c shows the XML.
+  :mode ("\\.\\(xml\\|xsd\\|xslts\\|rss\\|plist\\|rng\\|rnc\\)\\'" . nxml-mode)
   :magic ("<\\?xml" . nxml-mode)
   :init
   ;; Use nxml-mode for XML

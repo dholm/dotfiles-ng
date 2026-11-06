@@ -17,7 +17,6 @@
 (use-package cmake-mode
   :if (executable-find "cmake")
   :defer
-  :mode "\(CMakeLists\.txt|\.cmake\)$"
   :hook (cmake-mode-hook . user--cmake-mode-hook)
   :config
   (use-package company-cmake

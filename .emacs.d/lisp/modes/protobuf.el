@@ -3,8 +3,8 @@
 ;;; Code:
 
 (use-package protobuf-mode
-  :defer
-  :mode (("proto\\'" . protobuf-mode)))
+  ;; protobuf-mode associates .proto files itself.
+  :defer)
 
 
 (provide 'modes/protobuf)

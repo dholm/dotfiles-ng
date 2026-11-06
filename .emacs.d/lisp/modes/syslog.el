@@ -13,7 +13,7 @@
 
 (use-package syslog-mode
   :defer
-  :mode "\(/var/log.*\|\.log\)$"
+  :mode "\\(/var/log/.*\\|\\.log\\)\\'"
   :init
   (add-hook 'syslog-mode-hook 'user--syslog-mode-hook)
   :config

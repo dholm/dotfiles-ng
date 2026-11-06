@@ -5,7 +5,7 @@
 (use-package groovy-mode
   :config
   (use-package jenkinsfile-mode
-    :mode "Jenkinsfile"))
+    :mode "/Jenkinsfile\\'"))
 
 
 (provide 'modes/groovy)

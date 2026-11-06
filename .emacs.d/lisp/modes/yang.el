@@ -12,7 +12,6 @@
 
 (use-package yang-mode
   :defer
-  :mode "\.yang$"
   :hook (yang-mode-hook . user--yang-mode-hook)
   :config
   (use-package flycheck-yang

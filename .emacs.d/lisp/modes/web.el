@@ -33,7 +33,7 @@
 
 (use-package web-mode
   :defer
-  :mode "\.\(html?\|phtml\|php[3-5]?\)$"
+  :mode "\\.\\(html?\\|phtml\\|php[3-5]?\\)\\'"
   :hook ((web-mode-hook . user--web-mode-hook)
          (web-mode-hook . user/eglot-ensure)
          (html-mode-hook . user/eglot-ensure))
