@@ -15,9 +15,11 @@
         ((:key :code :complete) . plantuml-complete-symbol)
         ((:key :code :compile) . plantuml-preview))
   :init
-  (let ((plantuml-url "https://sourceforge.net/projects/plantuml/files/latest/download?source=files"))
-    (when (not (file-exists-p *user-plantuml-jar-path*))
-      (url-copy-file plantuml-url *user-plantuml-jar-path*)))
+  (setq
+   ;; Render diagrams locally instead of sending them to plantuml.com.
+   ;; Prefer an installed plantuml command, otherwise use the jar, which
+   ;; `plantuml-download-jar' installs on request.
+   plantuml-default-exec-mode (if (executable-find "plantuml") 'executable 'jar))
   :config
   (validate-setq
    plantuml-jar-path *user-plantuml-jar-path*)
@@ -28,6 +30,8 @@
      'org-src-lang-modes '("plantuml" . plantuml)))
 
   (use-package flycheck-plantuml
+    ;; The checker runs the jar.
+    :if (file-exists-p *user-plantuml-jar-path*)
     :config
     (flycheck-plantuml-setup)))
 
