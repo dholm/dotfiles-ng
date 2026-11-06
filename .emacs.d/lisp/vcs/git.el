@@ -5,24 +5,21 @@
 (defun user--git-commit-mode-hook ()
   "Git commit mode hook."
   ;; Run the shared log edit hook.
-  (user--vc-log-edit-hook)
-
-  ;;; (Bindings) ;;;
-  ;; Ensure C-c C-c and C-c C-k are bound to git and not org.
-  (local-set-key (kbd "C-c C-c") 'git-commit-commit)
-  (local-set-key (kbd "C-c C-k") 'git-commit-abort))
+  (user--vc-log-edit-hook))
 
 
 (defun user/magit-toggle-whitespace ()
   "Toggle showing all differences in whitespace when using Magit."
   (interactive)
-  (if (member "-w" magit-diff-options)
+  (if (seq-intersection '("-w" "--ignore-all-space") magit-buffer-diff-args)
       (progn
         (message "Showing differences in whitespace.")
-        (setq magit-diff-options (remove "-w" magit-diff-options)))
+        (setq magit-buffer-diff-args
+              (seq-difference magit-buffer-diff-args
+                              '("-w" "--ignore-all-space"))))
     (progn
       (message "Hiding differences in whitespace.")
-      (add-to-list 'magit-diff-options "-w")))
+      (push "-w" magit-buffer-diff-args)))
   (magit-refresh))
 
 
@@ -36,7 +33,7 @@
     :hook (git-commit-mode-hook . user--git-commit-mode-hook)
     :bind-wrap
     (:map git-commit-mode-map
-          ((:key :basic :server-edit) . git-commit-commit)))
+          ((:key :basic :server-edit) . with-editor-finish)))
 
   (use-package magit
     :defer

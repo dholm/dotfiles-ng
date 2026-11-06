@@ -5,13 +5,16 @@
 (defvar user/vcs-command-alist
   '((:Git . ((:clone . magit-clone)
              (:status . magit-status)
-             (:history . magit-file-log)
-             (:version . magit-show)
+             (:history . magit-log-buffer-file)
+             (:version . magit-find-file)
              (:describe . git-messenger:popup-message)
              (:gutter . git-gutter:toggle)
              (:review . (lambda ()
-                          ;; Make it non-interactive to pick the current repo.
-                          (gerrit-download)))
+                          ;; gerrit.el downloads a change into the current
+                          ;; repository.
+                          (if (fboundp 'gerrit-download)
+                              (call-interactively 'gerrit-download)
+                            (user-error "Code review needs gerrit.el"))))
              (:add-buffer . (lambda ()
                               (magit-run-git "add" (path-abs-buffer))))
              (:mergetool . magit-ediff)
