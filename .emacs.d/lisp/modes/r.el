@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(defun user--R-mode-hook ()
+(defun user--ess-r-mode-hook ()
   "R programming mode hook."
   (unless (derived-mode-p 'prog-mode)
     (run-hooks 'prog-mode-hook)))
@@ -15,9 +15,6 @@
 
 (defun user--ess-mode-common-hook ()
   "ESS common mode hook."
-  (when (feature-p 'ac-R)
-    (ess-ac-init))
-
   ;;; (Bindings) ;;;
   (user/bind-key-local :code :eval-buffer 'ess-eval-buffer)
   (user/bind-key-local :code :eval-function 'ess-eval-function)
@@ -60,7 +57,7 @@
 (use-package ess
   :if (executable-find "R")
   :defer
-  :mode (("\\.R\\'" . R-mode)
+  :mode (("\\.R\\'" . ess-r-mode)
          ("\\.Rd\\'" . Rd-mode))
   :bind (:map ess-mode-map
               ;; Workaround issue with ess yank.
@@ -68,7 +65,8 @@
   :init
   (add-hook 'ess-mode-hook 'user--ess-mode-hook)
   (add-hook 'inferior-ess-mode-hook 'user--inferior-ess-mode-hook)
-  (add-hook 'R-mode-hook 'user--R-mode-hook)
+  ;; ESS 25 runs ess-r-mode-hook; R-mode-hook no longer exists.
+  (add-hook 'ess-r-mode-hook 'user--ess-r-mode-hook)
   (add-hook 'ess-R-post-run-hook 'user--ess-R-post-run-hook)
   (when (feature-p 'polymode)
     (add-auto-mode 'poly-noweb+r-mode "\\.Snw$" "\\.Rnw")
@@ -95,21 +93,10 @@
    ;; Enable ElDoc support.
    ess-use-eldoc t)
 
-  (cond
-   ((user/auto-complete-p)
-    (validate-setq
-     ;; Use auto completion in ESS modes.
-     ess-use-auto-complete t))
-   ((user/company-mode-p)
+  (when (user/company-mode-p)
     (validate-setq
      ;; Use company mode completion in ESS modes.
      ess-use-company t)))
-
-  (use-package ess-smart-underscore)
-  (use-package ac-R
-    :after (auto-complete)
-    :init
-    (autoload 'ess-ac-init "ac-R")))
 
 
 (provide 'modes/r)

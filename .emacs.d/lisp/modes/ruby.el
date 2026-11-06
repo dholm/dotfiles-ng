@@ -10,7 +10,8 @@
   (user/gnu-global-enable)
 
   ;; Enable inferior ruby mode
-  (inf-ruby-minor-mode t)
+  (when (fboundp 'inf-ruby-minor-mode)
+    (inf-ruby-minor-mode t))
 
   ;; Enable eldoc mode
   (eldoc-mode t)
@@ -22,11 +23,6 @@
   (user/eglot-ensure))
 
 
-(defun user--robe-mode-hook ()
-  "Robe mode hook."
-  (when (user/auto-complete-p)
-    (ac-robe-setup)))
-
 (use-package ruby-mode
   :defer
   ;; ruby-base-mode-hook also runs in ruby-ts-mode.
@@ -36,9 +32,7 @@
         ("TAB" . indent-for-tab-command))
   :config
   (use-package robe
-    :hook
-    ((ruby-mode-hook . robe-mode)
-     (robe-mode-hook . user--robe-mode-hook))
+    :hook (ruby-base-mode-hook . robe-mode)
     :config
     (with-eval-after-load 'company
       (push 'company-robe company-backends)))

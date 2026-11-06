@@ -6,17 +6,14 @@
   "Scala mode hook."
   (user/smartparens-enable)
 
-  (when (feature-p 'ensime)
-    (ensime-scala-mode-hook)))
+  ;; Enable LSP (Metals), if a language server is installed.
+  (user/eglot-ensure))
 
 (use-package scala-mode
   :if (executable-find "scala")
   :defer
   :init
-  (add-hook 'scala-mode-hook 'user--scala-mode-hook)
-  :config
-  (use-package ensime
-    :if (executable-find "sbt")))
+  (add-hook 'scala-mode-hook 'user--scala-mode-hook))
 
 
 (provide 'modes/scala)

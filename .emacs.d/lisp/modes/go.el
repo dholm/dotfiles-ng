@@ -13,16 +13,6 @@
   ;; Camel-case separates words.
   (subword-mode t)
 
-  (when (feature-p 'go-eldoc)
-    (go-eldoc-setup))
-
-  (cond
-   ((user/company-mode-p)
-    (with-feature 'company-go
-      (set
-       (make-local-variable 'company-backends)
-       '(company-go)))))
-
   (user/tags-try-enable)
 
   ;; Disable whitespace mode settings that don't make sense in Go.
@@ -48,10 +38,12 @@
    ;; Hide errors as they are managed by Flycheck.
    gofmt-show-errors nil)
 
-  (use-package go-autocomplete)
-  (use-package company-go
-    :after (company))
-  (use-package go-eldoc)
+  (with-executable 'goimports
+    (validate-setq
+     ;; Use goimports as formatter so that imports are updated at the
+     ;; same time.
+     gofmt-command "goimports"))
+
   (use-package gotest
     ;; The compilation error regexps should be set up with go-mode.
     :demand
@@ -63,22 +55,8 @@
     ;; Copy compilation error regexes from gotest.
     (dolist (elt go-test-compilation-error-regexp-alist-alist)
       (add-to-list 'compilation-error-regexp-alist-alist elt)))
-  (use-package godoctor
-    :if (executable-find "godoctor")
-    :bind-wrap
-    (:map go-mode-map
-          ((:key :code :refactor-rename) . godoctor-rename)
-          ((:key :code :refactor-extract) . godoctor-extract)
-          ((:key :code :document) . godoctor-godoc)))
   (use-package go-tag
     :if (executable-find "gomodifytags"))
-
-  (use-package go-projectile)
-
-  (when (feature-p 'helm)
-    (use-package helm-go-package
-      :bind (:map go-mode-map
-                  ([remap go-import-add] . helm-go-package))))
 
   (use-package flycheck-golangci-lint
     :hook (go-mode-hook . flycheck-golangci-lint-setup)
@@ -90,44 +68,11 @@
   (use-package go-fill-struct
     :if (executable-find "fillstruct"))
 
-  (use-package go-imports
-    :if (executable-find "goimports")
-    :config
-    (validate-setq
-     ;; Use goimports as formatter so that imports are updated at the
-     ;; same time.
-     gofmt-command "goimports"))
-
-  (use-package rats
-    :hook (go-mode-hook . rats-mode)
-    :bind-wrap (:map rats-mode-map
-                     ((:key :code :test)
-                      . rats-run-test-in-current-buffer))
-    :config
-    (with-eval-after-load 'popwin
-      (add-to-list
-       'popwin:special-display-config
-       ;; Don't select compilation window when shown
-       '(go-test-mode :height 20 :dedicated t))))
-
-  (use-package gorepl-mode
-    :if (executable-find "gore")
-    :diminish gorepl-mode
-    :hook (go-mode-hook . gorepl-mode)
-    :bind-wrap (:map gorepl-mode-map
-                     ((:key :code :eval-expression) . gorepl-eval-line)
-                     ((:key :code :eval-selection)
-                      . gorepl-eval-region)))
-
   (use-package go-gen-test
     :if (executable-find "gotests")
     :bind-wrap (:map go-mode-map
                      ((:key :code :generate-test)
                       . go-gen-test-dwim)))
-
-  (use-package go-imenu
-    :if (executable-find "go-outline")
-    :hook (go-mode-hook . go-imenu-setup))
 
   (use-package go-template-mode
     :mode ("\\.\\(gotmpl\\|tpl\\|tmpl\\)\\'" . go-template-mode)))

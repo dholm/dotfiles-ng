@@ -2,10 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(defconst *user-omnisharp-path*
-  (path-join *user-home-directory* ".local" "opt" "omnisharp"))
-
-
 (defun user--csharp-mode-hook ()
   "C# mode hook."
   (unless (derived-mode-p 'prog-mode)
@@ -19,11 +15,9 @@
 
   ;; Bring in CEDET.
   (user--cedet-hook)
-  (with-feature 'omnisharp
-    (eldoc-mode t)
-    (add-ac-sources 'ac-source-omnisharp)
-    (add-company-sources 'company-omnisharp)
-    (omnisharp-mode t)))
+
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure))
 
 
 (use-package csharp-mode
@@ -37,15 +31,7 @@
     ;; google-c-style only defines the style; register it under the name
     ;; that `c-default-style' refers to.
     (c-add-style "Google" google-c-style)
-    (add-to-list 'c-default-style '(csharp-mode . "Google")))
-
-  ;;; (Packages) ;;;
-  (when (file-exists-p *user-omnisharp-path*)
-    (use-package omnisharp
-      :config
-      (validate-setq
-       omnisharp-server-executable-path
-       (path-join *user-omnisharp-path* "omnisharp")))))
+    (add-to-list 'c-default-style '(csharp-mode . "Google"))))
 
 
 (provide 'modes/csharp)

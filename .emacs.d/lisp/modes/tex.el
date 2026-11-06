@@ -28,13 +28,9 @@
     (tex-fold-mode t))
 
   ;; Completion backends.
-  (cond
-   ((user/auto-complete-p)
-    (with-feature 'ac-math
-      (add-ac-modes 'latex-mode 'LaTeX-mode)))
-   ((user/company-mode-p)
+  (when (user/company-mode-p)
     (with-feature 'company-math
-      (add-company-sources 'company-math-symbols-latex 'company-latex-commands))))
+      (add-company-sources 'company-math-symbols-latex 'company-latex-commands)))
 
   (when (feature-p 'mic-paren)
     ;; Match context to quoted parentheses.
@@ -43,8 +39,6 @@
     (paren-toggle-matching-paired-delimiter t))
 
   ;;; (Bindings) ;;;
-  (when (feature-p 'latexdiff)
-    (user/bind-key-local :util :diff 'helm-latexdiff))
   (user/bind-key-local :nav :functions/toc 'reftex-toc)
   (when (display-graphic-p)
     (user/bind-key-local :code :run 'preview-document))
@@ -74,12 +68,6 @@ files."
   ;; Enable TeX math macros.
   (LaTeX-math-mode t)
 
-  (when (user/auto-complete-p)
-    ;; Enable auto-complete.
-    (with-feature 'ac-math
-      (add-ac-sources 'ac-source-math-unicode 'ac-source-math-latex
-                      'ac-source-latex-commands)))
-
   ;; Activate improved sentence filling.
   (advice-add 'LaTeX-fill-region-as-paragraph :around
               #'user--LaTeX-fill-sentences))
@@ -103,16 +91,10 @@ files."
   ;;; (Packages) ;;;
   (use-package reftex
     :ensure nil
-    :diminish reftex-mode
-    :config
-    (use-package company-reftex
-      :after (company)))
+    :diminish reftex-mode)
 
   (use-package latex-extra
     :hook (LaTeX-mode-hook . latex-extra-mode))
-
-  (use-package latexdiff
-    :if (executable-find "latexdiff"))
 
   (use-package bibtex
     :config
@@ -121,92 +103,7 @@ files."
      bibtex-autokey-name-case-convert 'identity
      bibtex-autokey-year-length 4)
 
-    (use-package gscholar-bibtex)
-    (use-package bibtex-utils)
-    (use-package bibclean-format
-      :if (executable-find "bibclean")
-      :hook (bibtex-mode-hook . bibclean-format-on-save-mode)))
-
-  (use-package auctex
-    :bind (:map LaTeX-mode-map
-                ([remap fill-paragraph] . LaTeX-fill-paragraph))
-    :config
-    (validate-setq
-     ;; Use synctex to communicate with LaTeX.
-     TeX-source-correlate-method 'synctex
-     LaTeX-command "latex -synctex=1"
-     ;; Do not ask about saving buffers before starting TeX.
-     TeX-save-query nil
-     ;; Use PDF rather than DVI by default.
-     TeX-PDF-mode t
-     TeX-interactive-mode t
-     ;; Parse file after load/save unless it has a style hook.
-     TeX-parse-self t
-     TeX-auto-save t
-     ;; Display help on error messages.
-     TeX-display-help t
-     ;; Automatically remove tabs.
-     TeX-auto-untabify t
-     ;; Support for backwards search in documents.
-     TeX-source-correlate-mode t
-     TeX-source-correlate-start-server t
-     TeX-master nil
-
-     ;; (RefTeX) ;;
-     ;; Make reftex interact with AucTeX.
-     reftex-plug-into-AUCTeX t
-     ;; Prompt for optional arguments.
-     reftex-cite-prompt-optional-args t
-     ;; Try to guess the label type before prompting.
-     reftex-guess-label-type t
-     ;; Use nice fonts for toc.
-     reftex-use-fonts t
-     ;; Revisit files if necessary when browsing toc.
-     reftex-revisit-to-follow t
-     ;; Center on the section currently being edited.
-     reftex-auto-recenter-toc t
-     ;; Save parse info to avoid reparsing every time a file is visited.
-     reftex-save-parse-info t
-     ;; Cache selection buffers for faster access.
-     reftex-use-multiple-selection-buffers t)
-
-    (with-eval-after-load 'preview
-      ;; Support previewing of TikZ.
-      (add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
-
-    (with-eval-after-load 'auctex
-      (when (user/company-mode-p)
-        (with-feature 'company-auctex
-          ;; Enable company AUCTeX completion.
-          (company-auctex-init))))
-
-    (cond
-     ((eq system-type 'darwin)
-      (validate-setq
-       TeX-view-program-list (quote (("Preview" "open -a Preview.app %o")
-                                     ("Skim" "open -a Skim.app %o")
-                                     ("open" "open %o")))
-       TeX-view-program-selection '((output-pdf "Preview"))))
-     (t (with-executable 'evince
-          (validate-setq
-           TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o"))
-           TeX-view-program-selection '((output-pdf "Evince"))))))
-
-      ;;; (Packages) ;;;
-    (use-package auctex-latexmk
-      :if (executable-find "latexmk")
-      :init
-      (auctex-latexmk-setup))
-
-    (use-package auctex-lua
-      :if (executable-find "luatex"))
-
-    (use-package company-auctex
-      :after (company)
-      :init
-      (company-auctex-init))
-
-    (use-package bibretrieve))
+    (use-package bibtex-utils))
 
   (use-package ebib
     :config
@@ -218,25 +115,6 @@ files."
         (with-project project (path-buffer-abs)
           (user/proj-root project)))))
 
-  (use-package zotelo
-    :diminish zotelo-minor-mode
-    :hook (TeX-mode-hook . zotelo-minor-mode))
-
-  (use-package ac-math
-    :after (auto-complete)
-    :config
-    (validate-setq
-     ;; Enable unicode math input.
-     ac-math-unicode-in-math-p t))
-
-  (use-package auto-complete-latex
-    :after (auto-complete)
-    :quelpa (auto-complete-latex
-             :fetcher hg
-             :url "https://bitbucket.org/tequilasunset/auto-complete-latex")
-    :config
-    (add-ac-modes 'latex-mode 'LaTeX-mode))
-
   (use-package company-math
     :after (company))
 
@@ -244,6 +122,78 @@ files."
     :diminish texfrag-mode
     :config
     (texfrag-global-mode t)))
+
+
+(use-package tex
+  ;; AUCTeX has no auctex feature; its main library is tex.
+  :ensure auctex
+  :if (or (executable-find "tex")
+          (executable-find "latex"))
+  :defer t
+  :config
+  (validate-setq
+   ;; Use synctex to communicate with LaTeX.
+   TeX-source-correlate-method 'synctex
+   LaTeX-command "latex -synctex=1"
+   ;; Do not ask about saving buffers before starting TeX.
+   TeX-save-query nil
+   ;; Use PDF rather than DVI by default.
+   TeX-PDF-mode t
+   TeX-interactive-mode t
+   ;; Parse file after load/save unless it has a style hook.
+   TeX-parse-self t
+   TeX-auto-save t
+   ;; Display help on error messages.
+   TeX-display-help t
+   ;; Automatically remove tabs.
+   TeX-auto-untabify t
+   ;; Support for backwards search in documents.
+   TeX-source-correlate-mode t
+   TeX-source-correlate-start-server t
+   TeX-master nil
+
+   ;; (RefTeX) ;;
+   ;; Make reftex interact with AucTeX.
+   reftex-plug-into-AUCTeX t
+   ;; Prompt for optional arguments.
+   reftex-cite-prompt-optional-args t
+   ;; Try to guess the label type before prompting.
+   reftex-guess-label-type t
+   ;; Use nice fonts for toc.
+   reftex-use-fonts t
+   ;; Revisit files if necessary when browsing toc.
+   reftex-revisit-to-follow t
+   ;; Center on the section currently being edited.
+   reftex-auto-recenter-toc t
+   ;; Save parse info to avoid reparsing every time a file is visited.
+   reftex-save-parse-info t
+   ;; Cache selection buffers for faster access.
+   reftex-use-multiple-selection-buffers t)
+
+  (with-eval-after-load 'preview
+    ;; Support previewing of TikZ.
+    (add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
+
+  (cond
+   ((eq system-type 'darwin)
+    (validate-setq
+     TeX-view-program-list (quote (("Preview" "open -a Preview.app %o")
+                                   ("Skim" "open -a Skim.app %o")
+                                   ("open" "open %o")))
+     TeX-view-program-selection '((output-pdf "Preview"))))
+   (t (with-executable 'evince
+        (validate-setq
+         TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o"))
+         TeX-view-program-selection '((output-pdf "Evince"))))))
+
+  ;;; (Packages) ;;;
+  (use-package auctex-latexmk
+    :if (executable-find "latexmk")
+    :init
+    (auctex-latexmk-setup))
+
+  (with-eval-after-load 'latex
+    (define-key LaTeX-mode-map [remap fill-paragraph] #'LaTeX-fill-paragraph)))
 
 
 (provide 'modes/tex)

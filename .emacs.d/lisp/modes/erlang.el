@@ -24,10 +24,7 @@
 
 (defun user--elixir-mode-hook ()
   "Erlang Elixir mode hook."
-  (user--erlang-mode-hook)
-
-  (with-feature 'alchemist
-    (alchemist-mode t)))
+  (user--erlang-mode-hook))
 
 
 (use-package erlang
@@ -44,16 +41,11 @@
   (with-feature 'distel
     (distel-setup))
 
-  (use-package alchemist)
   (use-package distel
     :quelpa (distel
              :fetcher github
              :repo "massemanet/distel"
-             :files ("elisp/*.el")))
-  (use-package flycheck-dialyzer
-    :if (executable-find "dialyzer"))
-  (use-package flycheck-rebar3
-    :if (executable-find "rebar3")))
+             :files ("elisp/*.el"))))
 
 
 (provide 'modes/erlang)
