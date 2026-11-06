@@ -125,6 +125,7 @@
    ;; List of holidays to display in calendar.
    calendar-holidays
    (append holiday-general-holidays
+           holiday-local-holidays
            holiday-christian-holidays
            ;; Not holidays.
            ;;holiday-other-holidays
@@ -156,18 +157,18 @@
   :hook ((calendar-today-visible-hook . calendar-mark-today)
          (calendar-load-hook . user--calendar-load-hook))
   :config
-  (let ((diary-data-store (path-join *user-org-data-directory* "diary.org")))
-    (validate-setq
-     ;; Diary data store.
-     diary-file diary-data-store
-     ;; Always show entries for current date.
-     calendar-view-diary-initially-flag t
-     ;; Mark dates containing entries.
-     calendar-mark-diary-entries-flag t
-     ;; Mark holidays in calendar.
-     calendar-mark-holidays-flag t
-     ;; Week starts on Monday.
-     calendar-week-start-day 1))
+  (validate-setq
+   ;; Diary data store. This has to be a file in diary format, not the Org
+   ;; journal (diary.org), which org-agenda can show on its own.
+   diary-file (path-join *user-data-directory* "diary")
+   ;; Always show entries for current date.
+   calendar-view-diary-initially-flag t
+   ;; Mark dates containing entries.
+   calendar-mark-diary-entries-flag t
+   ;; Mark holidays in calendar.
+   calendar-mark-holidays-flag t
+   ;; Week starts on Monday.
+   calendar-week-start-day 1)
 
   ;; Date style should be ISO. The date patterns depend on the style, so
   ;; it has to be changed through `calendar-set-date-style'.
@@ -224,8 +225,9 @@
   (use-package excorporate-diary
     :ensure nil
     :after org
-    :hook (org-agenda-cleanup-fancy-diary-hook
-           . user--exco-agenda-update-diary)
+    ;; Fetch today's meetings once each time an agenda is built, not once
+    ;; for every day the agenda shows.
+    :hook (org-agenda-finalize-hook . user--exco-agenda-update-diary)
     :init
     (make-directory *user-excorporate-cache-directory* t)
     :config
