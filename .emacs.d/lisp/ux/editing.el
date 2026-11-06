@@ -66,11 +66,23 @@ mode that sets `syntax-ppss' properly."
        ;; Use right option key for writing special characters.
        mac-right-option-modifier nil)))
 
-  ; Dependency of unicode-fonts.
+  ;; Dependencies of unicode-fonts. Their MELPA Stable releases still
+  ;; require the obsolete cl library, which current MELPA builds replace
+  ;; with cl-lib.
   (use-package list-utils
     :pin "MELPA")
+  (use-package font-utils
+    :pin "MELPA"
+    :defer t)
+  (use-package ucs-utils
+    :pin "MELPA"
+    :defer t)
+  (use-package persistent-soft
+    :pin "MELPA"
+    :defer t)
   (use-package unicode-fonts
     :if (eq default-terminal-coding-system 'utf-8)
+    :pin "MELPA"
     ;; Ensure `pcache-directory' has been set first.
     :after ux/cache
     :config
