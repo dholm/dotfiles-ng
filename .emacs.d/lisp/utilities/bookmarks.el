@@ -44,7 +44,7 @@
    bm-buffer-persistence t)
 
   ;; Restore bookmarks on file find.
-  (add-hook 'find-file-hooks 'bm-buffer-restore)
+  (add-hook 'find-file-hook 'bm-buffer-restore)
   ;; Save bookmarks when killing buffer.
   (add-hook 'kill-buffer-hook 'bm-buffer-save)
   ;; Save all bookmarks on exit.

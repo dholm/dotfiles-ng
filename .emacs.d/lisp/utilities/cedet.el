@@ -13,16 +13,6 @@
   (ede-minor-mode t))
 
 
-(defun user/ede-get-local-var (fname var)
-  "For file FNAME fetch the value of VAR from project."
-  (with-project current-project fname
-    (when (user/ede-proj-p current-project)
-      (let* ((ov (oref current-project local-variables))
-             (lst (assoc var ov)))
-        (when lst
-          (cdr lst))))))
-
-
 (defun user/cedet-gnu-idutils-create/update ()
   "Create or update GNU idutils database at current project root."
   (interactive)
