@@ -301,7 +301,7 @@
 
                (:complete . "TAB")
                (:try-complete . "TAB")
-               (:auto-complete . "C-TAB")
+               (:auto-complete . "<C-tab>")
 
                (:unwrap-expr . "C-M-d")
 
