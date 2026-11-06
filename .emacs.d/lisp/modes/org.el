@@ -185,8 +185,6 @@
    'ol-bibtex
    ;; Link to tags.
    'org-ctags
-   ;; Link to articles and messages in Gnus.
-   'ol-gnus
    ;; Habit tracking.
    'org-habit
    ;; Support links to info pages.
@@ -200,8 +198,16 @@
    ;; Embed source code in org-mode.
    'org-src)
 
-  (when (feature-p 'bbdb)
-    (add-to-list 'org-modules 'ol-bbdb))
+  ;; Links to Gnus articles, BBDB records and EWW pages. Org's default
+  ;; modules include these, and loading them loads Gnus (ol-eww through
+  ;; eww and mm-url) and BBDB, so only load them once those are in use.
+  (setq org-modules (seq-difference org-modules '(ol-gnus ol-bbdb ol-eww)))
+  (with-eval-after-load 'gnus
+    (require 'ol-gnus))
+  (with-eval-after-load 'bbdb
+    (require 'ol-bbdb))
+  (with-eval-after-load 'eww
+    (require 'ol-eww))
   (when (feature-p 'emacs-w3m)
     (add-to-list 'org-modules 'ol-w3m))
 
