@@ -219,6 +219,7 @@
 
 (use-package excorporate
   :ensure t
+  :defer
   :config
   (use-package excorporate-diary
     :ensure nil

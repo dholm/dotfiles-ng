@@ -4,6 +4,7 @@
 
 (use-package notmuch
   :if (executable-find "notmuch")
+  :defer
   :config
   (use-package helm-notmuch)
   (use-package notmuch-bookmarks

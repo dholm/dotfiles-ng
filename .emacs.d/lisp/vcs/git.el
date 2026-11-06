@@ -79,7 +79,8 @@
       :hook (magit-mode-hook . magit-svn-mode))
     (use-package magit-imerge
       :if (executable-find "git-imerge"))
-    (use-package orgit)
+    (use-package orgit
+      :defer)
     (use-package magit-todos
       :disabled
       :hook (magit-mode-hook . magit-todos-mode))
@@ -115,7 +116,8 @@
     (use-package helm-hunks
       :defer))
 
-  (use-package magit-diff-flycheck)
+  (use-package magit-diff-flycheck
+    :defer)
 
   (use-package magit-delta
     :if (executable-find "delta")))

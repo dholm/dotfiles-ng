@@ -30,6 +30,7 @@
 
     (use-package eww
       :ensure nil
+      :defer
       :config
       (use-package helm-eww
         :bind (:map eww-mode-map

@@ -4,6 +4,7 @@
 
 (use-package rg
   :if (executable-find "rg")
+  :defer
   :config
   (use-package helm-rg))
 

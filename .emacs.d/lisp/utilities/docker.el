@@ -4,6 +4,7 @@
 
 (use-package docker
   :if (executable-find "docker")
+  :defer
   :diminish docker-mode
   :bind-wrap ((:key :util :docker) . docker))
 
