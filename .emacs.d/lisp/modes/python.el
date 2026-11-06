@@ -30,7 +30,8 @@
   :mode ("/SCon\\(struct\\|script\\)\\'" . python-mode)
   :interpreter ("python[0-9.]*" . python-mode)
   :hook
-  (python-mode-hook . user--python-mode-hook)
+  ;; python-base-mode-hook also runs in python-ts-mode.
+  (python-base-mode-hook . user--python-mode-hook)
   :config
   (validate-setq
    ;; Don't try to guess the indentation.
@@ -71,7 +72,7 @@
 
   (use-package pipenv
     :if (executable-find "pipenv")
-    :hook (python-mode-hook . pipenv-mode))
+    :hook (python-base-mode-hook . pipenv-mode))
 
   (use-package flycheck-pycheckers
     :after flycheck

@@ -17,7 +17,7 @@
 (use-package cmake-mode
   :if (executable-find "cmake")
   :defer
-  :hook (cmake-mode-hook . user--cmake-mode-hook)
+  :hook ((cmake-mode-hook cmake-ts-mode-hook) . user--cmake-mode-hook)
   :config
   (use-package company-cmake
     :after (company)
@@ -25,10 +25,13 @@
     (add-to-list 'company-backends 'company-cmake))
 
   (use-package cmake-font-lock
-    :hook (cmake-mode-hook . cmake-font-lock-activate))
+    :hook (cmake-mode-hook . cmake-font-lock-activate)))
 
-  (use-package eldoc-cmake
-    :hook (cmake-mode-hook . eldoc-cmake-enable)))
+;; Not nested in cmake-mode's :config, which doesn't run when files open in
+;; cmake-ts-mode.
+(use-package eldoc-cmake
+  :if (executable-find "cmake")
+  :hook ((cmake-mode-hook cmake-ts-mode-hook) . eldoc-cmake-enable))
 
 
 (provide 'modes/cmake)

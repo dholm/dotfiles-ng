@@ -32,7 +32,8 @@
 
 (use-package shell
   :defer
-  :hook ((sh-mode-hook . user--sh-mode-hook)
+  ;; sh-base-mode-hook also runs in bash-ts-mode.
+  :hook ((sh-base-mode-hook . user--sh-mode-hook)
          (shell-mode-hook . user--shell-mode-hook))
   :config
   ;;; (Packages) ;;;

@@ -20,8 +20,10 @@
      ;; Ask before cloning and compiling missing grammars.
      treesit-auto-install 'prompt
      ;; treesit-auto has no tree-sitter-c revision for ABI 14, and the
-     ;; current grammar does not load, so keep using `c-mode'.
-     treesit-auto-langs (remq 'c treesit-auto-langs))
+     ;; current grammar does not load, so keep using `c-mode'. Keep
+     ;; `c++-mode' too: the C/C++ configuration is built on cc-mode's
+     ;; `c-mode-common-hook', which `c++-ts-mode' doesn't run.
+     treesit-auto-langs (seq-difference treesit-auto-langs '(c cpp)))
 
     (global-treesit-auto-mode)))
 

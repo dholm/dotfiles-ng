@@ -15,7 +15,7 @@
   (with-feature 'rainbow-mode
     (rainbow-mode t))
 
-  (when (eq major-mode 'css-mode)
+  (when (memq major-mode '(css-mode css-ts-mode))
     ;; Only enable in strictly css-mode, not scss-mode (css-mode-hook
     ;; fires for scss-mode because scss-mode is derived from
     ;; css-mode).
@@ -29,7 +29,7 @@
 
 (use-package css-mode
   :defer
-  :hook (css-mode-hook . user--css-mode-hook)
+  :hook ((css-mode-hook css-ts-mode-hook) . user--css-mode-hook)
   :config
   (use-package showcss-mode
     :quelpa (showcss-mode

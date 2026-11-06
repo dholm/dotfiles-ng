@@ -10,7 +10,7 @@
   :ensure nil
   :if (executable-find "javac")
   :defer
-  :hook (java-mode-hook . user--java-mode-hook)
+  :hook ((java-mode-hook java-ts-mode-hook) . user--java-mode-hook)
   :config
   (use-package mvn))
 

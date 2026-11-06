@@ -29,7 +29,8 @@
 
 (use-package ruby-mode
   :defer
-  :hook (ruby-mode-hook . user--ruby-mode-hook)
+  ;; ruby-base-mode-hook also runs in ruby-ts-mode.
+  :hook (ruby-base-mode-hook . user--ruby-mode-hook)
   :bind
   (:map ruby-mode-map
         ("TAB" . indent-for-tab-command))

@@ -12,10 +12,14 @@
 
 (defun user--javascript-mode-hook ()
   "JavaScript mode hook."
-  ;; `js-mode-hook' also runs in modes derived from `js-mode', such as
+  ;; `js-base-mode-hook' also runs in modes derived from `js-mode', such as
   ;; `js2-mode' and `js-json-mode', which have their own hooks.
-  (when (eq major-mode 'js-mode)
-    (user--javascript-mode-common-hook)))
+  (when (memq major-mode '(js-mode js-ts-mode))
+    (user--javascript-mode-common-hook))
+  (when (eq major-mode 'js-ts-mode)
+    ;; treesit-auto opens .js files in js-ts-mode instead of js2-mode
+    ;; once the grammar is installed.
+    (user/eglot-ensure)))
 
 
 (defun user--inferior-js-mode-hook ()
@@ -37,7 +41,7 @@
 
 (use-package js
   :defer
-  :hook ((js-mode-hook . user--javascript-mode-hook)
+  :hook ((js-base-mode-hook . user--javascript-mode-hook)
          (inferior-js-mode-hook . user--inferior-js-mode-hook)))
 
 (use-package js2-mode

@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package dockerfile-mode
-  :hook (dockerfile-mode-hook . user/eglot-ensure))
+  :hook ((dockerfile-mode-hook dockerfile-ts-mode-hook) . user/eglot-ensure))
 
 (use-package docker-compose-mode)
 
