@@ -82,14 +82,7 @@
        ;; 10 LINE FEED, 9166 RETURN SYMBOL 「⏎」, 36 DOLLAR SIGN 「$」
        (newline-mark ?\n [9166 10] [36 10])
        ;; 9 TAB, 9655 WHITE RIGHT-POINTING TRIANGLE 「▷」, 92 9 CHARACTER TABULATION 「\t」
-       (tab-mark ?\t [9655 9] [92 9]))))
-
-  (defadvice whitespace-cleanup (around whitespace-cleanup-indent-tab
-                                        activate)
-    "Fix whitespace-cleanup indent-tabs-mode bug."
-    (let ((whitespace-indent-tabs-mode indent-tabs-mode)
-          (whitespace-tab-width tab-width))
-      ad-do-it)))
+       (tab-mark ?\t [9655 9] [92 9])))))
 
 
 (provide 'modes/whitespace)

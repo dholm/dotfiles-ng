@@ -68,8 +68,9 @@
    bookmark-default-file *bookmark+-data-file*)
 
   ;; Share Emacs directory bookmarks with ZSH.
-  (defadvice bookmark-write-file
-      (after local-directory-bookmarks-to-zsh-advice activate)
+  (define-advice bookmark-write-file
+      (:after (&rest _) user-local-directory-bookmarks-to-zsh)
+    "Also write the directory bookmarks for ZSH."
     (bookmark--local-directory-bookmarks-to-zsh))
 
   (use-package bookmark+

@@ -52,6 +52,23 @@
     (user/bind-key-local :nav :references 'ebib)))
 
 
+(defun user--LaTeX-fill-sentences (fill from to &rest args)
+  "Call FILL from FROM to TO with ARGS one sentence at a time.
+Around advice for `LaTeX-fill-region-as-paragraph' that starts each
+sentence on a new line, which makes it easier to version control LaTeX
+files."
+  (let ((to-marker (copy-marker to)))
+    (while (< from (marker-position to-marker))
+      (forward-sentence)
+      ;; Might have gone beyond to-marker, use whichever is smaller.
+      (apply fill from (min (point) (marker-position to-marker)) args)
+      (setq from (point))
+      (unless (or (bolp)
+                  (looking-at "\\s *$"))
+        (LaTeX-newline)))
+    (set-marker to-marker nil)))
+
+
 (defun user--latex-mode-hook ()
   "LaTeX mode hook."
   ;; Enable TeX math macros.
@@ -64,7 +81,8 @@
                       'ac-source-latex-commands)))
 
   ;; Activate improved sentence filling.
-  (ad-activate 'LaTeX-fill-region-as-paragraph))
+  (advice-add 'LaTeX-fill-region-as-paragraph :around
+              #'user--LaTeX-fill-sentences))
 
 
 (defun user--bibtex-mode-hook ()
@@ -173,26 +191,6 @@
           (validate-setq
            TeX-view-program-list '(("Evince" "evince --page-index=%(outpage) %o"))
            TeX-view-program-selection '((output-pdf "Evince"))))))
-
-    ;;; (Functions) ;;;
-    (defadvice LaTeX-fill-region-as-paragraph (around LaTeX-sentence-filling)
-      "Start each sentence on a new line.
-
-Makes it easier to version control LaTeX-files."
-      (let ((from (ad-get-arg 0))
-            (to-marker (set-marker (make-marker) (ad-get-arg 1)))
-            tmp-end)
-        (while (< from (marker-position to-marker))
-          (forward-sentence)
-          ;; might have gone beyond to-marker --- use whichever is smaller:
-          (ad-set-arg 1 (setq tmp-end (min (point) (marker-position to-marker))))
-          ad-do-it
-          (ad-set-arg 0 (setq from (point)))
-          (unless (or
-                   (bolp)
-                   (looking-at "\\s *$"))
-            (LaTeX-newline)))
-        (set-marker to-marker nil)))
 
       ;;; (Packages) ;;;
     (use-package auctex-latexmk

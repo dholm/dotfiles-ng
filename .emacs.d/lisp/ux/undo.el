@@ -37,9 +37,10 @@
    undo-tree-visualizer-diff t)
 
   ;; Compress undo history.
-  (defadvice undo-tree-make-history-save-file-name
-      (after undo-tree activate)
-    (validate-setq ad-return-value (concat ad-return-value ".gz")))
+  (define-advice undo-tree-make-history-save-file-name
+      (:filter-return (file-name) user-compress)
+    "Save the undo history compressed."
+    (concat file-name ".gz"))
 
   (global-undo-tree-mode t))
 

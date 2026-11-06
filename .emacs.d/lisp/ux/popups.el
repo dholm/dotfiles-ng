@@ -13,11 +13,11 @@
     :config
     ;; Install workaround for whitespace-mode bug.
     (with-eval-after-load 'modes/whitespace
-      (defadvice popup-draw (before user/turn-off-whitespace activate compile)
+      (define-advice popup-draw (:before (&rest _) user-turn-off-whitespace)
         "Turn off whitespace mode before showing popup."
         (user/whitespace-mode-suppress t))
 
-      (defadvice popup-delete (after user/restore-whitespace activate compile)
+      (define-advice popup-delete (:after (&rest _) user-restore-whitespace)
         "Restore previous whitespace mode when deleting popup."
         (user/whitespace-mode-suppress nil))))
 

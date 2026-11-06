@@ -153,13 +153,13 @@
    gnus-agent-go-online t)
 
   ;; Set up smtpmail queue based on Gnus queue state.
-  (defadvice gnus (after gnus-queue-off activate)
+  (define-advice gnus (:after (&rest _) user-queue-off)
     "Turn off and flush the smtpmail queue when starting a plugged gnus."
     (with-feature 'smtpmail
       (validate-setq smtpmail-queue-mail nil)
       (when (file-exists-p (path-join smtpmail-queue-dir "index"))
         (smtpmail-send-queued-mail))))
-  (defadvice gnus-unplugged (after gnus-queue-on activate)
+  (define-advice gnus-unplugged (:after (&rest _) user-queue-on)
     "Turn on the smtpmail queue when starting an unplugged gnus."
     (when (featurep 'smtpmail)
       (validate-setq smtpmail-queue-mail t))))
@@ -292,7 +292,7 @@
        gnus-group-sort-by-level))
 
     ;; Use smtpmail queue instead of Gnus queue.
-    (defadvice gnus-group-send-queue (after smtp-flush-queue activate)
+    (define-advice gnus-group-send-queue (:after (&rest _) user-flush-smtp-queue)
       "Empty the smtpmail queue after emptying the gnus send queue."
       (smtpmail-send-queued-mail)))
 
