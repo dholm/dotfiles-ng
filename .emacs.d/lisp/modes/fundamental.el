@@ -7,6 +7,10 @@
   (with-feature 'undo-tree
     (undo-tree-mode t))
 
+  ;; Break long lines automatically, but outside of text modes only in
+  ;; comments, so that code and configuration lines aren't split.
+  (unless (derived-mode-p 'text-mode)
+    (setq-local comment-auto-fill-only-comments t))
   (auto-fill-mode t)
 
   ;; Enable whitespace mode globally.
@@ -27,10 +31,9 @@
 
 (defun user--fundamental-mode-config ()
   "Initialize Emacs fundamental mode."
-  (validate-setq
-   ;; When using fill-paragraph or auto-fill-mode break lines at 80 characters by
-   ;; default.
-   fill-column 80)
+  ;; When using fill-paragraph or auto-fill-mode break lines at 80 characters by
+  ;; default. fill-column is buffer-local, so set the default value.
+  (setq-default fill-column 80)
 
   ;;; (Packages) ;;;
   (use-package rainbow-delimiters)
