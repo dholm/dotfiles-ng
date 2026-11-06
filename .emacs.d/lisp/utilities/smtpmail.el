@@ -6,19 +6,29 @@
   (path-join *user-data-directory* "smtpmail")
   "Path to user's smtpmail data store.")
 
-(defun user/smtpmail-set-gmail-user (fullname username)
-  "Configure smtpmail to use \"FULLNAME\" <USERNAME@gmail.com>."
+(defun user/smtpmail-set-gmail-user (_fullname username)
+  "Configure smtpmail to send mail as USERNAME@gmail.com.
+The password is read with auth-source, for example from a line like
+\"machine smtp.gmail.com port 587 login USERNAME@gmail.com password
+...\" in ~/.authinfo.gpg."
   (let ((email-address (concat username "@gmail.com")))
     (if (feature-p 'smtpmail-multi)
         (with-feature 'smtpmail-multi
-          (add-to-list 'smtpmail-multi-accounts
-                       `(,email-address
-                         (,email-address "smtp.gmail.com" 587
-                                         ,(concat fullname " <" email-address ">")
-                                         starttls nil nil "gmail.com"))))
+          (let ((account (intern email-address)))
+            ;; (ACCOUNT USER SERVER PORT MAIL-FROM STREAM-TYPE KEY CERT
+            ;;  LOCAL-DOMAIN)
+            (add-to-list 'smtpmail-multi-accounts
+                         `(,account ,email-address "smtp.gmail.com" 587
+                                    ,email-address starttls nil nil
+                                    "gmail.com"))
+            ;; Send mail from this address through the account.
+            (add-to-list 'smtpmail-multi-associations
+                         `(,(regexp-quote email-address) ,account))
+            (unless smtpmail-multi-default-account
+              (setq smtpmail-multi-default-account account))))
       (setq
-       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-       smtpmail-auth-credentials `(("smtp.gmail.com" 587 ,email-address nil))
+       smtpmail-smtp-user email-address
+       smtpmail-stream-type 'starttls
        smtpmail-default-smtp-server "smtp.gmail.com"
        smtpmail-smtp-server "smtp.gmail.com"
        smtpmail-smtp-service 587
@@ -44,8 +54,8 @@
     :config
     (validate-setq
      ;; Use smtpmail-multi as the default method of sending email.
-     send-mail-function 'smtpmail-send-it
-     message-send-mail-function 'smtpmail-send-it))
+     send-mail-function 'smtpmail-multi-send-it
+     message-send-mail-function 'smtpmail-multi-send-it))
 
   (use-package smtpmail-async
     :after async
