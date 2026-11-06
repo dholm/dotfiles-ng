@@ -184,17 +184,17 @@
    ;; File attachment manager.
    'org-attach
    ;; Link to BibTeX entries.
-   'org-bibtex
+   'ol-bibtex
    ;; Link to tags.
    'org-ctags
    ;; Link to articles and messages in Gnus.
-   'org-gnus
+   'ol-gnus
    ;; Habit tracking.
    'org-habit
    ;; Support links to info pages.
-   'org-info
+   'ol-info
    ;; Support links to man pages.
-   'org-man
+   'ol-man
    ;; Export org buffer to MIME email message.
    'org-mime
    ;; Allow external applications to talk to org.
@@ -203,13 +203,9 @@
    'org-src)
 
   (when (feature-p 'bbdb)
-    (add-to-list 'org-modules 'org-bbdb))
+    (add-to-list 'org-modules 'ol-bbdb))
   (when (feature-p 'emacs-w3m)
-    (add-to-list 'org-modules 'org-w3m))
-  (when (feature-p 'wanderlust)
-    (add-to-list 'org-modules 'org-wl))
-  (with-executable 'git
-    (add-to-list 'org-modules 'org-git-link))
+    (add-to-list 'org-modules 'ol-w3m))
 
   (when (display-graphic-p)
     (validate-setq
