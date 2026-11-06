@@ -9,8 +9,7 @@
   (use-package helm-notmuch)
   (use-package notmuch-bookmarks
     :config
-    (notmuch-bookmarks-mode))
-  (use-package notmuch-labeler))
+    (notmuch-bookmarks-mode)))
 
 
 (provide 'apps/notmuch)

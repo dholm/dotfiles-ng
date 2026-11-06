@@ -75,6 +75,8 @@
   (user/bind-key-global :emacs :tutorial 'help-with-tutorial))
 
 (use-package which-key
+  ;; Built into Emacs 30.
+  :ensure nil
   :diminish which-key-mode
   :config
   (validate-setq

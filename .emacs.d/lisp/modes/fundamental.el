@@ -37,9 +37,13 @@
 
   ;;; (Packages) ;;;
   (use-package rainbow-delimiters)
-  (use-package mic-paren
+  (use-package paren
+    :ensure nil
     :config
-    (paren-activate))
+    (validate-setq
+     ;; Show the line of an open parenthesis that is off screen.
+     show-paren-context-when-offscreen 'overlay)
+    (show-paren-mode t))
   (use-package dynamic-spaces
     :config
     (dynamic-spaces-global-mode t))

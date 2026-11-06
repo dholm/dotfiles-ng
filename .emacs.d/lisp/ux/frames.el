@@ -19,7 +19,7 @@
 (defun user/close-and-kill-current-window ()
   "If multiple windows are open, close the current one and kill the buffer."
   (interactive)
-  (kill-this-buffer)
+  (kill-current-buffer)
   (if (not (one-window-p))
       (delete-window)))
 
@@ -28,7 +28,7 @@
   "If multiple windows are open, close the next one and kill its buffer."
   (interactive)
   (other-window 1)
-  (kill-this-buffer)
+  (kill-current-buffer)
   (if (not (one-window-p))
       (delete-window)))
 

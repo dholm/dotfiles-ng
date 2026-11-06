@@ -280,7 +280,10 @@
      ;; Improved keep-place by fitting more unread text.
      'scrolltoplace))
 
-  (use-package erc-status-sidebar)
+  (use-package erc-status-sidebar
+    ;; Part of ERC since Emacs 30.
+    :ensure nil
+    :defer t)
 
   (when (feature-p 'bbdb)
     (use-package bbdb2erc

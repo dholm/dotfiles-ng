@@ -18,9 +18,6 @@
   (with-feature 'paredit
     (enable-paredit-mode))
 
-  (with-feature 'redshank
-    (redshank-mode t))
-
   (with-feature 'easy-escape
     (easy-escape-minor-mode t))
 

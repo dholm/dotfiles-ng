@@ -6,7 +6,6 @@
   :if (executable-find "kubectl")
   :defer
   :config
-  (use-package timonier)
   (use-package kubedoc))
 
 

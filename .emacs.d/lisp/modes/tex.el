@@ -32,12 +32,6 @@
     (with-feature 'company-math
       (add-company-sources 'company-math-symbols-latex 'company-latex-commands)))
 
-  (when (feature-p 'mic-paren)
-    ;; Match context to quoted parentheses.
-    (paren-toggle-matching-quoted-paren t)
-    ;; Match paired delimiters.
-    (paren-toggle-matching-paired-delimiter t))
-
   ;;; (Bindings) ;;;
   (user/bind-key-local :nav :functions/toc 'reftex-toc)
   (when (display-graphic-p)

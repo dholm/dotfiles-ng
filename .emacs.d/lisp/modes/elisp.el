@@ -11,9 +11,6 @@
     (auto-compile-on-save-mode t)
     (auto-compile-on-load-mode t))
 
-  (with-feature 'elisp-slime-nav
-    (elisp-slime-nav-mode t))
-
   (with-feature 'eros
     (eros-mode t))
 
@@ -105,8 +102,6 @@
     (when (eq default-terminal-coding-system 'utf-8)
       (validate-setq
        eros-eval-result-prefix "∴ ")))
-  (use-package elisp-slime-nav
-    :diminish elisp-slime-nav-mode)
   (use-package flycheck-elsa
     :after flycheck
     :config
@@ -115,8 +110,6 @@
   (use-package rainbow-delimiters)
   (use-package paredit
     :diminish paredit-mode)
-  (use-package redshank
-    :diminish redshank-mode)
   (use-package helm-elisp
     :ensure helm
     :bind (("C-c h a" . helm-apropos)

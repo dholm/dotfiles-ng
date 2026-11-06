@@ -2,11 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(defconst *user-flymd-cache-directory*
-  (path-join *user-cache-directory* "flymd")
-  "Path to user's FLYMD cache store.")
-
-
 (defun user--markdown-mode-hook ()
   "Markdown mode hook."
   (user/smartparens-enable)
@@ -30,27 +25,9 @@
   (use-package poly-markdown
     :hook (markdown-mode-hook . poly-markdown-mode))
 
-  ;; Previewers, loaded when their commands are first used.
-  (use-package markdown-preview-eww
-    :defer t)
+  ;; Live preview, loaded when its command is first used.
   (use-package markdown-preview-mode
-    :defer t)
-
-  (use-package mkdown
-    :after markdown-mode
-    :config
-    (add-to-list 'markdown-css-paths mkdown-css-file-name))
-
-  (use-package gh-md
-    :defer t)
-
-  (use-package flymd
-    :defer t
-    :init
-    (make-directory *user-flymd-cache-directory* t)
-    :config
-    (validate-setq
-     flymd-output-directory *user-flymd-cache-directory*)))
+    :defer t))
 
 
 (provide 'modes/markdown)

@@ -57,8 +57,9 @@
 
      ((bound-and-true-p elisp-def-mode)
       (call-interactively 'elisp-def))
-     ((eq major-mode 'emacs-lisp-mode)
-      (call-interactively 'elisp-slime-nav-find-elisp-thing-at-point))
+     ((derived-mode-p 'emacs-lisp-mode)
+      (let ((xref-prompt-for-identifier nil))
+        (call-interactively 'xref-find-definitions)))
 
      ((eq major-mode 'go-mode)
       (when (user/use-go-guru)

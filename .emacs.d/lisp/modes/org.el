@@ -88,9 +88,7 @@
 (defun user/org-mobile-sync-pull-and-push ()
   "Sync OrgMobile directory."
   (org-mobile-pull)
-  (org-mobile-push)
-  (with-eval-after-load 'sauron
-    (sauron-add-event 'my 3 "Called org-mobile-pull and org-mobile-push")))
+  (org-mobile-push))
 
 
 (defun user/org-mobile-sync-start ()

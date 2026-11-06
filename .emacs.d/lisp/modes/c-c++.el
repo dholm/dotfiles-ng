@@ -28,10 +28,6 @@
   ;; Separate camel-case into separate words.
   (subword-mode t)
 
-  (when (feature-p 'mic-paren)
-    ;; Match context to open parentheses.
-    (paren-toggle-open-paren-context t))
-
   ;; Load CEDET.
   (user--cedet-hook)
 

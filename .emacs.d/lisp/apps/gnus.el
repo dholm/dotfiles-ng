@@ -427,7 +427,6 @@
      gnus-score-decay-scale 0.03))
 
   (use-package gnus-alias)
-  (use-package gnus-summary-ext)
 
   (use-package gnus-gravatar
     :if window-system
