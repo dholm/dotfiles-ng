@@ -445,12 +445,12 @@
   (use-package nnfolder
     :ensure nil
     :init
+    ;; Create the archive directory. Its active file is created by
+    ;; nnfolder.
     (make-directory (path-join *user-gnus-data-directory* "mail"
-                               "archive" "active") t)
+                               "archive") t)
     (set-file-modes (path-join *user-gnus-data-directory*
                                "mail" "archive") #o0700)
-    (set-file-modes (path-join *user-gnus-data-directory*
-                               "mail" "archive" "active") #o0700)
     :config
     (validate-setq
      ;; nnfolder data store.
