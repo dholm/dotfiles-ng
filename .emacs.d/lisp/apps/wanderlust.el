@@ -114,34 +114,26 @@
 
 (defun wl-summary-overview-entity-compare-by-reply-date (a b)
   "Compare message A and B by latest date of replies including thread."
-  (cl-flet ((string-max2 (x y)
-                         (cond ((string< x y) y)
-                               ('t x)))
-            (thread-number-get-date (x)
-                                    (timezone-make-date-sortable (elmo-msgdb-overview-entity-get-date
-                                                                  (elmo-message-entity
-                                                                   wl-summary-buffer-elmo-folder x))))
-            (thread-get-family (x)
-                               (cons x (wl-thread-entity-get-descendant (wl-thread-get-entity x))))
-            (max-reply-date (x)
-                            (cond ((eq 'nil x)
-                                   'nil)
-                                  ((eq 'nil (cdr x))
-                                   (thread-number-get-date (car x)))
-                                  ('t
-                                   (string-max2 (thread-number-get-date (car x))
-                                                (max-reply-date (cdr x)))))))
+  (cl-labels ((string-max2 (x y)
+                           (cond ((string< x y) y)
+                                 ('t x)))
+              (thread-number-get-date (x)
+                                      (timezone-make-date-sortable (elmo-msgdb-overview-entity-get-date
+                                                                    (elmo-message-entity
+                                                                     wl-summary-buffer-elmo-folder x))))
+              (thread-get-family (x)
+                                 (cons x (wl-thread-entity-get-descendant (wl-thread-get-entity x))))
+              (max-reply-date (x)
+                              (cond ((eq 'nil x)
+                                     'nil)
+                                    ((eq 'nil (cdr x))
+                                     (thread-number-get-date (car x)))
+                                    ('t
+                                     (string-max2 (thread-number-get-date (car x))
+                                                  (max-reply-date (cdr x)))))))
     (string<
      (max-reply-date (thread-get-family (elmo-message-entity-number a)))
      (max-reply-date (thread-get-family (elmo-message-entity-number b))))))
-
-
-(defun user--mime-display-text/plain-hook ()
-  "Plain text display hook."
-  (let ((fmt (cdr (assoc "format" (mime-content-type-parameters
-                                   (mime-entity-content-type entity))))))
-    (when (string= "flowed" fmt)
-      (fill-flowed))))
 
 
 (defun user--semi-shr-config ()
@@ -472,10 +464,6 @@ Gmail {
          default-mime-charset
          (if (eq default-terminal-coding-system 'utf-8) 'utf-8
            'iso-8859-1)))
-
-      (use-package mime-view
-        :ensure nil
-        :hook (mime-display-text/plain-hook . user--mime-display-text/plain-hook))
 
       (use-package elmo
         :ensure nil
