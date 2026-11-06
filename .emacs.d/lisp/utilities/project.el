@@ -7,16 +7,16 @@
     ()
     "Project class.")
 
-  (cl-defgeneric user/proj-name ((project user/proj))
+  (cl-defgeneric user/proj-name (project)
     "Get the PROJECT name.")
 
-  (cl-defgeneric user/proj-root ((project user/proj))
+  (cl-defgeneric user/proj-root (project)
     "Get the PROJECT root path.")
 
-  (cl-defgeneric user/proj-include-paths ((project user/proj))
+  (cl-defgeneric user/proj-include-paths (project)
     "Get the include paths for PROJECT.")
 
-  (cl-defgeneric user/proj-build ((project user/proj))
+  (cl-defgeneric user/proj-build (project)
     "Build PROJECT.")
 
   (cl-defmethod user/proj-name ((project user/proj))
