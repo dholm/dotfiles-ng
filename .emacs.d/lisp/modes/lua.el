@@ -20,7 +20,7 @@
     :requires lua-mode
     :quelpa (lua-block
              :fetcher url
-             :url "http://www.emacswiki.org/emacs/download/lua-block.el")
+             :url "https://www.emacswiki.org/emacs/download/lua-block.el")
     :init
     (autoload 'lua-block-mode "lua-block" nil t)))
 

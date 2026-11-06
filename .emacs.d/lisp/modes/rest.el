@@ -30,10 +30,8 @@
 
 
 (use-package rst
+  :ensure nil
   :defer
-  :quelpa (rst
-           :fetcher svn
-           :url "http://svn.code.sf.net/p/docutils/code/trunk/docutils/tools/editors/emacs")
   :mode ("\.\(rst\|rest\)$" . rst-mode)
   :hook ((rst-adjust-hook . rst-toc-update)
          (rst-mode-hook . user--rst-mode-hook))

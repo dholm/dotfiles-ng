@@ -15,13 +15,6 @@
   (when (feature-p 'polymode)
     (add-auto-mode 'poly-verilog+perl-mode "\\.sv$" "\\.svh$"))
 
-  (use-package auto-complete-verilog
-    :after (auto-complete)
-    :quelpa (auto-complete-verilog
-             :fetcher url
-             :url
-             "http://www.emacswiki.org/emacs-en/download/auto-complete-verilog.el"))
-
   (use-package veri-kompass
     :hook (verilog-mode-hook . veri-kompass-minor-mode)
     :bind-wrap

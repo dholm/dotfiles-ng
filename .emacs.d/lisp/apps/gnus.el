@@ -586,12 +586,12 @@
   (with-executable 'gpgsm
     (quelpa '(jl-encrypt
               :fetcher url
-              :url "http://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-encrypt4.3/jl-encrypt.el"))
+              :url "https://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-encrypt4.3/jl-encrypt.el"))
     (use-package jl-smime
       :requires jl-encrypt
       :quelpa (jl-smime
                :fetcher url
-               :url "http://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-smime3.3/jl-smime.el")
+               :url "https://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-smime3.3/jl-smime.el")
       :init
       (with-eval-after-load 'gnus
         (load "jl-smime"))
