@@ -16,12 +16,11 @@
   (skewer-css-mode t)
   (rainbow-mode t)
 
-  (with-feature 'lsp-css
-    (when (eq major-mode 'css-mode)
-      ;; Only enable in strictly css-mode, not scss-mode (css-mode-hook
-      ;; fires for scss-mode because scss-mode is derived from
-      ;; css-mode).
-      (lsp-css-enable)))
+  (when (eq major-mode 'css-mode)
+    ;; Only enable in strictly css-mode, not scss-mode (css-mode-hook
+    ;; fires for scss-mode because scss-mode is derived from
+    ;; css-mode).
+    (user/eglot-ensure))
 
   ;;; (Bindings) ;;;
   (user/bind-key-local :nav :functions/toc 'helm-css-scss)
@@ -41,10 +40,6 @@
 
   (when (feature-p 'helm)
     (use-package helm-css-scss))
-
-  (use-package lsp-css
-    :ensure nil
-    :if (executable-find "css-languageserver"))
 
   (use-package flycheck-css-colorguard
     :config

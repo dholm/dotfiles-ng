@@ -24,9 +24,7 @@
 
   ;;; (Bindings) ;;;
   (when (feature-p 'pyvenv)
-    (user/bind-key-local :code :virtual 'pyvenv-workon))
-  (when (feature-p 'lsp-pyright)
-    (require 'lsp-pyright)))
+    (user/bind-key-local :code :virtual 'pyvenv-workon)))
 
 
 (use-package python
@@ -62,8 +60,6 @@
         (switch-to-buffer "*bpython*"))))
 
   ;;; (Packages) ;;;
-  (use-package lsp-pyright
-    :if (executable-find "pyright-langserver"))
   (use-package anaconda-mode)
   (use-package py-autopep8)
   (use-package pylookup
@@ -76,11 +72,6 @@
      ;; Locate of Python environment store.
      python-environment-directory (path-join *user-cache-directory*
                                              "python-environment")))
-  (use-package lsp-jedi
-    :config
-    (with-eval-after-load "lsp-mode"
-      (add-to-list 'lsp-disabled-clients 'pyls)
-      (add-to-list 'lsp-enabled-clients 'jedi)))
 
   (use-package pipenv
     :if (executable-find "pipenv")

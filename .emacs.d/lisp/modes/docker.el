@@ -3,11 +3,7 @@
 ;;; Code:
 
 (use-package dockerfile-mode
-  :config
-  (use-package lsp-dockerfile
-    :if (executable-find "docker-langserver")
-    :quelpa (lsp-dockerfile :fetcher github :repo "emacs-lsp/lsp-dockerfile")
-    :hook (dockerfile-mode-hook . lsp-dockerfile-enable)))
+  :hook (dockerfile-mode-hook . user/eglot-ensure))
 
 (use-package docker-compose-mode)
 

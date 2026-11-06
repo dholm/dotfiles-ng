@@ -29,7 +29,9 @@
   ;; Enable smart indentation
   (smart-tabs-mode t)
   ;; Enable Flycheck
-  (flycheck-mode t))
+  (flycheck-mode t)
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure))
 
 
 (use-package js
@@ -67,10 +69,6 @@
     (setenv "NODE_NO_READLINE" "1"))
 
   (use-package prettier-js)
-
-  (use-package lsp-javascript-typescript
-    :if (executable-find "javascript-typescript-langserver")
-    :hook (js2-mode-hook . lsp-javascript-typescript-enable))
 
   (use-package helm-js-codemod
     :if (executable-find "jscodeshift"))

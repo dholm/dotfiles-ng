@@ -35,7 +35,10 @@
     (ghc-init))
 
   (with-feature 'shm
-    (structured-haskell-mode t)))
+    (structured-haskell-mode t))
+
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure))
 
 
 (defun user--inferior-haskell-mode-hook ()
@@ -76,10 +79,7 @@
   (use-package flycheck-ghcmod
     :if (executable-find "ghc-mod"))
   (use-package company-ghc
-    :after (company))
-  (use-package lsp-haskell
-    :if (executable-find "hie")
-    :hook (haskell-mode-hook . lsp-haskell-enable)))
+    :after (company)))
 
 
 (provide 'modes/haskell)

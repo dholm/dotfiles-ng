@@ -2,23 +2,25 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package dap-mode
-  :pin "MELPA"
-  :hook ((lsp-mode-hook . dap-mode)
-         (lsp-mode-hook . dap-ui-mode))
+(use-package dape
+  :after (eglot)
   :bind-wrap
-  (:map lsp-mode-map
-        ((:key :debug :break) . dap-breakpoint-toggle)
-        ((:key :debug :step) . dap-step-in)
-        ((:key :debug :next) . dap-next)
-        ((:key :debug :run) . dap-debug)
-        ((:key :debug :continue) . dap-continue)
+  (:map eglot-mode-map
+        ((:key :debug :break) . dape-breakpoint-toggle)
+        ((:key :debug :step) . dape-step-in)
+        ((:key :debug :next) . dape-next)
+        ((:key :debug :run) . dape)
+        ((:key :debug :continue) . dape-continue)
 
-        ((:key :debug :show-value) . dap-ui-inspect-thing-at-point))
+        ((:key :debug :show-value) . dape-evaluate-expression))
   :config
   (validate-setq
    ;; Location of persistent breakpoints.
-   dap-breakpoints-file (path-join *user-cache-directory* "dap-breakpoints")))
+   dape-default-breakpoints-file (path-join *user-cache-directory* "dape-breakpoints"))
+
+  ;; Persist breakpoints between sessions.
+  (dape-breakpoint-load)
+  (add-hook 'kill-emacs-hook #'dape-breakpoint-save))
 
 
 (provide 'utilities/dap)

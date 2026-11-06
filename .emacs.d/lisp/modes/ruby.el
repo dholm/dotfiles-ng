@@ -16,7 +16,10 @@
   (eldoc-mode t)
 
   ;; Separate camel-case into separate words
-  (subword-mode t))
+  (subword-mode t)
+
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure))
 
 
 (defun user--robe-mode-hook ()
@@ -45,10 +48,7 @@
           ((:key :doc :reference) . yari)))
   (use-package rubocopfmt
     :if (executable-find "rubocop")
-    :hook (ruby-mode-hook . rubocopfmt-mode))
-  (use-package lsp-ruby
-    :if (executable-find "solargraph")
-    :hook (ruby-mode-hook . lsp-ruby-enable)))
+    :hook (ruby-mode-hook . rubocopfmt-mode)))
 
 
 (provide 'modes/ruby)

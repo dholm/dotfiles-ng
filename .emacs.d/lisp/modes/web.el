@@ -44,12 +44,21 @@
 (use-package web-mode
   :defer
   :mode "\.\(html?\|phtml\|php[3-5]?\)$"
-  :hook (web-mode-hook . user--web-mode-hook)
+  :hook ((web-mode-hook . user--web-mode-hook)
+         (web-mode-hook . user/eglot-ensure)
+         (html-mode-hook . user/eglot-ensure))
   :init
   (when (feature-p 'polymode)
     (add-auto-mode 'poly-javascript-erb-mode "\\.js\\.erb$")
     (add-auto-mode 'poly-coffee-erb-mode "\\.coffee\\.erb$")
     (add-auto-mode 'poly-html-erb-mode "\\.html\\.erb$"))
+  (with-eval-after-load 'eglot
+    ;; Use the HTML language server in web-mode.
+    (add-to-list 'eglot-server-programs
+                 `((web-mode :language-id "html")
+                   . ,(eglot-alternatives
+                       '(("vscode-html-language-server" "--stdio")
+                         ("html-languageserver" "--stdio"))))))
   :config
   (validate-setq
    ;; Indent HTML automatically.
@@ -104,12 +113,6 @@
   (use-package cakecrumbs
     :init
     (cakecrumbs-auto-setup))
-
-  (use-package lsp-html
-    :ensure nil
-    :if (executable-find "html-languageserver")
-    :hook ((web-mode-hook . lsp-mode)
-           (html-mode-hook . lsp-mode)))
 
   (use-package prettier
     :if (executable-find "prettier")

@@ -62,10 +62,8 @@
       ;; Better auto completion.
       (irony-mode t)))
 
-  ;; Enable LSP components, if installed.
-  (cond
-   ((feature-p 'ccls) (ignore-errors (lsp-ccls-enable)))
-   ((feature-p 'cquery) (ignore-errors (lsp-cquery-enable))))
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure)
 
   (when (require 'flycheck-rtags nil :noerror)
     (if (user/use-rtags)
@@ -212,27 +210,7 @@
     :if (executable-find "flawfinder")
     :config
     (flycheck-flawfinder-setup))
-  (use-package google-c-style)
-  (use-package ccls
-    :if (executable-find "ccls")
-    :config
-    (validate-setq
-     ccls-initialization-options
-     '(:index (:comments 1) :cacheFormat "msgpack")))
-  (use-package cquery
-    :if (executable-find "cquery")
-    :pin "MELPA"
-    :config
-    (setq
-     ;; Enable extra features (incompatible with `validate-setq').
-     cquery-extra-init-params
-     '(:index (:comments 1) :cacheFormat "msgpack")))
-  (use-package lsp-clangd
-    :disabled
-    :if (executable-find "clangd")
-    :hook ((c-mode--hook . lsp-clangd-c-enable)
-           (c++-mode-hook . lsp-clangd-c++-enable)
-           (objc-mode-hook . lsp-clangd-objc-enable))))
+  (use-package google-c-style))
 
 
 (provide 'modes/c-c++)

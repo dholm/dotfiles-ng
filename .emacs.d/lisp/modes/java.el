@@ -4,8 +4,7 @@
 
 (defun user--java-mode-hook ()
   "Java mode hook."
-  (with-feature 'lsp
-    (lsp)))
+  (user/eglot-ensure))
 
 (use-package cc-mode
   :ensure nil
@@ -13,17 +12,6 @@
   :defer
   :hook (java-mode-hook . user--java-mode-hook)
   :config
-  (use-package lsp-java
-    :pin "MELPA"
-    :config
-    (validate-setq
-     ;; Path to LSP server.
-     lsp-java-server-install-dir (path-join *user-cache-directory* "lsp-java" "server")
-     ;; Workspace path.
-     lsp-java-workspace-dir (path-join *user-data-directory* "lsp-java")
-     ;; Workspace cache.
-     lsp-java-workspace-cache-dir  (path-join *user-cache-directory* "lsp-java" "cache")))
-
   (use-package mvn))
 
 

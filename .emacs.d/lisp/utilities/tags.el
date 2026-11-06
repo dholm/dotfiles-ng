@@ -2,22 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
-(defun user/use-lsp ()
-  "Check if language server protocol is supported."
-  (and
-   ;; Don't use lsp-mode over Tramp until it is supported.
-   ;;  - https://github.com/emacs-lsp/lsp-mode/issues/197
-   (when buffer-file-name
-     (not (tramp-tramp-file-p buffer-file-name)))
-   (fboundp 'lsp)
-   (lsp-deferred)))
-
-
 (defun user/use-rtags (&optional filemanager)
   "Check if rtags can be used, optionally with its FILEMANAGER."
   (and
    ;; Only use rtags if LSP is unavailable.
-   (not (user/use-lsp))
+   (not (user/eglot-server-available-p))
    (or
     (eq major-mode 'c-mode)
     (eq major-mode 'c++-mode))
@@ -86,8 +75,9 @@
                (not rtags-last-request-not-indexed)
                (rtags-find-symbol-at-point))
     (user/eval-until-move
-     '(((user/use-lsp)
-        (call-interactively 'lsp-find-definition))
+     '(((user/use-eglot)
+        (let ((xref-prompt-for-identifier nil))
+          (call-interactively 'xref-find-definitions)))
 
        ((bound-and-true-p elisp-def-mode)
         (call-interactively 'elisp-def))
@@ -111,8 +101,9 @@
                                     (not rtags-last-request-not-indexed)))
                (rtags-find-references-at-point))
     (user/eval-until-move
-     '(((user/use-lsp)
-        (call-interactively 'lsp-find-references))
+     '(((user/use-eglot)
+        (let ((xref-prompt-for-identifier nil))
+          (call-interactively 'xref-find-references)))
 
        ((eq major-mode 'go-mode)
         (when (user/use-go-guru)
@@ -130,7 +121,7 @@
   (unless (and (user/use-rtags)
                (rtags-find-symbol))
     (user/eval-until-move
-     '(((user/use-lsp)
+     '(((user/use-eglot)
         (call-interactively 'xref-find-apropos))
        ((user/use-helm-gtags)
         (call-interactively 'helm-gtags-select))
@@ -144,8 +135,9 @@
   (unless (and (user/use-rtags)
                (rtags-find-references))
     (user/eval-until-move
-     '(((user/use-lsp)
-        (call-interactively 'lsp-find-references))
+     '(((user/use-eglot)
+        (let ((xref-prompt-for-identifier nil))
+          (call-interactively 'xref-find-references)))
 
        ((eq major-mode 'go-mode)
         (when (user/use-go-guru)
@@ -162,7 +154,8 @@
   (interactive)
   (cond
    ((user/use-rtags) (call-interactively 'rtags-print-symbol-info))
-   ((user/use-lsp) (call-interactively 'lsp-describe-thing-at-point))
+   ;; Interactive ElDoc also shows the documentation buffer.
+   ((user/use-eglot) (call-interactively 'eldoc))
    ((eq major-mode 'go-mode)
     (when (user/use-go-guru)
       (call-interactively 'go-guru-describe)))
@@ -174,7 +167,7 @@
   (interactive)
   (cond
    ((user/use-rtags) (call-interactively 'rtags-rename-symbol))
-   ((user/use-lsp) (call-interactively 'lsp-rename))
+   ((user/use-eglot) (call-interactively 'eglot-rename))
    ((eq major-mode 'go-mode)
     (if (executable-find "godoctor")
         (call-interactively 'godoctor-rename)
@@ -217,8 +210,8 @@
   (unless (and (user/use-rtags)
                (rtags-location-stack-back))
     (user/eval-until-move
-     '(((user/use-lsp)
-        (call-interactively 'xref-pop-marker-stack))
+     '(((user/use-eglot)
+        (call-interactively 'xref-go-back))
 
        ((eq major-mode 'go-mode)
         (when (user/use-go-guru)
@@ -232,7 +225,7 @@
 (defun user/tags-try-enable ()
   "Enable tags if any of the tag backends is located."
   (when (or (user/use-rtags)
-            (user/use-lsp)
+            (user/eglot-ensure)
             (user/use-helm-gtags)
             (user/use-semantic))
     (when (feature-p 'rtags)
