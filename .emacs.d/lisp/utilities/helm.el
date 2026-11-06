@@ -217,13 +217,7 @@
     :defer
     :quelpa (helm-build-command
              :fetcher github
-             :repo "tkf/helm-build-command"))
-
-  (use-package helm-icons
-    :if (display-graphic-p)
-    :disabled
-    :config
-    (helm-icons-enable)))
+             :repo "tkf/helm-build-command")))
 
 
 (provide 'utilities/helm)
