@@ -30,13 +30,26 @@
   (when (eq action 'insert)
     (save-excursion
       (backward-char 1)
-      (looking-back "\\sw\\|\\s_\\|\\s'"))))
+      (looking-back "\\sw\\|\\s_\\|\\s'" (1- (point))))))
 
 (defun user--sp-gfm-skip-asterisk (_ms position _me)
   "Return t if asterisk should be skipped at point with POSITION."
   (save-excursion
     (goto-char position)
     (save-match-data (looking-at "^\\* "))))
+
+(defun user--php-function-args ()
+  "Return the parameter names of the next PHP function declaration.
+Only the current and the next line are searched."
+  (save-excursion
+    (when (re-search-forward "function[^(]*(\\([^)]*\\))" (line-end-position 2) t)
+      (let ((params (match-string-no-properties 1))
+            (start 0)
+            args)
+        (while (string-match "\\$[[:alnum:]_]+" params start)
+          (push (match-string 0 params) args)
+          (setq start (match-end 0)))
+        (nreverse args)))))
 
 (defun user--sp-php-handle-docstring (&rest _ignored)
   "Handle PHP docstrings with smartparens."
@@ -49,7 +62,7 @@
         (insert "\n")
         (let ((args (save-excursion
                       (forward-line)
-                      (my-php-get-function-args))))
+                      (user--php-function-args))))
           (--each args
             (insert (format "* @param %s\n" it)))))
       (insert "* "))
