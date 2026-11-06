@@ -22,10 +22,6 @@
   (unless (derived-mode-p 'text-mode)
     (user--text-mode-hook))
 
-  (with-feature 'org-sticky-header
-    ;; Enable sticky org mode header.
-    (org-sticky-header-mode t))
-
   ;; Highlighting lines that are too long since it often causes false
   ;; positives on URLs.
   (user/whitespace-disable-style '(lines lines-tail))
@@ -39,10 +35,6 @@
    (concat "\f\\|[ ]*$\\|\\*+ \\|\f\\|[ \t]*\\([-+*][ \t]+\\|"
            "[0-9]+[.)][ \t] +\\)\\|[ \t]*[:|]\\|"
            "^[ \t]+\\[[0-9]\\{4\\}-"))
-
-  (with-feature 'org-table-sticky-header
-    ;; Enable sticky headers for tables.
-    (org-table-sticky-header-mode t))
 
   (user/smartparens-enable)
 
@@ -74,6 +66,12 @@
   ;; Load Babel languages.
   (org-babel-do-load-languages 'org-babel-load-languages
                                org-babel-load-languages))
+
+
+(defun user/org-confirm-babel-evaluate (_lang _body)
+  "Ask before evaluating code blocks outside of the user's org directory."
+  (not (and buffer-file-name
+            (file-in-directory-p buffer-file-name *user-org-data-directory*))))
 
 
 (defun user/org-open-at-point (&optional arg)
@@ -171,7 +169,7 @@
    ;; Do not record timestamp when using S-cursor to change state.
    org-treat-S-cursor-todo-selection-as-state-change nil
    ;; Start in folded view.
-   org-startup-folded t
+   org-startup-folded 'fold
    ;; Enable speed commands.
    org-use-speed-commands t)
 
@@ -243,11 +241,6 @@
      ;; Cache refile operations for performance.
      org-refile-use-cache t))
 
-  (use-package org-table
-    :ensure nil
-    :config
-    (use-package org-table-sticky-header))
-
   (use-package org-capture
     :ensure nil
     :init
@@ -257,28 +250,28 @@
     (setq
      ;; Capture templates.
      org-capture-templates
-     (quote (("t" "todo" entry (file org-default-notes-file)
-              "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-             ("r" "respond" entry (file org-default-notes-file)
-              "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
-              :clock-in t :clock-resume t :immediate-finish t)
-             ("n" "note" entry (file org-default-notes-file)
-              "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-             ("j" "Journal" entry
-              (file+datetree (path-join *user-org-data-directory* "diary.org"))
-              "* %?\n%U\n" :clock-in t :clock-resume t)
-             ("w" "org-protocol" entry (file org-default-notes-file)
-              "* TODO Review %c\n%U\n" :immediate-finish t)
-             ("m" "Meeting" entry (file org-default-notes-file)
-              "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-             ("p" "Phone call" entry (file "~/git/org/refile.org")
-              "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-             ("h" "Habit" entry (file org-default-notes-file)
-              (concat "* NEXT %?\n%U\n%a\n"
-                      "SCHEDULED: "
-                      "%(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:"
-                      "PROPERTIES:\n:STYLE: habit\n"
-                      ":REPEAT_TO_STATE: NEXT\n:END:\n")))))
+     `(("t" "todo" entry (file org-default-notes-file)
+        "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+       ("r" "respond" entry (file org-default-notes-file)
+        "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
+        :clock-in t :clock-resume t :immediate-finish t)
+       ("n" "note" entry (file org-default-notes-file)
+        "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+       ("j" "Journal" entry
+        (file+datetree ,(path-join *user-org-data-directory* "diary.org"))
+        "* %?\n%U\n" :clock-in t :clock-resume t)
+       ("w" "org-protocol" entry (file org-default-notes-file)
+        "* TODO Review %c\n%U\n" :immediate-finish t)
+       ("m" "Meeting" entry (file org-default-notes-file)
+        "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+       ("p" "Phone call" entry (file org-default-notes-file)
+        "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+       ("h" "Habit" entry (file org-default-notes-file)
+        ,(concat "* NEXT %?\n%U\n%a\n"
+                 "SCHEDULED: "
+                 "%(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:"
+                 "PROPERTIES:\n:STYLE: habit\n"
+                 ":REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
     (use-package org-id
       :ensure nil
@@ -287,31 +280,22 @@
        org-id-locations-file
        (path-join *user-org-data-directory* "org-id-locations")))
 
-    (use-package helm-books
-      :config
-      (add-to-list
-       'org-capture-templates
-       '("b" "book memo" entry
-         (file (concat org-directory "book.org"))
-         "* %(helm-books)")))
-
     (use-package org-chef
-      :config
+      :defer
+      :init
       (add-to-list
        'org-capture-templates
        `("c" "Cookbook" entry
          (file ,(path-join *user-org-data-directory* "cookbook.org"))
          "%(org-chef-get-recipe-from-url)"
-         :empty-lines 1)))
-
-    (use-package org-repo-todo))
+         :empty-lines 1))))
 
   (use-package ob-core
     :ensure nil
     :config
     (validate-setq
-     ;; Don't ask for validation.
-     org-confirm-babel-evaluate nil)
+     ;; Only evaluate code blocks without asking in the user's own files.
+     org-confirm-babel-evaluate #'user/org-confirm-babel-evaluate)
 
     (add-many-to-list
      'org-babel-load-languages
@@ -347,34 +331,13 @@
     (with-executable 'ruby
       (add-to-list 'org-babel-load-languages '(ruby . t)))
 
-    (use-package helm-lib-babel)
-    (use-package ob-async
-      :defer
-      :config
-      (add-to-list
-       ;; Execute org-babel asynchronously.
-       'org-ctrl-c-ctrl-c-hook 'ob-async-org-babel-execute-src-block))
+    (with-executable 'rustc
+      (use-package ob-rust
+        :init (add-to-list 'org-babel-load-languages '(rust . t))))
 
-    (use-package ob-go
-      :if (executable-find "go")
-      :init (add-to-list 'org-babel-load-languages '(go . t)))
-
-    (use-package ob-http
-      :init (add-to-list 'org-babel-load-languages '(http . t)))
-
-    (use-package ob-rust
-      :if (executable-find "rustc")
-      :init (add-to-list 'org-babel-load-languages '(rust . t)))
-
-    (use-package ob-translate
-      :init (add-to-list 'org-babel-load-languages '(translate . t)))
-
-    (use-package ob-uart
-      :init (add-to-list 'org-babel-load-languages '(uart . t)))
-
-    (use-package ob-tmux
-      :if (executable-find "tmux")
-      :init (add-to-list 'org-babel-load-languages '(tmux . t))))
+    (with-executable 'tmux
+      (use-package ob-tmux
+        :init (add-to-list 'org-babel-load-languages '(tmux . t)))))
 
   (use-package ox
     :ensure nil
@@ -407,10 +370,10 @@
       :config (add-to-list 'org-export-backends 'gfm))
     (use-package ox-jira
       :config (add-to-list 'org-export-backends 'jira))
-    (use-package ox-pandoc
-      :if (executable-find "pandoc")
-      :pin "MELPA"
-      :config (add-to-list 'org-export-backends 'pandoc))
+    (with-executable 'pandoc
+      (use-package ox-pandoc
+        :pin "MELPA"
+        :config (add-to-list 'org-export-backends 'pandoc)))
     (use-package ox-rfc
       :config (add-to-list 'org-export-backends 'rfc)))
 
@@ -429,8 +392,6 @@
      org-mobile-directory (path-join *user-org-data-directory* "mobile")
      ;; Custom agenda view.
      org-mobile-force-id-on-agenda-items nil))
-
-  (use-package org-onenote)
 
   ;;; (Packages) ;;;
   (use-package org-rich-yank
@@ -466,20 +427,8 @@
        ;; Include current clocking task in clock reports.
        org-clock-report-include-clocking-task t)))
 
-  (use-package org-sticky-header)
-
-  (use-package org-sync
-    :config
-    (validate-setq
-     ;; Org sync cache store.
-     org-sync-cache-file (path-join *user-org-cache-directory* "org-sync-cache"))
-
-    ;; Redmine module.
-    (load "org-sync-redmine")
-    ;; GitHub module.
-    (load "org-sync-github"))
-
   (use-package org-caldav
+    :defer
     :config
     (validate-setq
      ;; Path to state synchronization file.
@@ -496,43 +445,42 @@
     ;; Ensure that state synchronization directory exists.
     (make-directory org-caldav-save-directory t))
 
-  (use-package org-web-tools)
-  (use-package orgnav)
+  (use-package org-web-tools
+    :defer)
   (use-package org-present
+    :defer
     :config
-    (with-eval-after-load 'org-present
-      (add-hook 'org-present-mode-hook
-                (lambda ()
-                  (org-present-big)
-                  (org-display-inline-images)
-                  (org-present-hide-cursor)
-                  (org-present-read-only)))
-      (add-hook 'org-present-mode-quit-hook
-                (lambda ()
-                  (org-present-small)
-                  (org-remove-inline-images)
-                  (org-present-show-cursor)
-                  (org-present-read-write)))))
+    (add-hook 'org-present-mode-hook
+              (lambda ()
+                (org-present-big)
+                (org-link-preview-region)
+                (org-present-hide-cursor)
+                (org-present-read-only)))
+    (add-hook 'org-present-mode-quit-hook
+              (lambda ()
+                (org-present-small)
+                (org-link-preview-clear)
+                (org-present-show-cursor)
+                (org-present-read-write))))
 
-  (use-package helm-org-rifle)
-  (use-package org-noter)
-  (use-package anki-editor)
-  (use-package org-attach-screenshot)
-  (use-package org-fancy-priorities
-    :hook (org-mode-hook . org-fancy-priorities-mode))
+  (use-package helm-org-rifle
+    :defer)
+  (use-package org-noter
+    :defer)
+  (use-package anki-editor
+    :defer)
   (use-package org-autolist
     :hook (org-mode-hook . org-autolist-mode))
-  (use-package org-download)
-  (use-package org-elisp-help)
+  (use-package org-download
+    :demand)
   ;; Enables `#+BEGIN_FSTREE: <dir>' for directory listings.
   (use-package org-fstree
     :disabled)
   (use-package org-vcard
+    :defer
     :config
     (validate-setq
-     org-vcard-custom-styles-dir (path-join *user-org-data-directory* "org-vcard-styles")))
-  ;; Enables `#+BEGIN: kanban' for producing a kanban table.
-  (use-package org-kanban))
+     org-vcard-custom-styles-dir (path-join *user-org-data-directory* "org-vcard-styles"))))
 
 (use-package org-agenda
   :ensure org
