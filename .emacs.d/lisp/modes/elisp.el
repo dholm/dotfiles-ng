@@ -54,7 +54,18 @@
     (when (feature-p 'rainbow-delimiters)
       (rainbow-delimiters-mode))
     (when (feature-p 'paredit)
-      (enable-paredit-mode))))
+      (enable-paredit-mode)
+      ;; Paredit binds RET and C-j to insert newlines, keep them submitting
+      ;; the expression.
+      (let ((map (make-sparse-keymap)))
+        (set-keymap-parent map paredit-mode-map)
+        (define-key map (kbd "RET") #'exit-minibuffer)
+        (define-key map (kbd "C-j") #'exit-minibuffer)
+        (setq-local minor-mode-overriding-map-alist
+                    (cons (cons 'paredit-mode map)
+                          (assq-delete-all 'paredit-mode
+                                           (copy-sequence
+                                            minor-mode-overriding-map-alist))))))))
 
 
 (defun user/elisp-describe-thing-in-popup ()
