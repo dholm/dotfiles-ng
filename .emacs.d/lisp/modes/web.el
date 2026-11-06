@@ -24,16 +24,6 @@
                  (funcall ,function)))))
 
 
-(defun user--tern-mode-hook ()
-  "Tern mode hook."
-  (tern-ac-setup)
-
-  ;;; (Bindings) ;;;
-  (user/bind-key-local :nav :follow-symbol 'tern-find-definition)
-  (user/bind-key-local :nav :go-back 'tern-pop-find-definition)
-  (user/bind-key-local :doc :reference 'tern-get-docs))
-
-
 (defun user/current-buffer-django-p ()
   "Evaluate to non-nil if the current buffer should use the `django` engine."
   (save-excursion
@@ -68,55 +58,28 @@
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
    ;; Highlight current HTML element.
-   web-mode-enable-current-element-highlight t
+   web-mode-enable-current-element-highlight t)
+  ;; Not validated: web-mode accepts predicate functions as well as regexps,
+  ;; but its custom type only allows strings.
+  (setq
    ;; Engine selection.
    web-mode-engines-alist
    '(("django" . user/current-buffer-django-p)
      ("php" . "\\.php[3-5]?")))
 
   (use-package restclient
-    :config
-    (use-package company-restclient
-      :after (company)
-      :config
-      (with-eval-after-load 'company
-        (add-to-list 'company-backends 'company-restclient)))
+    :defer)
 
-    (use-package restclient-helm)
-
-    (use-package ob-restclient
-      :config
-      (with-eval-after-load 'ob
-        (org-babel-do-load-languages
-         'org-babel-load-languages
-         '((restclient . t))))))
-
-  (use-package tern
-    :if (executable-find "npm")
-    :hook (tern-mode-hook . user--tern-mode-hook)
-    :config
-    (use-package company-tern
-      :after (company)))
-
-  (use-package ac-html
-    :after (auto-complete)
-    :config
-    (add-to-list 'web-mode-ac-sources-alist
-                 '("html" . (ac-source-html-attribute-value
-                             ac-source-html-tag
-                             ac-source-html-attribute))))
   (use-package company-web
     :after (company))
-  (use-package skewer-mode)
-  (use-package tidy)
+  (use-package skewer-mode
+    :defer)
 
-  (use-package cakecrumbs
-    :init
-    (cakecrumbs-auto-setup))
-
-  (use-package prettier
-    :if (executable-find "prettier")
-    :hook (after-init-hook . global-prettier-mode)))
+  (with-executable 'prettier
+    (use-package prettier
+      :demand
+      :config
+      (global-prettier-mode t))))
 
 
 (provide 'modes/web)
