@@ -50,14 +50,6 @@
   :config
   (ns-auto-titlebar-mode))
 
-(use-package face-remap
-  :ensure nil
-  :bind-wrap
-  (((:key :emacs :text-scale-reset) . (lambda () (interactive)
-                                        (text-scale-set 0)))
-   ((:key :emacs :text-scale-increase) . text-scale-increase)
-   ((:key :emacs :text-scale-decrease)  . text-scale-decrease)))
-
 
 (provide 'ux/theme)
 ;;; theme.el ends here
