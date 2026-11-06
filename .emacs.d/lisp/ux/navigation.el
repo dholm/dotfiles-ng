@@ -19,8 +19,7 @@
   ;; Enable mouse in iTerm2
   (when (eq system-type 'darwin)
     (with-feature 'mouse
-      (xterm-mouse-mode t)
-      (defun track-mouse (e))))
+      (xterm-mouse-mode t)))
 
   ;;; (Bindings) ;;;
   (user/bind-key-global :nav :scroll-up 'user/scroll-up)
