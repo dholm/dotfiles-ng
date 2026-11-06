@@ -10,11 +10,14 @@
 
 
 (defmacro user/filter-form (form list)
-  "Return list with elements for which FORM are non-nil in LIST."
+  "Return list with elements for which FORM are non-nil in LIST.
+FORM can refer to the current element as `it'."
   (declare (debug (form form)))
   (let ((r (make-symbol "result")))
     `(let (,r)
-       (--each ,list (when ,form (!cons it ,r)))
+       (dolist (it ,list)
+         (when ,form
+           (push it ,r)))
        (nreverse ,r))))
 
 
@@ -25,9 +28,10 @@
 
 
 (defun user/toggle-element (list element)
-  "Return LIST with ELEMENT removed if present or added if not present."
+  "Return LIST with ELEMENT removed if present or added if not present.
+Elements are compared with `equal'."
   (if (member element list)
-      (user/filter-form (not (eq element it)) list)
+      (remove element list)
     (cons element list)))
 
 
