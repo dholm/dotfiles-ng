@@ -3,8 +3,8 @@
 ;;; Code:
 
 (use-package apparmor-mode
-  :defer t
-  :mode ("apparmor" . apparmor-mode))
+  ;; apparmor-mode associates the profile directories itself.
+  :defer t)
 
 
 (provide 'modes/apparmor)
