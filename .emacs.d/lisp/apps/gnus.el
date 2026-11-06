@@ -52,8 +52,15 @@
 (defun user--gnus-message-sent-hook ()
   "Message sent hook for Gnus."
   ;; Increase score for followups to a sent article.
+  (require 'gnus-score)
   (gnus-score-followup-article)
   (gnus-score-followup-thread))
+
+
+(defun user--gnus-message-setup-hook ()
+  "Gnus message setup hook."
+  ;; Only score followups for messages composed from Gnus.
+  (add-hook 'message-sent-hook #'user--gnus-message-sent-hook nil t))
 
 
 (defun user--gnus-startup-hook ()
@@ -83,7 +90,7 @@
 
   (with-feature 'gnus-dired
     ;; Attach files using dired.
-    (turn-on-gnus-dired-mode)))
+    (add-hook 'dired-mode-hook #'turn-on-gnus-dired-mode)))
 
 
 (defun user/gnus-mailsync ()
@@ -160,7 +167,7 @@
   :defer
   :commands gnus
   :hook ((gnus-startup-hook . user--gnus-startup-hook)
-         (message-sent-hook . user--gnus-message-sent-hook))
+         (gnus-message-setup-hook . user--gnus-message-setup-hook))
   :init
   ;; Create data and cache stores.
   (let ((article-dir (path-join *user-gnus-data-directory* "articles")))
@@ -423,10 +430,6 @@
 
   (use-package gnus-alias)
   (use-package gnus-summary-ext)
-  (use-package gnus-x-gm-raw)
-  (when (feature-p 'gnus-x-gm-raw)
-    ;; GMail search.
-    (require 'gnus-x-gm-raw))
 
   (use-package gnus-gravatar
     :if window-system
@@ -440,7 +443,7 @@
     :config
     (validate-setq
      ;; Workaround for scoring GMail folder names.
-     nnheader-file-name-translation-alist '((?[ . ?_) (?] . ?_))))
+     nnheader-file-name-translation-alist '((?\[ . ?_) (?\] . ?_))))
 
   (use-package nnfolder
     :ensure nil
@@ -590,36 +593,31 @@
       (require 'ldap)
       (load "jl-smime")))
 
-  (use-package nnir
+  (use-package gnus-search
     :ensure nil
     :config
     (with-executable 'swish-e
       (validate-setq
-       ;; Set search engine to Swish-E.
-       nnir-search-engine 'swish-e
-       nnir-swish-e-index-files (list
-                                 (path-join *user-gnus-data-directory* "index.swish")))
+       ;; Search local mail with Swish-E.
+       gnus-search-swish-e-index-files
+       (list (path-join *user-gnus-data-directory* "index.swish")))
+      (add-to-list 'gnus-search-default-engines '(nnml . gnus-search-swish-e))
+      (add-to-list 'gnus-search-default-engines '(nnfolder . gnus-search-swish-e))
 
       (defun user/swish-e-create/update-mail-index ()
         "Create or update mail index using Swish-E."
         (interactive)
         (eq
-         (call-process-shell-command "swish-e" nil nil nil "-i" message-directory
-                                     "-f" (car nnir-swish-e-index-files) "-e")
+         (call-process "swish-e" nil nil nil "-i" message-directory
+                       "-f" (car gnus-search-swish-e-index-files) "-e")
          0))))
-
-  (use-package all-the-icons-gnus
-    :if window-system
-    :config
-    (all-the-icons-gnus-setup))
 
   (use-package gnus-select-account
     :pin "MELPA"
     :config
-    (gnus-select-account-enable))
-
-  ;; Initialize Gnus modules.
-  (require 'nnir))
+    ;; Only ask for the account in messages composed from Gnus, not in
+    ;; every message-mode buffer.
+    (add-hook 'gnus-message-setup-hook #'gnus-select-account)))
 
 
 (provide 'apps/gnus)
