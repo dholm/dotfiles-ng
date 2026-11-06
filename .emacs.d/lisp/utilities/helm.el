@@ -148,7 +148,6 @@
     ;; `helm-recentf-fuzzy-match' is set via Customize
     ;; Reason: https://emacs.stackexchange.com/a/106/5514
     (validate-setq
-     helm-ff-file-name-history-use-recentf t
      ;; Don't prompt for new buffer.
      helm-ff-newfile-prompt-p nil
      helm-input-idle-delay 0.1
