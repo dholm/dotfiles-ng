@@ -2,16 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
-(defun user--diff-mode-hook ()
-  "Diff mode hook."
-  ;; Highlight changes in detail.
-  (diff-auto-refine-mode t))
-
 (use-package diff-mode
   :defer
   :mode "/patch$"
-  :init
-  (add-hook 'diff-mode-hook 'user--diff-mode-hook)
   :config
   (validate-setq
    ;; Open patches in read-only mode by default.
