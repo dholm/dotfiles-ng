@@ -107,16 +107,13 @@
 
     (add-to-list
      'gnus-secondary-select-methods
+     ;; Searches use gnus-search's IMAP engine, which also accepts Gmail's
+     ;; X-GM-RAW queries, and deleted articles are expunged when the group
+     ;; is closed (the `nnimap-expunge' default).
      `(nnimap ,email-address
               (nnimap-address "imap.gmail.com")
               (nnimap-server-port 993)
-              (nnimap-stream tls)
-              (nnimap-list-pattern ("INBOX" "*"))
-              (nnimap-expunge-on-close always)
-              (gnus-check-new-newsgroups nil)
-              (gnus-ignored-newsgroups
-               "^to\\.\\|^[0-9.\t]+\\( \\|$\\)\\|^[\”]\”[#’()]")
-              (nnir-search-engine imap)))
+              (nnimap-stream tls)))
 
     (add-to-list
      'gnus-parameters
@@ -125,17 +122,8 @@
        (posting-style
         (name ,fullname)
         (address ,email-address)
-        (gcc ,(concat "nnimap+" email-address ":[Gmail]/Sent")))
+        (gcc ,(concat "nnimap+" email-address ":[Gmail]/Sent Mail")))
        (expiry-wait . never)))
-
-    (add-to-list
-     'gnus-message-archive-method
-     `(nnimap ,email-address
-              (nnfolder-directory ,(concat "nnimap+" email-address ":\"Sent Items\""))
-              (nnfolder-get-new-mail t)
-              (nnfolder-inhibit-expiry t)))
-
-    (add-to-list 'nnimap-inbox (concat "nnimap+" email-address ":INBOX"))
 
     (user/smtpmail-set-gmail-user fullname username)))
 
