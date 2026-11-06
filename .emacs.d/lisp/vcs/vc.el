@@ -28,7 +28,7 @@
   :config
   (with-feature 'fullframe
     ;; Full frame annotations.
-    (fullframe vc-annotate vc-annotate-mode-quit-window nil)))
+    (fullframe vc-annotate quit-window nil)))
 
 (use-package autorevert
   :ensure nil
