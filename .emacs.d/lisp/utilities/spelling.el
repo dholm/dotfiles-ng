@@ -10,7 +10,8 @@
   "Hook for fly spell common mode."
   (if (> (buffer-size) *user-auto-dictionary-buffer-limit*)
       ;; Disables automatic dictionary detection in large buffers.
-      (guess-language-mode -1)
+      (when (fboundp 'guess-language-mode)
+        (guess-language-mode -1))
     (with-feature 'guess-language
       (guess-language-mode t)))
 
@@ -52,8 +53,7 @@
   "Check if flyspell is available."
   (or (executable-find "ispell")
       (executable-find "aspell")
-      (executable-find "hunspell"))
-  nil)
+      (executable-find "hunspell")))
 
 (when (user-flyspell-p)
   (use-package flyspell

@@ -22,8 +22,8 @@
   (when (user-flyspell-p)
     ;; Protect against missing dictionary.
     (try-eval
-        ;; Run spell-checker in programming mode.
-        (flyspell-prog-mode)))
+        ;; Check the spelling of all text.
+        (flyspell-mode t)))
 
   (when (and (feature-p 'flycheck-vale)
              (executable-find "vale"))
