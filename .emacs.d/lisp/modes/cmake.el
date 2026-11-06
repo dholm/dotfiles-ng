@@ -29,7 +29,7 @@
     :hook (cmake-mode-hook . cmake-font-lock-activate))
 
   (use-package eldoc-cmake
-    :hook (cmake-mode . eldoc-cmake-enable)))
+    :hook (cmake-mode-hook . eldoc-cmake-enable)))
 
 
 (provide 'modes/cmake)

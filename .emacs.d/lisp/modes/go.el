@@ -81,7 +81,7 @@
                   ([remap go-import-add] . helm-go-package))))
 
   (use-package flycheck-golangci-lint
-    :hook (go-mode . flycheck-golangci-lint-setup)
+    :hook (go-mode-hook . flycheck-golangci-lint-setup)
     :config
     (validate-setq
      ;; Default to using fast linters only.

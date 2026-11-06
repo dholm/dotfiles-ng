@@ -105,7 +105,7 @@
     :ensure t
     :defer t
     :custom (edebug-inline-result-backend 'posframe)
-    :hook (edebug-mode . edebug-inline-result-mode))
+    :hook (edebug-mode-hook . edebug-inline-result-mode))
   (use-package eros
     :config
     (when (eq default-terminal-coding-system 'utf-8)

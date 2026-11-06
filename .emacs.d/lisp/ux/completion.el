@@ -271,7 +271,7 @@
        company-quickhelp-delay 0.5))
     (use-package company-box
       :if (display-graphic-p)
-      :hook (company-mode . company-box-mode))
+      :hook (company-mode-hook . company-box-mode))
 
     (use-package kind-icon
       :if (display-graphic-p)
