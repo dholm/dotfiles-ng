@@ -5,13 +5,15 @@
 (defun user--scheme-mode-hook ()
   "Scheme mode hook."
   (user--cedet-hook)
-  (semantic-default-scheme-setup)
+  (when (fboundp 'semantic-default-scheme-setup)
+    (semantic-default-scheme-setup))
 
   (user/gnu-global-enable)
 
   (enable-paredit-mode)
 
-  (geiser-mode t))
+  (with-feature 'geiser
+    (geiser-mode t)))
 
 
 (defun user/run-geiser ()
