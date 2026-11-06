@@ -49,8 +49,7 @@
                'user--window-configuration-change-hook)
 
   ;;; (Bindings) ;;;
-  (when (display-graphic-p)
-    (user/bind-key-global :emacs :fullscreen 'toggle-frame-fullscreen))
+  (user/bind-key-global :emacs :fullscreen 'toggle-frame-fullscreen)
 
   (user/bind-key-global :emacs :grow-vertical 'enlarge-window)
   (user/bind-key-global :emacs :shrink-vertical 'shrink-window)

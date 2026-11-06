@@ -290,9 +290,9 @@
 
                (:comment . "M-;")
                (:document . (user/code-prefix "="))
-               (:join-line . ((if (display-graphic-p) "C-x C-6" "C-x C-^")))
-               (:align . ((if (display-graphic-p) "C-x C-5" "C-x C-]")))
-               (:fill-paragraph . ((if (display-graphic-p) "C-x C-4" "C-x C-\\")))
+               (:join-line . "C-x C-6")
+               (:align . "C-x C-5")
+               (:fill-paragraph . "C-x C-4")
                (:tidy . ("C-x ="))
                (:whitespace-auto-cleanup . (user/code-prefix "w"))
 
@@ -440,6 +440,14 @@
 
   ;; Initialize global keymap.
   (user--global-keymap-config)
+
+  ;; Text terminals can't send C-6, C-5 and C-4, so the join-line, align
+  ;; and fill-paragraph keys also work as C-^, C-] and C-\. Translate the
+  ;; keys rather than choosing one when binding them, since a daemon binds
+  ;; keys before it has a frame and serves both kinds of frames.
+  (define-key key-translation-map (kbd "C-x C-^") (kbd "C-x C-6"))
+  (define-key key-translation-map (kbd "C-x C-]") (kbd "C-x C-5"))
+  (define-key key-translation-map (kbd "C-x C-\\") (kbd "C-x C-4"))
 
   ;;; (Bindings) ;;;
   ;; Alias C-x C-m to M-x which is a bit awkward to reach.
