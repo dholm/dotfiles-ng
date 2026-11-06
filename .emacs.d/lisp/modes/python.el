@@ -15,6 +15,9 @@
   ;; ElDoc shows function documentation as you type
   (eldoc-mode t)
 
+  ;; Enable LSP, if a language server is installed.
+  (user/eglot-ensure)
+
   ;;; (Bindings) ;;;
   (when (feature-p 'pyvenv)
     (user/bind-key-local :code :virtual 'pyvenv-workon)))
