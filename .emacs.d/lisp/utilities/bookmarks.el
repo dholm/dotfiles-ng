@@ -4,9 +4,7 @@
 
 (defconst *visible-bookmarks-data-file* (path-join *user-data-directory*
                                                    "visible-bookmarks"))
-(defconst *bookmark+-data-file* (path-join *user-data-directory* "bookmarks"))
-(defconst *bookmark+-menu-state-file* (path-join *user-cache-directory*
-                                                 "bookmark-menu-state.el"))
+(defconst *bookmark-data-file* (path-join *user-data-directory* "bookmarks"))
 
 (defun bookmark--local-directory-bookmarks-to-zsh ()
   "Store Emacs bookmarks in ZSH bookmarks file."
@@ -65,32 +63,13 @@
    bookmark-version-control t
    bookmark-save-flag 1
    ;; Put the repository in the data directory.
-   bookmark-default-file *bookmark+-data-file*)
+   bookmark-default-file *bookmark-data-file*)
 
   ;; Share Emacs directory bookmarks with ZSH.
   (define-advice bookmark-write-file
       (:after (&rest _) user-local-directory-bookmarks-to-zsh)
     "Also write the directory bookmarks for ZSH."
-    (bookmark--local-directory-bookmarks-to-zsh))
-
-  (use-package bookmark+
-    :disabled
-    :config
-    (validate-setq
-     ;; Save bookmarks after ten updates.
-     bmkp-count-multi-mods-as-one-flag t)
-
-    ;;; (Bindings) ;;;
-    (define-key bookmark-map (kbd "l") 'bookmark-jump)
-    (define-key bookmark-map (kbd "e") 'bmkp-edit-bookmark-record)
-    (define-key bookmark-map (kbd "t") 'bmkp-add-tags)
-
-    (use-package bookmark+-bmu
-      :ensure bookmark+
-      :config
-      (validate-setq
-       ;; Put the menu state in the cache directory.
-       bmkp-bmenu-state-file *bookmark+-menu-state-file*))))
+    (bookmark--local-directory-bookmarks-to-zsh)))
 
 
 (provide 'utilities/bookmarks)
