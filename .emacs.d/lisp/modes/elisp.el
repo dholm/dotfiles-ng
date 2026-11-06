@@ -102,11 +102,10 @@
        eros-eval-result-prefix "∴ ")))
   (use-package elisp-slime-nav
     :diminish elisp-slime-nav-mode)
-  (use-package elsa
+  (use-package flycheck-elsa
+    :after flycheck
     :config
-    (use-package flycheck-elsa
-      :config
-      (flycheck-elsa-setup)))
+    (flycheck-elsa-setup))
   (use-package auto-compile)
   (use-package rainbow-delimiters)
   (use-package paredit
