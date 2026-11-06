@@ -2,10 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (version< "27.1" emacs-version)
-  ;; Workaround for deprecated parameter referenced by Helm.
-  (defvar browse-url-mosaic-program "xmosaic"))
-
 ;; Bring in package. Startup has already activated the installed packages
 ;; (see `package-enable-at-startup').
 (require 'package)
@@ -20,7 +16,6 @@
 (require 'lib/utils)
 (require 'lib/hash-tables)
 (require 'lib/bootstrap)
-(require 'lib/apps)
 (require 'lib/introspection)
 
 

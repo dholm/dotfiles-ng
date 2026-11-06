@@ -34,9 +34,6 @@
 ;; Helper functions for bootstrapping Emacs.
 (require 'lib/bootstrap)
 
-;; Helper functions for other applications.
-(require 'lib/apps)
-
 ;; Load Emacs user experience settings.
 (require 'init-bindings)
 (require 'init-ux)
