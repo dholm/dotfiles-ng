@@ -107,12 +107,7 @@
     :defer
     :diminish ggtags-mode
     :init
-    (add-hook 'ggtags-mode-hook 'user--ggtags-mode-hook))
-
-  (use-package gxref
-    :after (xref)
-    :init
-    (add-to-list 'xref-backend-functions 'gxref-xref-backend)))
+    (add-hook 'ggtags-mode-hook 'user--ggtags-mode-hook)))
 
 
 (provide 'utilities/global)
