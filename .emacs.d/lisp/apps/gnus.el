@@ -216,15 +216,15 @@
     (validate-setq
      message-directory (path-join *user-gnus-data-directory* "mail")))
 
-  (validate-setq
-   ;; Archive using nnfolder.
-   gnus-message-archive-method
-   `(nnfolder "archive"
-              (nnfolder-directory ,(path-join message-directory "archive"))
-              (nnfolder-active-file ,(path-join message-directory
-                                                "archive" "active"))
-              (nnfolder-get-new-mail nil)
-              (nnfolder-inhibit-expiry t)))
+  (let ((archive-directory (path-join *user-gnus-data-directory* "mail" "archive")))
+    (validate-setq
+     ;; Archive using nnfolder.
+     gnus-message-archive-method
+     `(nnfolder "archive"
+                (nnfolder-directory ,archive-directory)
+                (nnfolder-active-file ,(path-join archive-directory "active"))
+                (nnfolder-get-new-mail nil)
+                (nnfolder-inhibit-expiry t))))
 
   (with-feature 'fullframe
     (fullframe gnus gnus-group-exit nil))
