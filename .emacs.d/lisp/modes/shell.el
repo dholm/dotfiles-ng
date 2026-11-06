@@ -22,13 +22,7 @@
 
 (defun user--shell-mode-hook ()
   "Initialize mode for interactive shell."
-  (user--shell-mode-common-hook)
-
-  (validate-setq
-   ;; Set up to use Bash with input echoing.
-   explicit-shell-file-name "bash"
-   explicit-bash-args '("-c" "export EMACS=; stty echo; bash")
-   comint-process-echoes t))
+  (user--shell-mode-common-hook))
 
 (use-package shell
   :defer
@@ -36,6 +30,14 @@
   :hook ((sh-base-mode-hook . user--sh-mode-hook)
          (shell-mode-hook . user--shell-mode-hook))
   :config
+  ;; Set when shell loads, before `shell' starts the first shell; the mode
+  ;; hook runs only after the process has been started.
+  (validate-setq
+   ;; Set up to use Bash with input echoing.
+   explicit-shell-file-name "bash"
+   explicit-bash-args '("-c" "export EMACS=; stty echo; bash")
+   comint-process-echoes t)
+
   ;;; (Packages) ;;;
   (use-package bash-completion)
   (use-package company-shell

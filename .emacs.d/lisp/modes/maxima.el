@@ -9,8 +9,11 @@
   :interpreter ("maxima" . maxima-mode)
   :config
   (validate-setq
-   org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
    maxima-display-maxima-buffer nil)
+  (with-eval-after-load 'org
+    ;; Render LaTeX fragments at twice the size.
+    (setq org-format-latex-options
+          (plist-put org-format-latex-options :scale 2.0)))
 
   (use-package company-maxima
     :config

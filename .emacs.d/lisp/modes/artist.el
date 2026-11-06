@@ -2,10 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(defun user--artist-mode-hook ()
-  "Artist mode hook."
-  ;;; (Bindings) ;;;
-  (local-set-key (kbd "C-c C-a C-s") 'user/artist-select-setting))
 
 
 (defun user/artist-select-setting (setting)
@@ -30,9 +26,10 @@
 (use-package artist
   :defer
   :init
-  (add-hook 'picture-mode-hook 'user--artist-mode-hook)
-
-  (user/bind-key-global :util :draw 'artist-mode))
+  (user/bind-key-global :util :draw 'artist-mode)
+  :config
+  ;;; (Bindings) ;;;
+  (define-key artist-mode-map (kbd "C-c C-a C-s") 'user/artist-select-setting))
 
 
 (provide 'modes/artist)

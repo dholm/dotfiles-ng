@@ -11,11 +11,7 @@
   :defer
   :bind-wrap
   (:map Man-mode-map
-   ((:key :nav :functions/toc) . helm-imenu))
-  :config
-  (validate-setq
-   ;; Make man-mode wrap lines at half the width of Emacs.
-   Man-width (/ (window-total-width (frame-root-window)) 2)))
+   ((:key :nav :functions/toc) . helm-imenu)))
 
 (use-package woman
   :if (executable-find "man")
@@ -25,6 +21,10 @@
    ((:key :nav :functions/toc) . helm-imenu))
   :init
   (make-directory *user-man-cache-directory* t)
+  ;;; (Bindings) ;;;
+  (if (feature-p 'helm)
+      (user/bind-key-global :doc :manual 'helm-man-woman)
+    (user/bind-key-global :doc :manual 'man))
   :config
   (validate-setq
    ;; WoMan cache store.
@@ -32,16 +32,12 @@
    ;; Use highest cache level.
    woman-cache-level 3
    ;; Have WoMan fill the entire frame.
-   woman-fill-frame t)
-
-  ;;; (Bindings) ;;;
-  (if (feature-p 'helm)
-      (user/bind-key-global :doc :manual 'helm-man-woman)
-    (user/bind-key-global :doc :manual 'man)))
+   woman-fill-frame t))
 
 (use-package helm-man
   :if (executable-find "man")
   :ensure helm
+  :defer t
   :config
   ;; Validation won't work because because the supported functions
   ;; have been hardcoded in the option list.

@@ -13,8 +13,9 @@
            :fetcher github
            :repo "dholm/ttcn-el")
   :mode (("\\.mp$" . ttcn-mode)
-         ("\\.ttcn" . ttcn-3-mode))
-  :config
+         ("\\.ttcn3?\\'" . ttcn-3-mode))
+  :init
+  ;; The package has no ttcn-mode feature, so :config would never run.
   (add-hook 'ttcn3-mode-hook 'user--ttcn3-mode-hook))
 
 

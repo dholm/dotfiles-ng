@@ -4,7 +4,8 @@
 
 (use-package view
   :defer
-  :config
+  :init
+  ;; Set before view is loaded: files.el checks it when visiting files.
   (validate-setq
    ;; Open read-only files in view-mode by default.
    view-read-only t))

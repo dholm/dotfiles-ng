@@ -7,23 +7,22 @@
   (user/bind-key-local :nav :goto-line 'pdf-view-goto-page))
 
 (use-package pdf-tools
-  :if (pkg-config-has-p "poppler-glib")
+  :if (and window-system (pkg-config-has-p "poppler-glib"))
+  :defer t
+  :hook (pdf-view-mode-hook . user--pdf-view-mode-hook)
+  :init
+  ;; Load pdf-tools, and build epdfinfo if needed, when the first PDF is
+  ;; opened instead of at startup.
+  (pdf-loader-install)
   :config
   (use-package pdf-view
     :ensure nil
-    :if window-system
-    :hook (pdf-view-mode-hook . user--pdf-view-mode-hook)
-    :mode ("\\.pdf\\'" . pdf-view-mode)
     :config
     (validate-setq
      ;; Fit page to view by default.
      pdf-view-display-size 'fit-page
      pdf-view-use-imagemagick t
-     pdf-view-midnight-colors '("white smoke" . "gray5"))
-
-    (use-package org-pdfview))
-
-  (pdf-tools-install))
+     pdf-view-midnight-colors '("white smoke" . "gray5"))))
 
 
 (provide 'modes/pdf)

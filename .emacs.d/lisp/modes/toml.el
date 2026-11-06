@@ -4,7 +4,8 @@
 
 (defun user--toml-mode-hook ()
   "Mode hook for TOML buffers."
-  (unless (derived-mode-p 'toml-mode)
+  ;; toml-mode derives from conf-mode; set it up like code.
+  (unless (derived-mode-p 'prog-mode)
     (user--prog-mode-hook)))
 
 

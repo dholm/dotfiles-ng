@@ -2,9 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(defvar user/whitespace-mode-suppressed nil
+(defvar-local user/whitespace-mode-suppressed nil
   "Tracks whether `whitespace-mode' is currently being suppressed.")
-(make-variable-buffer-local 'user/prev-whitespace-mode-suppressed)
 
 
 (defun user--whitespace-mode-hook ()
@@ -27,13 +26,13 @@
 
 
 (defun user/whitespace-disable-style (styles)
-  "Disable STYLES in current mode."
+  "Disable STYLES in the current buffer."
   (when (boundp 'whitespace-style)
-    (let ((options (cl-intersection styles whitespace-style)))
-      (when (and (boundp 'global-whitespace-mode) global-whitespace-mode)
-        (global-whitespace-toggle-options options))
-      (when (and (boundp 'whitespace-mode) whitespace-mode)
-        (whitespace-toggle-options options)))))
+    (setq-local whitespace-style (seq-difference whitespace-style styles))
+    (when (bound-and-true-p whitespace-mode)
+      ;; Restart the mode to apply the new style.
+      (whitespace-mode -1)
+      (whitespace-mode 1))))
 
 
 (defun user/toggle-whitespace-auto-cleanup ()

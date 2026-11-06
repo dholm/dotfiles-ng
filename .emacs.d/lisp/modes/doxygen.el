@@ -57,5 +57,5 @@
     :diminish doc-mode))
 
 
-(provide 'utilities/doxygen)
+(provide 'modes/doxygen)
 ;;; doxygen.el ends here

@@ -28,32 +28,29 @@
     :hook (flycheck-mode-hook . flycheck-mmark-setup))
 
   (use-package poly-markdown
-    :after polymode
     :hook (markdown-mode-hook . poly-markdown-mode))
 
-  (use-package markdown-preview-eww)
-  (use-package markdown-preview-mode)
+  ;; Previewers, loaded when their commands are first used.
+  (use-package markdown-preview-eww
+    :defer t)
+  (use-package markdown-preview-mode
+    :defer t)
 
   (use-package mkdown
+    :after markdown-mode
     :config
     (add-to-list 'markdown-css-paths mkdown-css-file-name))
 
-  (use-package gh-md)
+  (use-package gh-md
+    :defer t)
 
   (use-package flymd
+    :defer t
     :init
     (make-directory *user-flymd-cache-directory* t)
     :config
     (validate-setq
-     flymd-output-directory *user-flymd-cache-directory*))
-
-  (use-package livedown
-    :if (executable-find "livedown")
-    :quelpa (livedown
-             :fetcher github
-             :repo "shime/emacs-livedown")
-    :init
-    (require 'livedown)))
+     flymd-output-directory *user-flymd-cache-directory*)))
 
 
 (provide 'modes/markdown)
