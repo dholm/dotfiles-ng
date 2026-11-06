@@ -38,9 +38,7 @@
   (define-key calc-mode-map [mouse-2] 'calc-yank)
 
   (use-package easy-convert
-    :quelpa (easy-convert
-             :fetcher github
-             :repo "Frozenlock/easy-convert")
+    :vc (:url "https://github.com/Frozenlock/easy-convert")
     :commands easy-convert-interactive
     :init
     (autoload 'easy-convert-interactive "easy-convert" nil t)

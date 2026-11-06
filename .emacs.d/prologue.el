@@ -26,10 +26,10 @@
 ;; Set up package management.
 (require 'lib/packaging)
 
-;; Install benchmark-init if present.
+;; Install benchmark-init from the latest commit of its repository.
 (use-package benchmark-init
-  :pin "MELPA"
-  :ensure t)
+  :vc (:url "https://github.com/dholm/benchmark-init-el"
+       :rev :newest))
 
 ;; Helper functions for bootstrapping Emacs.
 (require 'lib/bootstrap)

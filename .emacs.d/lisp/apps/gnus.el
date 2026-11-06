@@ -571,14 +571,15 @@
      mml-smime-use 'epg))
 
   (with-executable 'gpgsm
-    (quelpa '(jl-encrypt
-              :fetcher url
-              :url "https://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-encrypt4.3/jl-encrypt.el"))
+    (use-package jl-encrypt
+      ;; DefaultEncrypt, which also contains jl-smime.
+      :vc (:url "https://gitlab.com/lechten/defaultencrypt"
+           :main-file "jl-encrypt.el")
+      :defer t)
     (use-package jl-smime
+      ;; Part of the jl-encrypt package.
+      :ensure nil
       :requires jl-encrypt
-      :quelpa (jl-smime
-               :fetcher url
-               :url "https://www.informationelle-selbstbestimmung-im-internet.de/emacs/jl-smime3.3/jl-smime.el")
       :init
       (with-eval-after-load 'gnus
         (load "jl-smime"))

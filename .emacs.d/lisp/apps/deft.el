@@ -24,7 +24,7 @@
    deft-auto-save-interval 30.0)
 
   (use-package helm-deft
-    :quelpa (helm-deft :fetcher github :repo "dfeich/helm-deft")
+    :vc (:url "https://github.com/dfeich/helm-deft")
     :bind-wrap
     ((:key :apps :notes) . helm-deft)
     :config

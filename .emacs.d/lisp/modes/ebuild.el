@@ -4,11 +4,8 @@
 
 (use-package ebuild-mode
   :disabled
-  :defer
-  :quelpa (ebuild-mode
-           :fetcher git
-           :url "https://anongit.gentoo.org/git/proj/emacs-tools.git"
-           :branch "ebuild-mode"))
+  ;; Maintained by Gentoo on NonGNU ELPA.
+  :defer)
 
 
 (provide 'modes/ebuild)

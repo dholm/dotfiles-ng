@@ -42,10 +42,11 @@
     (distel-setup))
 
   (use-package distel
-    :quelpa (distel
-             :fetcher github
-             :repo "massemanet/distel"
-             :files ("elisp/*.el"))))
+    ;; With :lisp-dir, package-vc in Emacs 30 can't find the main file to
+    ;; look up the last release, so take the latest commit.
+    :vc (:url "https://github.com/massemanet/distel"
+         :lisp-dir "elisp"
+         :rev :newest)))
 
 
 (provide 'modes/erlang)

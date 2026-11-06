@@ -80,9 +80,7 @@
 
 (use-package tdtd
   :defer
-  :quelpa (tdtd
-           :fetcher github
-           :repo "tkg/tdtd")
+  :vc (:url "https://github.com/tkg/tdtd")
   :mode (("\\.dtd$" . dtd-mode))
   :init
   (add-hook 'dtd-mode-hook 'user--dtd-mode-hook))

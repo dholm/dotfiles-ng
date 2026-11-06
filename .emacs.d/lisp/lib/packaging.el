@@ -30,13 +30,9 @@
 ;; each start. The commands that install packages read the indexes when
 ;; they need them.
 (package-activate-all)
-(unless (package-installed-p 'quelpa-use-package)
-  (package-refresh-contents)
-  (package-install 'quelpa-use-package))
 
 (eval-when-compile
-  ;; Load use-package.
-  (require 'quelpa-use-package))
+  (require 'use-package))
 
 (use-package use-package
   :config
@@ -44,17 +40,6 @@
    use-package-always-ensure t
    ;; Hooks are verbatim.
    use-package-hook-name-suffix nil)
-
-  (use-package quelpa-use-package
-    :config
-    (validate-setq
-     ;; Only use quelpa for custom packages.
-     quelpa-checkout-melpa-p nil
-     ;; Only load quelpa on demand.
-     quelpa-use-package-inhibit-loading-quelpa t)
-
-    ;; Protect quelpa recipes when forcing ensure.
-    (quelpa-use-package-activate-advice))
 
   ;; Support using keys from init-bindings by using (:key <group> <function>).
   (push :bind-wrap (cdr (member :bind use-package-keywords)))
@@ -101,8 +86,8 @@
     (use-package-handler/:bind name keyword arg rest state 'bind-keys*))
 
   ;; Process :ensure after the :requires, :if, :when and :unless
-  ;; conditions, like :quelpa, so that a package is only installed when
-  ;; it is going to be configured.
+  ;; conditions, like :vc, so that a package is only installed when it is
+  ;; going to be configured.
   (let* ((keywords (remq :ensure use-package-keywords))
          (position (1+ (seq-position keywords :unless))))
     (setq use-package-keywords

@@ -19,9 +19,7 @@
    doc-view-resolution 300)
 
   (use-package doc-present
-    :quelpa (doc-present
-             :fetcher github
-             :repo "dengste/doc-present")
+    :vc (:url "https://github.com/dengste/doc-present")
     :init
     (autoload 'doc-present "doc-present" nil t)
     (autoload 'doc-present-mode "doc-present" nil t)))

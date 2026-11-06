@@ -9,9 +9,10 @@
 
 (use-package ttcn-mode
   :defer
-  :quelpa (ttcn-mode
-           :fetcher github
-           :repo "dholm/ttcn-el")
+  ;; package-vc can only install this once the Version header of ttcn.el,
+  ;; an RCS $Id$ string, is a version number.
+  :vc (:url "https://github.com/dholm/ttcn-el"
+       :main-file "ttcn.el")
   :mode (("\\.mp$" . ttcn-mode)
          ("\\.ttcn3?\\'" . ttcn-3-mode))
   :init

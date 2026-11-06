@@ -6,10 +6,7 @@
   :ensure nil
   :config
   (use-package solarized-dholm-theme
-    :quelpa (solarized-dholm-theme
-             :fetcher github
-             :repo "dholm/solarized-theme")
-    :ensure t
+    :vc (:url "https://github.com/dholm/solarized-theme")
     :config
     (setq
      ;; Make the fringe stand out.

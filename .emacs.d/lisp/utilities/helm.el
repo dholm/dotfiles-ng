@@ -215,9 +215,7 @@
 
   (use-package helm-build-command
     :defer
-    :quelpa (helm-build-command
-             :fetcher github
-             :repo "tkf/helm-build-command")))
+    :vc (:url "https://github.com/tkf/helm-build-command")))
 
 
 (provide 'utilities/helm)

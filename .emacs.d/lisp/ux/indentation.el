@@ -8,10 +8,7 @@
    dtrt-indent-verbosity 0
    global-mode-string (delq 'dtrt-indent-mode-line-info global-mode-string)))
 
-(use-package smart-tabs-mode
-  :quelpa (smart-tabs-mode
-           :fetcher github
-           :repo "jcsalomon/smarttabs"))
+(use-package smart-tabs-mode)
 
 
 (provide 'ux/indentation)

@@ -4,9 +4,9 @@
 
 (use-package swig-mode
   :defer
-  :quelpa (swig-mode
-           :fetcher github
-           :repo "dholm/swig-mode")
+  ;; package-vc can only install this once the Version header of
+  ;; swig-mode.el, an RCS $Id$ string, is a version number.
+  :vc (:url "https://github.com/dholm/swig-mode")
   :mode "\\.swg$")
 
 
