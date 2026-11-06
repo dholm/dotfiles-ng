@@ -45,7 +45,9 @@
   (use-package comment-tags
     :diminish comment-tags-mode
     :hook (prog-mode-hook . comment-tags-mode)
-    :config
+    :init
+    ;; The prefix is used when the mode map is built, so it has to be set
+    ;; before comment-tags is loaded.
     (setq
      comment-tags/keymap-prefix (user/get-key :nav :find-todos)))
   (use-package idle-highlight-in-visible-buffers-mode
