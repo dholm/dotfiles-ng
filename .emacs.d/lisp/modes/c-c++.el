@@ -16,6 +16,7 @@
   (c-set-offset 'inextern-lang 0)
 
   ;; Propertize "#if 0" regions as comments.
+  (add-hook 'before-change-functions #'user--c-if0-invalidate nil t)
   (font-lock-add-keywords
    nil
    '((user/c-mode-font-lock-if0 (0 font-lock-comment-face prepend)))
@@ -37,66 +38,33 @@
   (user/gnu-global-enable)
   (user/cscope-enable)
 
-  (when (user/auto-complete-p)
-    (when (and (user/use-rtags)
-               (require 'rtags-ac nil :noerror))
-      (add-ac-sources 'ac-source-rtags))
-    (with-feature 'auto-complete-c-headers
-      (add-ac-sources 'ac-source-c-headers)))
-
   (when (user/company-mode-p)
-    (when (and (user/use-rtags)
-               (require 'company-rtags nil :noerror))
-      (validate-setq rtags-completions-enabled t)
-      (add-company-sources 'company-rtags))
     (with-feature 'company-c-headers
       (add-company-sources 'company-c-headers)))
-
-  (when (derived-mode-p 'c-mode 'c++-mode)
-    (with-feature 'cpputils-cmake
-      ;; Enable CMake C/C++ utilities.
-      (cppcm-reload-all)))
-
-  (with-feature 'irony
-    (when (member major-mode irony-supported-major-modes)
-      ;; Better auto completion.
-      (irony-mode t)))
 
   ;; Enable LSP, if a language server is installed.
   (user/eglot-ensure)
 
-  (when (require 'flycheck-rtags nil :noerror)
-    (if (user/use-rtags)
-        (flycheck-select-checker 'rtags)
-      (flycheck-disable-checker 'rtags)))
-
   (user/smartparens-enable))
 
 
-(defun user--irony-mode-hook ()
-  "Mode hook for irony."
-  (with-feature 'irony-eldoc
-    (irony-eldoc t))
-
-  (with-feature 'flycheck-irony
-    (flycheck-irony-setup))
-
-  ;; Load flags from compilation database.
-  (irony-cdb-autosetup-compile-options)
-
-  ;;; (Bindings) ;;;
-  (define-key irony-mode-map (user/get-key :code :auto-complete)
-    'irony-completion-at-point-async))
+(defvar-local user--c-if0-regions 'unknown
+  "Cached list of (START . END) regions inside #if 0, or `unknown'.")
 
 
-(defun user/c-mode-font-lock-if0 (limit)
-  "Propertize '#if 0' regions, up to LIMIT in size, as comments."
+(defun user--c-if0-invalidate (&rest _)
+  "Forget the cached #if 0 regions after a change."
+  (setq user--c-if0-regions 'unknown))
+
+
+(defun user--c-if0-scan ()
+  "Return the (START . END) regions of the buffer inside #if 0 blocks."
   (save-restriction
     (widen)
     (save-excursion
       (goto-char (point-min))
-      (let ((depth 0) str start start-depth)
-        (while (re-search-forward "^\\s-*#\\s-*\\(if\\|else\\|endif\\)" limit 'move)
+      (let ((depth 0) str start start-depth regions)
+        (while (re-search-forward "^\\s-*#\\s-*\\(if\\|else\\|endif\\)" nil t)
           (setq str (match-string 1))
           (if (string= str "if")
               (progn
@@ -105,12 +73,27 @@
                   (setq start (match-end 0)
                         start-depth depth)))
             (when (and start (= depth start-depth))
-              (c-put-font-lock-face start (match-beginning 0) 'font-lock-comment-face)
+              (push (cons start (match-beginning 0)) regions)
               (setq start nil))
             (when (string= str "endif")
               (setq depth (1- depth)))))
         (when (and start (> depth 0))
-          (c-put-font-lock-face start (point) 'font-lock-comment-face)))))
+          (push (cons start (point-max)) regions))
+        (nreverse regions)))))
+
+
+(defun user/c-mode-font-lock-if0 (limit)
+  "Propertize '#if 0' regions between point and LIMIT as comments.
+The regions are found once after each buffer change, instead of
+rescanning the buffer from the start for every chunk that font-lock
+fontifies."
+  (when (eq user--c-if0-regions 'unknown)
+    (setq user--c-if0-regions (user--c-if0-scan)))
+  (let ((from (point)))
+    (dolist (region user--c-if0-regions)
+      (when (and (< (car region) limit) (> (cdr region) from))
+        (c-put-font-lock-face (max (car region) from) (min (cdr region) limit)
+                              'font-lock-comment-face))))
   nil)
 
 
@@ -146,21 +129,10 @@
      c-tab-always-indent nil
      c-insert-tab-function 'indent-for-tab-command))
 
-  (use-package auto-complete-c-headers
-    :after (auto-complete))
   (use-package company-c-headers
     :after (company))
   (use-package flycheck-pkg-config
     :if (executable-find "pkg-config"))
-  (use-package cpputils-cmake
-    :disabled
-    :if (executable-find "cmake")
-    :config
-    (validate-setq
-     ;; Disable Flymake.
-     cppcm-write-flymake-makefile nil))
-  (use-package cmake-ide
-    :if (executable-find "cmake"))
   (use-package clang-format
     :if (executable-find "clang")
     :bind-wrap
@@ -171,25 +143,6 @@
     :bind-wrap
     (:map c-mode-base-map
           ((:key :code :test) . helm-ctest)))
-  (use-package irony
-    :disabled
-    :if (and (executable-find "clang") (executable-find "cmake"))
-    :bind (:map irony-mode-map
-                ([remap completion-at-point] . irony-completion-at-point-async)
-                ([remap complete-symbol] . irony-completion-at-point-async))
-    :diminish irony-mode
-    :init
-    (add-hook 'irony-mode-hook 'user--irony-mode-hook)
-    :config
-    (validate-setq
-     ;; Install irony server in user's local path.
-     irony-user-dir *user-local-directory*)
-
-    (when (user/auto-complete-p)
-      (irony-enable 'ac))
-
-    (use-package irony-eldoc)
-    (use-package flycheck-irony))
   (use-package flycheck-clang-analyzer
     :after flycheck
     :if (executable-find "scan-build")
@@ -200,12 +153,6 @@
     (flycheck-clang-tidy-setup))
   (use-package flycheck-clangcheck
     :if (executable-find "clang-check"))
-  (use-package function-args
-    :disabled
-    :pin "MELPA"
-    :diminish function-args-mode
-    :config
-    (fa-config-default))
   (use-package flycheck-flawfinder
     :if (executable-find "flawfinder")
     :config
