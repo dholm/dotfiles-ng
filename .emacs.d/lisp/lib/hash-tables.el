@@ -2,18 +2,15 @@
 ;;; Commentary:
 ;;; Code:
 
+;; For `hash-table-keys'.
+(require 'subr-x)
+
 
 (defun hash-table-to-list (hash-table)
   "Return a list that represent the HASH-TABLE."
   (let (ll)
     (maphash (lambda (kk vv) (setq ll (cons (list kk vv) ll))) hash-table)
     ll))
-
-(defun hash-table-keys (hash-table)
-  "Return a list of the keys in the HASH-TABLE."
-  (let ((keys ()))
-    (maphash (lambda (k v) (push k keys)) hash-table)
-    keys))
 
 (cl-defmacro do-hash-table-sorted-by-value ((x hash-table) &rest body)
   "Iterates over keys in HASH-TABLE sorted by value with keys accessible as X
