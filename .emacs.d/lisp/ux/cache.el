@@ -6,7 +6,9 @@
   :pin "MELPA"
   :init
   (setq-default
-   pcache-directory (path-join *user-cache-directory* "pcache")))
+   ;; pcache appends repository names to this, so it must end in a slash.
+   pcache-directory (file-name-as-directory
+                     (path-join *user-cache-directory* "pcache"))))
 
 
 (provide 'ux/cache)
