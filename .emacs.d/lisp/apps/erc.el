@@ -120,17 +120,16 @@
      erc-log-insert-log-on-open t
      ;; Save buffers to log on activity.
      erc-log-write-after-send t
-     erc-log-write-after-insert t
-     ;; Path to log store.
-     erc-log-channels-directory (path-join *user-erc-cache-directory* "logs"))
+     erc-log-write-after-insert t)
 
-    (make-directory erc-log-channels-directory t)
-    (set-file-modes erc-log-channels-directory #o0700)
-
-    (use-package erc-view-log
-      :quelpa (erc-view-log
-               :fetcher github
-               :repo "Niluge-KiWi/erc-view-log")))
+    (let ((log-directory (path-join *user-erc-cache-directory* "logs")))
+      ;; Create a private log store before pointing ERC at it, ERC would
+      ;; otherwise create a world-readable fallback in ~/log.
+      (make-directory log-directory t)
+      (set-file-modes log-directory #o0700)
+      (validate-setq
+       ;; Path to log store.
+       erc-log-channels-directory log-directory)))
 
   (use-package erc-stamp
     :ensure nil
