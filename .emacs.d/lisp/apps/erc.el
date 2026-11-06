@@ -214,8 +214,9 @@
     (add-to-list 'erc-modules 'smiley))
 
   (use-package erc-colorize
-    :init
-    ;; Highlight nicknames in chats.
+    :config
+    ;; Highlight nicknames in chats. Only add the module once the package
+    ;; has loaded, ERC refuses to start with unknown modules.
     (add-to-list 'erc-modules 'colorize))
 
   (use-package erc-track
@@ -267,7 +268,7 @@
     :quelpa (erc-tex
              :fetcher github
              :repo "davazp/erc-tex")
-    :init
+    :config
     ;; Render (La)TeX mathematical expressions.
     (add-to-list 'erc-modules 'tex))
 
