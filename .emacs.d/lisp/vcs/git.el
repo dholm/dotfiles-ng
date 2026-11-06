@@ -62,18 +62,6 @@
     (define-key magit-status-mode-map (kbd "W")
       'user/magit-toggle-whitespace)
 
-    (use-package magithub
-      :disabled
-      :pin "MELPA"
-      :config
-      (validate-setq
-       magithub-dir (path-join *user-data-directory* "magithub"))
-
-      (unless (fboundp #'ghub-request)
-        ;; Compatibility with new version of ghub.
-        (defalias 'ghub-request #'ghub--request))
-
-      (magithub-feature-autoinject t))
     (use-package magit-svn
       :if (executable-find "svn")
       :hook (magit-mode-hook . magit-svn-mode))
