@@ -30,30 +30,28 @@
   ;; Printing
   (user/bind-key-local :debug :show-value 'gud-print))
 
-(defun user--realgud-mode-hook ()
-  "RealGud mode hook."
-  ;;; (Bindings) ;;;
-  ;; Breakpoints
-  (user/bind-key-local :debug :break 'realgud:cmd-break)
-  (user/bind-key-local :debug :watch 'realgud:cmd-watch)
-
-  ;; Stepping
-  (user/bind-key-local :debug :step 'realgud:cmd-step)
-  (user/bind-key-local :debug :step-instruction 'realgud:cmd-stepi)
-  (user/bind-key-local :debug :next 'realgud:cmd-next)
-
-  ;; Execution
-  (user/bind-key-local :debug :run 'realgud:cmd-restart)
-  (user/bind-key-local :debug :continue 'realgud:cmd-continue)
-  (user/bind-key-local :debug :continue-stack 'realgud:cmd-finish)
-  (user/bind-key-local :debug :continue-until 'realgud:cmd-until)
-
-  ;; Stack frames
-  (user/bind-key-local :debug :stack-up 'realgud:cmd-older-frame)
-  (user/bind-key-local :debug :stack-down 'realgud:cmd-newer-frame)
-
-  ;; Printing
-  (user/bind-key-local :debug :show-value 'realgud:cmd-print))
+(defun user--realgud-config ()
+  "Bind the debugger keys in RealGud's debugger buffers."
+  (dolist (binding
+           '(;; Breakpoints
+             (:break . realgud:cmd-break)
+             (:watch . realgud:cmd-watch)
+             ;; Stepping
+             (:step . realgud:cmd-step)
+             (:step-instruction . realgud:cmd-stepi)
+             (:next . realgud:cmd-next)
+             ;; Execution
+             (:run . realgud:cmd-restart)
+             (:continue . realgud:cmd-continue)
+             (:continue-stack . realgud:cmd-finish)
+             (:continue-until . realgud:cmd-until)
+             ;; Stack frames
+             (:stack-up . realgud:cmd-older-frame)
+             (:stack-down . realgud:cmd-newer-frame)
+             ;; Printing
+             (:show-value . realgud:cmd-print)))
+    (define-key realgud-track-mode-map
+                (user/get-key :debug (car binding)) (cdr binding))))
 
 (use-package gud
   :commands gud-gdb
@@ -76,13 +74,16 @@
 
 (use-package realgud
   :defer
-  :bind-wrap
-  (:map c-mode-base-map
-        ((:key :debug :start) . realgud-gdb)
-   :map go-mode-map
-        ((:key :debug :start) . realgud-gub))
-  :hook (realgud-mode-hook . user--realgud-mode-hook)
+  :init
+  ;; Start the debugger from C and Go buffers. The maps only exist once
+  ;; their modes have loaded.
+  (with-eval-after-load 'cc-mode
+    (define-key c-mode-base-map (user/get-key :debug :start) #'realgud:gdb))
+  (with-eval-after-load 'go-mode
+    (define-key go-mode-map (user/get-key :debug :start) #'realgud-gub))
   :config
+  (user--realgud-config)
+
   (use-package realgud-lldb
     :if (executable-find "lldb"))
   (use-package realgud-ipdb

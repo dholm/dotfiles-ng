@@ -8,7 +8,9 @@
     :init
     (user/bind-key-global :apps :processes 'proced)
     :config
-    (validate-setq
+    ;; proced-filter and proced-format are buffer-local, so set their
+    ;; default values.
+    (setq-default
      ;; Show all processes.
      proced-filter 'all
      ;; Default display mode.

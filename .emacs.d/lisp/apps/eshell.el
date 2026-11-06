@@ -25,10 +25,7 @@
     (when (feature-p 'company-eshell-autosuggest)
       (validate-setq
        company-backends '(company-eshell-autosuggest)
-       company-frontends '(company-preview-frontend))))
-
-  (with-feature 'esh-autosuggest
-    (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)))
+       company-frontends '(company-preview-frontend)))))
 
 
 (defun user/shorten-path (path)
@@ -153,20 +150,15 @@
     :config
     (eshell-syntax-highlighting-global-mode +1)))
 
-(use-package helm-shell
+(use-package helm-eshell
   :ensure helm
-  :defer
-  :hook ((eshell-mode-hook
-          . (lambda ()
-              (bind-key "C-c C-l"
-                        #'helm-eshell-history
-                        eshell-mode-map)))
-         (eshell-mode-hook
-          . (lambda ()
-              (bind-key [remap eshell-pcomplete]
-                        'helm-esh-pcomplete eshell-mode-map))))
+  :after (esh-mode em-cmpl)
   :config
-  (bind-key "C-c C-l" #'helm-comint-input-ring shell-mode-map))
+  ;; Complete with Helm. In Emacs 30 TAB in Eshell runs
+  ;; `completion-at-point' instead of `eshell-pcomplete'.
+  (define-key eshell-cmpl-mode-map [remap completion-at-point]
+              #'helm-esh-pcomplete)
+  (define-key eshell-mode-map (kbd "C-c C-l") #'helm-eshell-history))
 
 
 (provide 'apps/eshell)
