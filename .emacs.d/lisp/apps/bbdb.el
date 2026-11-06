@@ -15,13 +15,16 @@
 
 
 (defun user/bbdb-create-or-update-notes ()
-  "Auto create records, or update if they exist."
-  (let (done elt)
-    (while (and (setq elt (pop rest)) (not done))
-      (dolist (header (if (stringp (car elt)) (list (car elt)) (car elt)))
-        (if (bbdb-message-header-re header (cdr elt))
-            (setq done t))))
-    (if done 'create 'update)))
+  "Decide how BBDB handles the addresses in the current message.
+Create records, unless the message matches `bbdb-ignore-message-alist',
+in which case only update existing records."
+  (let ((ignored (eq bbdb-ignore-message-alist t)))
+    (unless ignored
+      (dolist (elt bbdb-ignore-message-alist)
+        (dolist (header (if (stringp (car elt)) (list (car elt)) (car elt)))
+          (when (bbdb-message-header-re header (cdr elt))
+            (setq ignored t)))))
+    (if ignored 'update 'create)))
 
 
 (defun user/bbdb-display-record ()
@@ -51,8 +54,9 @@
    bbdb-complete-mail-allow-cycling t
    ;; Hide pop-up after completion.
    bbdb-completion-display-record nil
-   ;; Automatically add addresses to bbdb.
-   bbdb-update-records-p 'create
+   ;; Create records for the addresses in messages, see
+   ;; `user/bbdb-create-or-update-notes'.
+   bbdb-update-records-p 'user/bbdb-create-or-update-notes
    bbdb-mua-update-interactive-p '(create . create)
    ;; Don't assume a certain phone number style.
    bbdb-phone-style nil
@@ -64,8 +68,12 @@
    bbdb-add-aka t
    ;; Ignore certain addresses when adding to address book.
    bbdb-ignore-message-alist
-   '(("From" . "no.*reply\\|DAEMON\\|daemon"))
-   ;; Fields to auto-populate in notes.
+   '(("From" . "no.*reply\\|DAEMON\\|daemon")))
+
+  (setq
+   ;; Fields to auto-populate in notes. Not validated: the rules use the
+   ;; documented (HEADER (REGEXP FIELD STRING REPLACE)) form, which BBDB's
+   ;; custom type doesn't describe.
    bbdb-auto-notes-rules
    (list
     '("Organization" (".*" organization "\\1" nil))
@@ -73,8 +81,7 @@
     '("Xref" ("[^ ]+ \\([^ :]+\\):[0-9]+" newsgroups "\\1" nil))
     '("User-Agent" (".*" mailer identity nil))
     '("X-Mailer" (".*" mailer identity nil))
-    '("X-Newsreader" (".*" mailer identity nil)))
-   bbdb-update-records-p 'user/bbdb-create-or-update-notes)
+    '("X-Newsreader" (".*" mailer identity nil))))
 
   (use-package bbdb-vcard
     :disabled

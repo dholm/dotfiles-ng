@@ -75,7 +75,9 @@
   (bbdb-mua-auto-update-init 'gnus 'message)
   (validate-setq
    bbdb-mua-update-interactive-p '(query . create)
-   bbdb-mua-auto-update-p 'create)
+   ;; Let `bbdb-update-records-p' decide, which honours
+   ;; `bbdb-ignore-message-alist'.
+   bbdb-mua-auto-update-p 'bbdb-select-message)
 
   (when (feature-p 'google-contacts)
     ;; Google Contacts for Gnus.
