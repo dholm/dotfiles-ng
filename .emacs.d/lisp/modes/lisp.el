@@ -65,13 +65,6 @@
       ((executable-find "clisp") "clisp -K full")
       (t inferior-lisp-program)))
 
-    (use-package slime-c-p-c
-      :ensure slime
-      :defer
-      :config
-      (validate-setq
-       slime-complete-symbol*-fancy t))
-
     (slime-setup '(slime-repl))
 
     (use-package ac-slime
