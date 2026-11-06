@@ -21,15 +21,13 @@
 
 ;; Bootstrap `use-package'.
 (package-initialize)
-(unless (and (package-installed-p 'quelpa-use-package) (package-installed-p 'validate))
+(unless (package-installed-p 'quelpa-use-package)
   (package-refresh-contents)
-  (package-install 'quelpa-use-package)
-  (package-install 'validate))
+  (package-install 'quelpa-use-package))
 
 (eval-when-compile
   ;; Load use-package.
-  (require 'quelpa-use-package)
-  (require 'validate))
+  (require 'quelpa-use-package))
 
 (use-package use-package
   :config

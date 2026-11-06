@@ -47,5 +47,43 @@
     (add-to-list 'interpreter-mode-alist (cons interpreter mode))))
 
 
+(defun user--validate-value (symbol value)
+  "Warn if SYMBOL is undefined or VALUE does not match its custom type.
+Return VALUE."
+  (cond
+   ((not (boundp symbol))
+    (display-warning
+     'user (format "Setting `%s', which is not defined (yet)" symbol)))
+   ((let ((type (get symbol 'custom-type)))
+      (and type
+           (not (condition-case nil
+                    (widget-apply (widget-convert type) :match value)
+                  ;; Don't complain about types the widget library can't check.
+                  (error t)))))
+    (display-warning
+     'user (format "Value `%S' does not match the type of `%s'" value symbol))))
+  value)
+
+
+(defmacro validate-setq (&rest svs)
+  "Like `setq', but warn about values that don't match their custom type.
+Each SYM is set to VAL like `setq' does, so automatically buffer-local
+variables are set in the current buffer.  A warning is displayed if
+SYM is not defined yet or if VAL does not match the custom type of
+SYM.  Unlike the `validate' package this never signals an error, so a
+renamed variable or a changed type cannot abort the rest of a
+configuration block.
+
+\(fn [SYM VAL] ...)"
+  (unless (zerop (% (length svs) 2))
+    (error "`validate-setq' takes an even number of arguments"))
+  (let (forms)
+    (while svs
+      (let ((symbol (pop svs))
+            (value (pop svs)))
+        (push `(setq ,symbol (user--validate-value ',symbol ,value)) forms)))
+    `(progn ,@(nreverse forms))))
+
+
 (provide 'lib/utils)
 ;;; utils.el ends here
