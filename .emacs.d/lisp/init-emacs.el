@@ -10,19 +10,11 @@
     '(defun enriched-decode-display-prop (start end &optional param)
        (list start end))))
 
-;; Improve init performance.
+;; Improve init performance. gcmh-mode (ux/gc) manages the threshold once
+;; it is enabled.
 (setq
  ;; Increase garbage collection threshold.
  gc-cons-threshold (* 128 1024 1024))
-
-;; Restore garbage collection threshold while Emacs is idle.
-(run-with-idle-timer
- 2 nil
- (lambda ()
-   (validate-setq
-    ;; Reduce number of pauses due to garbage collection.
-    gc-cons-threshold (* 50 1024 1024)
-    gc-cons-percentage 0.5)))
 
 
 ;; Create data and cache directories
