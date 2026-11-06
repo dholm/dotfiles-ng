@@ -367,6 +367,8 @@
        gnus-sum-thread-tree-single-leaf     "\\-> "))
 
     (use-package gnus-recent
+      ;; Tracks articles through hooks that are added when it is loaded.
+      :demand
       :bind-wrap
       (:map gnus-summary-mode-map
             ((:key :nav :go-back) . gnus-recent-goto-previous)

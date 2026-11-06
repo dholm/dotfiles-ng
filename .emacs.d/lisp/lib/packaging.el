@@ -84,6 +84,10 @@
       (use-package-normalize/:bind name keyword args*)))
   (defalias 'use-package-normalize/:bind-wrap 'use-package-normalize-bind-wrap)
   (defalias 'use-package-normalize/:bind*-wrap 'use-package-normalize-bind-wrap)
+  ;; Create autoloads for the bound commands, like :bind does, so that the
+  ;; keywords defer loading the package until a bound command is used.
+  (defalias 'use-package-autoloads/:bind-wrap 'use-package-autoloads-mode)
+  (defalias 'use-package-autoloads/:bind*-wrap 'use-package-autoloads-mode)
   (defun use-package-handler/:bind-wrap (name keyword arg rest state)
     (use-package-handler/:bind name keyword arg rest state))
   (defun use-package-handler/:bind*-wrap (name keyword arg rest state)

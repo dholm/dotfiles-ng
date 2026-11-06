@@ -395,6 +395,8 @@
 
   ;;; (Packages) ;;;
   (use-package org-rich-yank
+    ;; Records the source of kills through advice added when it is loaded.
+    :demand
     :bind-wrap
     (:map org-mode-map
      ((:key :basic :alternate-paste) . org-rich-yank)))

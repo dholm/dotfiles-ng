@@ -53,6 +53,8 @@
     :after (company))
   (use-package go-eldoc)
   (use-package gotest
+    ;; The compilation error regexps should be set up with go-mode.
+    :demand
     :bind-wrap
     (:map go-mode-map
           ((:key :code :test) . go-test-current-project)

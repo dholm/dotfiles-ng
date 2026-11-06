@@ -11,6 +11,8 @@
 (user/bind-key-global :basic :undo 'undo)
 
 (use-package undo-tree
+  ;; The global mode has to be enabled at startup.
+  :demand
   :bind-wrap
   (([remap undo] . undo-tree-undo)
    ([remap redo] . undo-tree-redo)
