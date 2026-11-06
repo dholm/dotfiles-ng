@@ -5,16 +5,20 @@
 (defun user/eudc-expand-inline ()
   "Expand entry at point using EUDC."
   (interactive)
-  (cond
-   ((eq eudc-protocol 'ldap)
-    (progn
-      (unless (condition-case nil
-                  (eudc-expand-inline)
-                (error nil)))))
-   (t (eudc-expand-inline)))
-  ;; Remove metadata from email after expansion.
-  (when (re-search-backward " {.*}" nil t)
-    (replace-match "")))
+  (let ((tick (buffer-chars-modified-tick)))
+    (cond
+     ((eq eudc-protocol 'ldap)
+      (progn
+        (unless (condition-case nil
+                    (eudc-expand-inline)
+                  (error nil)))))
+     (t (eudc-expand-inline)))
+    ;; Remove the metadata that the LDAP expansion format appends after the
+    ;; address. Only touch the text just inserted before point, and only if
+    ;; an expansion actually took place.
+    (when (and (/= tick (buffer-chars-modified-tick))
+               (looking-back " {[^{}\n]*}" (line-beginning-position)))
+      (replace-match ""))))
 
 
 (use-package eudc
