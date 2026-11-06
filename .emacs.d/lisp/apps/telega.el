@@ -10,7 +10,13 @@
          (telega-load-hook . global-telega-squash-message-mode))
   :config
   (when (feature-p 'alert)
-    (telega-alert-mode 1)))
+    ;; telega-alert is shipped in telega's contrib directory, which is not
+    ;; on the load path.
+    (add-to-list 'load-path
+                 (expand-file-name "contrib"
+                                   (file-name-directory (locate-library "telega"))))
+    (when (require 'telega-alert nil t)
+      (telega-alert-mode 1))))
 
 
 (provide 'apps/telega)
