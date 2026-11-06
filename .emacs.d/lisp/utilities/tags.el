@@ -289,7 +289,8 @@
   (use-package helm-xref
     :config
     (validate-setq
-     xref-show-xrefs-function 'helm-xref-show-xrefs)))
+     xref-show-xrefs-function 'helm-xref-show-xrefs-27
+     xref-show-definitions-function 'helm-xref-show-defs-27)))
 
 
 (provide 'utilities/tags)
