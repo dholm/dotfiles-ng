@@ -8,32 +8,20 @@
            (treesit-available-p))
   :config
   (validate-setq
+   ;; Grammars that treesit-auto has no recipe for. The other languages
+   ;; are left to treesit-auto, whose recipes pin revisions that work with
+   ;; the tree-sitter ABI that Emacs is built with.
    treesit-language-source-alist
-   '((awk "https://github.com/Beaglefoot/tree-sitter-awk")
-     (bash "https://github.com/tree-sitter/tree-sitter-bash")
-     (cmake "https://github.com/uyha/tree-sitter-cmake")
-     (c "https://github.com/tree-sitter/tree-sitter-c")
-     (c++ "https://github.com/tree-sitter/tree-sitter-cpp")
-     (css "https://github.com/tree-sitter/tree-sitter-css")
-     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-     (go "https://github.com/tree-sitter/tree-sitter-go")
-     (html "https://github.com/tree-sitter/tree-sitter-html")
-     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-     (json "https://github.com/tree-sitter/tree-sitter-json")
-     (make "https://github.com/alemuller/tree-sitter-make")
-     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-     (python "https://github.com/tree-sitter/tree-sitter-python")
-     (rust "https://github.com/tree-sitter/tree-sitter-rust")
-     (toml "https://github.com/tree-sitter/tree-sitter-toml")
-     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+   '((elisp "https://github.com/Wilfred/tree-sitter-elisp")))
 
   (use-package treesit-auto
     :config
     (validate-setq
-     ;; Automatically install missing grammars.
-     treesit-auto-install t)
+     ;; Ask before cloning and compiling missing grammars.
+     treesit-auto-install 'prompt
+     ;; treesit-auto has no tree-sitter-c revision for ABI 14, and the
+     ;; current grammar does not load, so keep using `c-mode'.
+     treesit-auto-langs (remq 'c treesit-auto-langs))
 
     (global-treesit-auto-mode)))
 
