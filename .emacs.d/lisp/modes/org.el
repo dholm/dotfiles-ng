@@ -53,21 +53,6 @@
   (org-agenda-to-appt t))
 
 
-(defun user--org-load-hook ()
-  "Org-mode loaded hook."
-  (when (not noninteractive)
-    ;; Resume clocking tasks when Emacs is restarted.
-    (org-clock-persistence-insinuate))
-
-  ;; Load modules.
-  (when org-modules-loaded
-    (org-load-modules-maybe 'force))
-
-  ;; Load Babel languages.
-  (org-babel-do-load-languages 'org-babel-load-languages
-                               org-babel-load-languages))
-
-
 (defun user/org-confirm-babel-evaluate (_lang _body)
   "Ask before evaluating code blocks outside of the user's org directory."
   (not (and buffer-file-name
@@ -131,8 +116,7 @@
   ;; Fix for EIN if org hasn't been setup yet.
   (autoload 'org-add-link-type "org" "" t)
   :hook
-  ((org-load-hook . user--org-load-hook)
-   (org-mode-hook . user--org-mode-hook))
+  (org-mode-hook . user--org-mode-hook)
   :bind
   (:map org-mode-map
         ("C-c C-o" . user/org-open-at-point))
@@ -337,7 +321,11 @@
 
     (with-executable 'tmux
       (use-package ob-tmux
-        :init (add-to-list 'org-babel-load-languages '(tmux . t)))))
+        :init (add-to-list 'org-babel-load-languages '(tmux . t))))
+
+    ;; Load the languages collected above.
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 org-babel-load-languages))
 
   (use-package ox
     :ensure nil
@@ -427,7 +415,10 @@
        ;; Enable auto clock resolution for finding open clocks.
        org-clock-auto-clock-resolution 'when-no-clock-is-running
        ;; Include current clocking task in clock reports.
-       org-clock-report-include-clocking-task t)))
+       org-clock-report-include-clocking-task t)
+
+      ;; Resume clocking tasks when Emacs is restarted.
+      (org-clock-persistence-insinuate)))
 
   (use-package org-caldav
     :defer
