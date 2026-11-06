@@ -7,14 +7,15 @@
   ;; Load CEDET
   (user--cedet-hook)
 
-  (user/gnu-global-enable)
-
-  (tern-mode t))
+  (user/gnu-global-enable))
 
 
 (defun user--javascript-mode-hook ()
   "JavaScript mode hook."
-  (user--javascript-mode-common-hook))
+  ;; `js-mode-hook' also runs in modes derived from `js-mode', such as
+  ;; `js2-mode' and `js-json-mode', which have their own hooks.
+  (when (eq major-mode 'js-mode)
+    (user--javascript-mode-common-hook)))
 
 
 (defun user--inferior-js-mode-hook ()
@@ -36,8 +37,8 @@
 
 (use-package js
   :defer
-  :hook ((javascript-mode-hook . user--javascript-mode-hook)
-         (inferior-js-mode-hook . user--inferior-javascript-mode-hook)))
+  :hook ((js-mode-hook . user--javascript-mode-hook)
+         (inferior-js-mode-hook . user--inferior-js-mode-hook)))
 
 (use-package js2-mode
   :defer
