@@ -1,4 +1,4 @@
-;;; .emacs.local.el --- local Emacs configuration
+;;; .emacs.local.el --- local Emacs configuration -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 

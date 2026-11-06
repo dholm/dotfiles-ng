@@ -1,4 +1,4 @@
-;;; basic.el --- Emacs as a basic editor
+;;; basic.el --- Emacs as a basic editor -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Usage:
 

@@ -1,4 +1,4 @@
-;;; epilogue.el --- Emacs init epilogue
+;;; epilogue.el --- Emacs init epilogue -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 

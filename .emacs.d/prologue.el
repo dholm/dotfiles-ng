@@ -1,8 +1,8 @@
-;;; prologue.el --- Emacs init prologue
+;;; prologue.el --- Emacs init prologue -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
+(eval-and-compile
   (defconst *user-emacs-lisp-directory*
     (expand-file-name "lisp" user-emacs-directory)
     "Path to user Emacs Lisp directory.")
