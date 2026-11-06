@@ -46,36 +46,23 @@
   :hook (js2-mode-hook . user--js2-mode-hook)
   :config
   (validate-setq
-   ;; Configure indentation
-   js2-enter-indents-newline t
-   js2-auto-indent-p t
-   ;; Idle timeout before reparsing buffer
-   js2-idle-timer-delay 0.5
    ;; Disable error parsing in favor of Flycheck
    js2-strict-missing-semi-warning nil)
+  (setq-default
+   ;; Idle timeout before reparsing buffer, buffer-local in js2-mode.
+   js2-idle-timer-delay 0.5)
 
-  (use-package js-comint
-    :config
-    (validate-setq
-     ;; Set JavaScript inferior.
-     inferior-js-program-command
-     (cond
-      ((executable-find "js") (executable-find "js"))
-      ((executable-find "node")
-       (concat (executable-find "node") " --interactive"))
-      (t "java org.mozilla.javascript.tools.shell.Main")))
+  (with-executable 'node
+    (use-package js-comint
+      :defer
+      :config
+      (validate-setq
+       ;; Set JavaScript inferior.
+       js-comint-program-command (executable-find "node"))))
 
-    ;; Workaround for Node.js prompt.
-    (setenv "NODE_NO_READLINE" "1"))
-
-  (use-package prettier-js)
-
-  (use-package helm-js-codemod
-    :if (executable-find "jscodeshift"))
-
-  (use-package xref-js2
-    :init
-    (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  (with-executable 'prettier
+    (use-package prettier-js
+      :defer)))
 
 
 (provide 'modes/javascript)
