@@ -11,10 +11,9 @@
   :init
   (autoload 'sx-search "sx-load" nil t)
   (user/bind-key-global :apps :stack-exchange 'sx-search)
-  :config
-  (validate-setq
-   ;; Set up sx cache store.
-   sx-cache-directory *user-sx-cache-directory*))
+  ;; Set before sx-cache is loaded. The cache also holds the OAuth token,
+  ;; which would otherwise be stored in `user-emacs-directory'.
+  (setq sx-cache-directory *user-sx-cache-directory*))
 
 
 (provide 'apps/sx)
