@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+. "$HOME/.local/lib/sh/shell.sh"
 . "$HOME/.local/lib/sh/path.sh"
 
 # test args
@@ -10,11 +11,11 @@ if [ ! ${#} -ge 2 ]; then
 fi
 
 # tools
-_EMACSCLIENT="$(path_to emacsclient)"
-_BASENAME="$(path_to basename)"
-_CP="$(path_to cp)"
-_EGREP="$(path_to egrep)"
-_MKTEMP="$(path_to mktemp)"
+_EMACSCLIENT="$(path::to emacsclient)"
+_BASENAME="$(path::to basename)"
+_CP="$(path::to cp)"
+_EGREP="$(path::to egrep)"
+_MKTEMP="$(path::to mktemp)"
 
 # args
 _LOCAL=${1}
