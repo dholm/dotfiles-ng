@@ -16,6 +16,11 @@
 (defvar user/org-mobile-sync-secs (* 60 20)
   "Interval of OrgMobile sync in seconds.")
 
+;; Org writes the autoload for `orgtbl-mode' to org-loaddefs.el, which only
+;; org.el loads, so it isn't defined in mail, Markdown and commit message
+;; buffers until something has loaded Org.
+(autoload 'orgtbl-mode "org" nil t)
+
 
 (defun user--org-mode-hook ()
   "Org mode hook."
