@@ -31,7 +31,7 @@
       (display-battery-mode t)))
 
   (use-package doom-modeline
-    :hook (after-init-hook . doom-modeline-init)
+    :hook (after-init-hook . doom-modeline-mode)
     :config
     (validate-setq
      doom-modeline-height 18))
