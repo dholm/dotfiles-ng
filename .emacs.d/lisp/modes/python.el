@@ -64,6 +64,8 @@
     :hook (python-base-mode-hook . pipenv-mode))
 
   (use-package flycheck-pycheckers
+    ;; The MELPA Stable release (0.16, 2018) fails to load in Emacs 30.
+    :pin "MELPA"
     :after flycheck
     :hook (flycheck-mode-hook . flycheck-pycheckers-setup))
   (use-package flycheck-mypy
