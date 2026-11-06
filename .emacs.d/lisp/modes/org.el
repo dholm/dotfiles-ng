@@ -466,9 +466,6 @@
     :hook (org-mode-hook . org-autolist-mode))
   (use-package org-download
     :demand)
-  ;; Enables `#+BEGIN_FSTREE: <dir>' for directory listings.
-  (use-package org-fstree
-    :disabled)
   (use-package org-vcard
     :defer
     :config
