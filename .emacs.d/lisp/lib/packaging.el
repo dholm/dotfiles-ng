@@ -10,8 +10,8 @@
    ;; Configure GNU/Emacs package repositories.
    package-archives
    '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
-     ("MELPA Stable" . "http://stable.melpa.org/packages/")
-     ("MELPA"        . "http://melpa.org/packages/"))
+     ("MELPA Stable" . "https://stable.melpa.org/packages/")
+     ("MELPA"        . "https://melpa.org/packages/"))
    ;; Prefer MELPA Stable over GNU over MELPA.
    package-archive-priorities
    '(("MELPA Stable" . 20)
