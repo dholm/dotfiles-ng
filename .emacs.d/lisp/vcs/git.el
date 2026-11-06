@@ -25,8 +25,11 @@
 
 (defun user--git-config ()
   "Initialize Git support."
-  ;; Automatic conf-mode expressions.
-  (add-auto-mode 'conf-mode "\\.git\\(config\\|attributes\\|ignore\\)\\(\\.local\\)?$")
+  ;; git-modes associates the usual names; also open the local variants
+  ;; and the core excludes file in its modes.
+  (add-auto-mode 'gitconfig-mode "/\\.gitconfig\\.local\\'")
+  (add-auto-mode 'gitignore-mode "/\\.gitignore\\.\\(local\\|core\\)\\'")
+  (add-auto-mode 'gitattributes-mode "/\\.gitattributes\\.local\\'")
 
   (use-package git-commit
     :ensure nil
