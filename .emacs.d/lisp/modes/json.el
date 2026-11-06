@@ -3,6 +3,8 @@
 ;;; Code:
 
 (use-package json-mode
+  ;; GNU ELPA has an unrelated package with the same name.
+  :pin "MELPA Stable"
   :defer
   :mode "\\.bowerrc$"
   :config

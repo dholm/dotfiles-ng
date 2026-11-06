@@ -12,10 +12,12 @@
    '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
      ("MELPA Stable" . "https://stable.melpa.org/packages/")
      ("MELPA"        . "https://melpa.org/packages/"))
-   ;; Prefer MELPA Stable over GNU over MELPA.
+   ;; Prefer GNU ELPA over MELPA Stable over MELPA. GNU ELPA first, so
+   ;; packages that are in both get the GNU ELPA release, which is usually
+   ;; newer.
    package-archive-priorities
-   '(("MELPA Stable" . 20)
-     ("GNU ELPA"     . 15)
+   '(("GNU ELPA"     . 20)
+     ("MELPA Stable" . 15)
      ("MELPA"        . 10))))
 
 
