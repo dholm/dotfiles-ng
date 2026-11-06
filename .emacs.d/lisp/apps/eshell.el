@@ -16,12 +16,7 @@
   (turn-on-eldoc-mode)
 
   (when (user/company-mode-p)
-    (company-mode t)
-
-    (when (feature-p 'company-eshell-autosuggest)
-      (validate-setq
-       company-backends '(company-eshell-autosuggest)
-       company-frontends '(company-preview-frontend)))))
+    (company-mode t)))
 
 
 (defun user/shorten-path (path)
@@ -129,10 +124,6 @@
      eshell-term-name "eterm-color"))
 
   (use-package eshell-bookmark)
-
-  (use-package company-eshell-autosuggest
-    :disabled
-    :after (company))
 
   (use-package esh-autosuggest
     :hook (eshell-mode-hook . esh-autosuggest-mode))
