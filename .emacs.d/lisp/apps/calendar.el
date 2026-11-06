@@ -158,8 +158,6 @@
   :config
   (let ((diary-data-store (path-join *user-org-data-directory* "diary.org")))
     (validate-setq
-     ;; Date style should be ISO.
-     calendar-date-style 'iso
      ;; Diary data store.
      diary-file diary-data-store
      ;; Always show entries for current date.
@@ -171,6 +169,10 @@
      ;; Week starts on Monday.
      calendar-week-start-day 1))
 
+  ;; Date style should be ISO. The date patterns depend on the style, so
+  ;; it has to be changed through `calendar-set-date-style'.
+  (calendar-set-date-style 'iso)
+
   (user--calendar-week-config)
 
   (use-package holidays
@@ -180,7 +182,6 @@
 
   (use-package diary-lib
     :ensure calendar
-    :hook (diary-display-function . diary-fancy-display)
     :config
     (validate-setq
      ;; Display one week of entries from current date.
@@ -203,16 +204,16 @@
   :config
   (validate-setq
    ;; Use `fill-region' to wrap long lines.
-   cfw:render-line-breaker 'cfw:render-line-breaker-wordwrap
+   calfw-render-line-breaker 'calfw-render-line-breaker-wordwrap
    ;; Use unicode to render calendar
-   cfw:fchar-junction ?╋
-   cfw:fchar-vertical-line ?┃
-   cfw:fchar-horizontal-line ?━
-   cfw:fchar-left-junction ?┣
-   cfw:fchar-right-junction ?┫
-   cfw:fchar-top-junction ?┯
-   cfw:fchar-top-left-corner ?┏
-   cfw:fchar-top-right-corner ?┓)
+   calfw-fchar-junction ?╋
+   calfw-fchar-vertical-line ?┃
+   calfw-fchar-horizontal-line ?━
+   calfw-fchar-left-junction ?┣
+   calfw-fchar-right-junction ?┫
+   calfw-fchar-top-junction ?┯
+   calfw-fchar-top-left-corner ?┏
+   calfw-fchar-top-right-corner ?┓)
 
   (use-package calfw-org))
 
