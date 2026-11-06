@@ -4,17 +4,16 @@
 
 (defun user--css-mode-hook ()
   "CSS mode hook."
-  (validate-setq
-   cssm-indent-function #'cssm-c-style-indenter
-   cssm-indent-level '4)
+  (setq-local
+   ;; Indent using four spaces.
+   css-indent-offset 4)
 
-  ;; Initialize auto completion
-  (tern-ac-setup)
-  (ac-css-mode-setup)
-
-  (showcss-mode t)
-  (skewer-css-mode t)
-  (rainbow-mode t)
+  (with-feature 'showcss-mode
+    (showcss-mode t))
+  (with-feature 'skewer-css
+    (skewer-css-mode t))
+  (with-feature 'rainbow-mode
+    (rainbow-mode t))
 
   (when (eq major-mode 'css-mode)
     ;; Only enable in strictly css-mode, not scss-mode (css-mode-hook
@@ -23,8 +22,9 @@
     (user/eglot-ensure))
 
   ;;; (Bindings) ;;;
-  (user/bind-key-local :nav :functions/toc 'helm-css-scss)
-  (user/bind-key-local :nav :go-back 'helm-css-scss-back-to-last-point))
+  (when (feature-p 'helm-css-scss)
+    (user/bind-key-local :nav :functions/toc 'helm-css-scss)
+    (user/bind-key-local :nav :go-back 'helm-css-scss-back-to-last-point)))
 
 
 (use-package css-mode
