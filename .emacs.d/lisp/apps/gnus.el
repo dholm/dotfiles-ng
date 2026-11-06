@@ -267,17 +267,16 @@
        "multipart/encrypted"
        "multipart/signed"))
 
+    ;; Keep the default `gnus-blocked-images', which blocks external images
+    ;; in mail groups since they are used to track reading, and don't look
+    ;; up gravatars for every address. W D W shows the images of an
+    ;; article.
     (when (display-graphic-p)
       (validate-setq
        ;; Properties for Face and X-Face attributes.
        gnus-face-properties-alist
        '((pbm . (:face gnus-x-face :ascent center))
-         (png . (:ascent center)))
-       ;; Render images in HTML mail.
-       gnus-blocked-images nil
-       ;; Enable gravatars.
-       gnus-treat-from-gravatar 'head
-       gnus-treat-mail-gravatar 'head)))
+         (png . (:ascent center))))))
 
   (use-package gnus-group
     :ensure gnus
