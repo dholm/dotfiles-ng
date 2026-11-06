@@ -8,14 +8,6 @@
    ;; Only split frame if it occupies at least 2/3 of the current screen width.
    split-width-threshold (* (/ (window-total-width (frame-root-window)) 3) 2)))
 
-(defun user/iconify-or-deiconify-frame ()
-  "Iconify the selected frame, or deiconify if it's currently an icon."
-  (interactive)
-  (if (display-graphic-p)
-      (iconify-or-deiconify-frame)
-    (suspend-frame)))
-
-
 (defun user/close-and-kill-current-window ()
   "If multiple windows are open, close the current one and kill the buffer."
   (interactive)
@@ -32,6 +24,15 @@
   (if (not (one-window-p))
       (delete-window)))
 
+
+(defun user--zoom-ignore-p ()
+  "Check if the current buffer has more than 20 lines.
+Unlike `count-lines', stop looking after line 21."
+  (save-excursion
+    (goto-char (point-min))
+    (forward-line 20)
+    (not (eobp))))
+
 (progn
   (validate-setq
    ;; Inhibit GUI features
@@ -45,8 +46,8 @@
   (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
   ;;; (Hooks) ;;;
-  (add-to-list 'window-configuration-change-hook
-               'user--window-configuration-change-hook)
+  (add-hook 'window-configuration-change-hook
+            'user--window-configuration-change-hook)
 
   ;;; (Bindings) ;;;
   (user/bind-key-global :emacs :fullscreen 'toggle-frame-fullscreen)
@@ -74,8 +75,7 @@
      zoom-ignored-buffer-name-regexps
      '("^*calc")
      ;; Ignore predicate definitions.
-     zoom-ignore-predicates
-     '((lambda () (> (count-lines (point-min) (point-max)) 20))))
+     zoom-ignore-predicates '(user--zoom-ignore-p))
 
     (zoom-mode t))
 
