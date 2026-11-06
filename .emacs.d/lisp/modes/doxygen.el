@@ -15,13 +15,6 @@
   :type '(hook))
 
 
-(defun user--doxygen-mode-hook ()
-  "Mode hook for Doxygen."
-  ;;; (Bindings) ;;;
-  (with-feature 'doc-mode
-    (user/bind-key-local :code :document 'doc-mode-fix-tag-doc)))
-
-
 (defun doxygen-mode (&optional arg)
   "Minor mode for Doxygen documentation, if ARG is nil the mode is toggled."
   (interactive "P")
@@ -32,29 +25,7 @@
   (when doxygen-mode
     (with-feature 'doxymacs
       (doxymacs-mode t))
-    (with-feature 'doc-mode
-      (doc-mode t)
-      ;; Disable buffer check from semantic idle scheduler since it tends to
-      ;; hang Emacs for a long time.
-      (remove-hook 'semantic-after-idle-scheduler-reparse-hooks
-                   'doc-mode-check-buffer t))
     (run-hooks 'doxygen-mode-hook)))
-
-
-(with-executable 'doxygen
-  ;;; (Hooks) ;;;
-  (add-hook 'doxygen-mode-hook 'user--doxygen-mode-hook)
-
-  (use-package highlight-doxygen
-    :hook (doxygen-mode-hook . highlight-doxygen-mode))
-
-  ;;; (Packages) ;;;
-  (use-package doc-mode
-    :defer
-    :quelpa (doc-mode
-             :fetcher github
-             :repo "nschum/doc-mode")
-    :diminish doc-mode))
 
 
 (provide 'modes/doxygen)
