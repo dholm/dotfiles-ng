@@ -8,8 +8,6 @@
    ;; Indent using four spaces.
    css-indent-offset 4)
 
-  (with-feature 'showcss-mode
-    (showcss-mode t))
   (with-feature 'skewer-css
     (skewer-css-mode t))
   (with-feature 'rainbow-mode
@@ -31,22 +29,10 @@
   :defer
   :hook ((css-mode-hook css-ts-mode-hook) . user--css-mode-hook)
   :config
-  (use-package showcss-mode
-    :quelpa (showcss-mode
-             :fetcher github
-             :repo "smmcg/showcss-mode"))
-
   (use-package rainbow-mode)
 
   (when (feature-p 'helm)
-    (use-package helm-css-scss))
-
-  (use-package flycheck-css-colorguard
-    :config
-    (flycheck-css-colorguard-setup))
-
-  (use-package css-autoprefixer
-    :if (executable-find "npx")))
+    (use-package helm-css-scss)))
 
 
 (provide 'modes/css)
