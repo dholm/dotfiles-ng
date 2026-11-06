@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 
 (defun user--auto-complete-mode-hook ()
   "Auto complete mode hook."

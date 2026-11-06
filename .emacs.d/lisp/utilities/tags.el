@@ -44,8 +44,8 @@
     (dolist (cond-expr cond-list)
       (when (and (eq start-buffer (current-buffer))
                  (eq start-point (point)))
-        (let ((cnd (first cond-expr))
-              (expr (second cond-expr)))
+        (let ((cnd (car cond-expr))
+              (expr (cadr cond-expr)))
           (when (eval cnd)
             (eval expr)))))))
 

@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 
 (defun user--ediff-mode-hook ()
   "Ediff mode hook."
@@ -25,6 +22,8 @@
   (ediff-next-difference))
 
 
+(defvar ediff-show-clashes-only)
+
 (defun user/ediff-mergetool ()
   "Launch ediff as mergetool."
   (defun ediff-write-merge-buffer ()
@@ -44,8 +43,8 @@
         (remote (pop command-line-args-left))
         (base (pop command-line-args-left))
         (merged (pop command-line-args-left)))
-    (lexical-let (;; Show only conflicts.
-                  (ediff-show-clashes-only t))
+    (let (;; Show only conflicts.
+          (ediff-show-clashes-only t))
       (ediff-merge-files-with-ancestor local remote base nil merged))))
 
 

@@ -34,10 +34,10 @@
     (cl-defmethod user/proj-from-path ((_project (subclass user/ede-proj)) &rest args)
       "Constructor for EDE project at path in ARGS."
       (when (featurep 'ede)
-        (let ((ede-proj (ede-current-project (expand-file-name (first args)))))
+        (let ((ede-proj (ede-current-project (expand-file-name (car args)))))
           (when (cl-some (lambda (args)
-                           (and (featurep (first args))
-                                (funcall (second args) ede-proj)))
+                           (and (featurep (car args))
+                                (funcall (cadr args) ede-proj)))
                          '((ede/cpp-root ede-cpp-root-project-p)
                            (ede/generic ede-generic-makefile-project-p)
                            (ede/generic ede-generic-cmake-project-p)
@@ -72,7 +72,7 @@
 
     (cl-defmethod user/proj-from-path ((_project (subclass user/projectile-proj)) &rest args)
       "Constructor for projectile project at path in ARGS."
-      (let ((default-directory (file-name-as-directory (first args)))
+      (let ((default-directory (file-name-as-directory (car args)))
             (projectile-require-project-root nil))
         (when (and (feature-p 'projectile) (projectile-project-p))
           (make-instance 'user/projectile-proj :root-path (projectile-project-root)))))
@@ -92,10 +92,10 @@
       (let* ((vc-backend (and (fboundp 'vc-responsible-backend)
                               (ignore-errors
                                 (vc-responsible-backend
-                                 (file-truename (first args))))))
+                                 (file-truename (car args))))))
              (root-path (and vc-backend
                              (vc-call-backend
-                              vc-backend 'root (file-truename (first args))))))
+                              vc-backend 'root (file-truename (car args))))))
         (when root-path
               (make-instance 'user/vc-proj :root-path root-path))))
 
@@ -106,7 +106,7 @@
     "Constructor for project at path in ARGS."
     (let ((f (lambda (proj-type)
                (when (fboundp proj-type)
-                 (funcall #'user/proj-from-path proj-type (first args)))))
+                 (funcall #'user/proj-from-path proj-type (car args)))))
           (proj-types '(user/ede-proj user/projectile-proj user/vc-proj)))
       (cl-some f proj-types))))
 

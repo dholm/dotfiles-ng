@@ -33,7 +33,7 @@
 
 (defun user/shorten-path (path)
   "Shorten the length of PATH."
-  (let ((scount (1- (count ?/ path))))
+  (let ((scount (1- (cl-count ?/ path))))
     (dotimes (i scount)
       (string-match "\\(/\\.?.\\)[^/]+" path)
       (setq path (replace-match "\\1" nil nil path))))

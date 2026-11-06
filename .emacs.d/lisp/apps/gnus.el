@@ -618,7 +618,7 @@
         (interactive)
         (eq
          (call-process-shell-command "swish-e" nil nil nil "-i" message-directory
-                                     "-f" (first nnir-swish-e-index-files) "-e")
+                                     "-f" (car nnir-swish-e-index-files) "-e")
          0))))
 
   (use-package all-the-icons-gnus

@@ -26,7 +26,7 @@
 (defmacro with-any-executable (executables &rest body)
   "If any of EXECUTABLES are available in the path, evaluate BODY."
   (declare (indent defun))
-  `(when (some (lambda (x) (executable-find (symbol-name x))) ,executables)
+  `(when (cl-some (lambda (x) (executable-find (symbol-name x))) ,executables)
      ,@body))
 
 

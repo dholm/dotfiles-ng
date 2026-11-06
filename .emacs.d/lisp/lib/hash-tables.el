@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 
 (defun hash-table-to-list (hash-table)
   "Return a list that represent the HASH-TABLE."

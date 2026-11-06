@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 
 (defconst *user-wanderlust-data-directory*
   (path-join *user-data-directory* "wanderlust")
