@@ -2,10 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package fill-column-indicator
+(use-package display-fill-column-indicator
+  :ensure nil
   :defer
   :init
-  (global-set-key [f3] 'fci-mode))
+  (global-set-key [f3] 'display-fill-column-indicator-mode))
 
 
 (provide 'utilities/fill-column-indicator)

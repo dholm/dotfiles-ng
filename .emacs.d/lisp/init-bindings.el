@@ -377,8 +377,6 @@
 
                (:ace-jump-mode . ("C-l a"))
 
-               (:ecb-toggle . (user/utilities-prefix "e"))
-
                (:google . (user/utilities-prefix "s"))
                (:google-at-point . (user/documentation-prefix "s RET"))
                (:google-selection . (user/documentation-prefix "s SPC"))
