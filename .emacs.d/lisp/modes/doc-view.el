@@ -4,6 +4,11 @@
 
 (use-package doc-view
   :defer
+  :init
+  (with-executable 'gs
+    ;; Show PostScript files rendered, like PDF files. Emacs opens them in
+    ;; ps-mode by default; C-c C-c switches between the two.
+    (add-auto-mode 'doc-view-mode-maybe "\\.e?ps\\'"))
   :bind-wrap
   (:map doc-view-mode-map
         ((:key :nav :go-forward) . doc-view-scroll-up-or-next-page)
@@ -12,33 +17,6 @@
   (validate-setq
    ;; Render documents in high resolution.
    doc-view-resolution 300)
-
-  (let ((dvi "\\.dvi$")
-        (msoffice "\\.(doc|xls|ppt)x?$")
-        (opendoc "\\.(od[tspgcim]|ot[tspg])$")
-        (ps "\\.e?ps$")
-        (pdf "\\.pdf$")
-        (patterns))
-    (with-executable 'pdftotext
-      (add-to-list 'patterns pdf)
-      (with-executable 'ps2pdf
-        (add-to-list 'patterns ps)))
-
-    (with-executable 'gs
-      (add-to-list 'patterns ps)
-      (when (display-graphic-p)
-        (add-to-list 'patterns pdf)))
-
-    (with-any-executable '(dvipdf dvipdfm)
-      (add-to-list 'patterns dvi))
-
-    (with-executable 'unoconv
-      (add-to-list 'patterns opendoc)
-      (add-to-list 'patterns msoffice))
-
-    ;; Register doc-view-mode for patterns.
-    (mapc (lambda (pattern)
-            (add-auto-mode 'doc-view-mode-maybe pattern)) patterns))
 
   (use-package doc-present
     :quelpa (doc-present
