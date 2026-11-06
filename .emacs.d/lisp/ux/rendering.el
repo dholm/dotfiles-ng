@@ -9,7 +9,7 @@
 (defun user--rendering-find-file-hook ()
   "Rendering hook for `find-file'."
   (when (> (buffer-size) *user-fast-font-lock-buffer-limit*)
-    (setq
+    (setq-local
      ;; Reduce the level of fontification.
      font-lock-maximum-decoration nil)
 
@@ -18,15 +18,7 @@
 
 (defun user--rendering-config ()
   "Setup Emacs user interface rendering."
-  (with-eval-after-load 'font-lock
-    ;; Allow reduction of decoration level in large buffers.
-    (make-variable-buffer-local 'font-lock-maximum-decoration))
-
   (validate-setq
-   ;; Redraw the entire screen before checking for pending input events.
-   ;; This will improve performance in general but might degrade performance of
-   ;; key repeat.
-   redisplay-dont-pause t
    ;; Use the maximum amount of decorations by default.
    font-lock-maximum-decoration t
    ;; Always use JIT mode for font-lock.
@@ -37,8 +29,14 @@
    jit-lock-stealth-load 200
    jit-lock-stealth-verbose nil
    jit-lock-chunk-size 500
-   ;; Do not reorder text during rendering.
-   bidi-display-reordering nil)
+   ;; Don't look for bidirectional parentheses, which is slow in long
+   ;; lines.
+   bidi-inhibit-bpa t)
+
+  (setq-default
+   ;; Lay out all paragraphs left to right instead of detecting their
+   ;; direction, which saves work in redisplay.
+   bidi-paragraph-direction 'left-to-right)
 
   ;;; (Hooks) ;;;
   (add-hook 'find-file-hook 'user--rendering-find-file-hook)
