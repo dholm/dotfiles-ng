@@ -31,7 +31,12 @@
   :init
   (add-hook 'csharp-mode-hook 'user--csharp-mode-hook)
   :config
-  (with-eval-after-load 'csharp-mode
+  (use-package google-c-style
+    :demand t
+    :config
+    ;; google-c-style only defines the style; register it under the name
+    ;; that `c-default-style' refers to.
+    (c-add-style "Google" google-c-style)
     (add-to-list 'c-default-style '(csharp-mode . "Google")))
 
   ;;; (Packages) ;;;
@@ -40,16 +45,7 @@
       :config
       (validate-setq
        omnisharp-server-executable-path
-       (path-join *user-omnisharp-path* "omnisharp"))))
-  (quelpa '(font-lock-ext
-            :fetcher github
-            :repo "sensorflo/font-lock-ext"))
-  (use-package sln-mode
-    :requires font-lock-ext
-    :quelpa (sln-mode
-             :fetcher github
-             :repo "sensorflo/sln-mode")
-    :mode "\\.sln\\'"))
+       (path-join *user-omnisharp-path* "omnisharp")))))
 
 
 (provide 'modes/csharp)
