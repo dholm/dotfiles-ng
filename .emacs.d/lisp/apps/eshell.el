@@ -15,10 +15,6 @@
 
   (turn-on-eldoc-mode)
 
-  (when (user/auto-complete-p)
-    ;; Use auto-complete for completion.
-    (add-ac-sources 'ac-source-pcomplete))
-
   (when (user/company-mode-p)
     (company-mode t)
 
@@ -93,10 +89,6 @@
      'eshell-smart
      ;; Extra alias functions.
      'eshell-xtra))
-
-  (when (user/auto-complete-p)
-    ;; For `ac-source-pcomplete'.
-    (add-ac-modes 'eshell-mode))
 
   (use-package em-script
     :ensure nil

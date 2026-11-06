@@ -12,11 +12,6 @@
                ;; Clean up adornments
                (rst-straighten-adornments)))
 
-  (when (user/auto-complete-p)
-    ;; Enable auto completion.
-    (with-eval-after-load 'auto-complete
-      (auto-complete-rst-init)))
-
   ;;; (Bindings) ;;;
   ;; Lists.
   (user/bind-key-local :code :itemize 'rst-bullet-list-region)
@@ -35,8 +30,6 @@
   :hook ((rst-adjust-hook . rst-toc-update)
          (rst-mode-hook . user--rst-mode-hook))
   :config
-  (use-package auto-complete-rst
-    :after (auto-complete))
   (use-package poly-rst))
 
 

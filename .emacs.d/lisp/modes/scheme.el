@@ -55,20 +55,7 @@
     :defer
     :init
     (add-hook 'geiser-mode-hook 'user--geiser-mode-hook)
-    (add-hook 'geiser-repl-mode-hook 'user--geiser-repl-mode-hook)
-    :config
-    (when (feature-p 'ac-geiser)
-      (with-eval-after-load 'geiser
-        (add-ac-modes 'geiser-repl-mode))))
-  (use-package quack
-    :defer
-    :config
-    (validate-setq
-     ;; Use Emacs-style fontification.
-     quack-fontify-style 'emacs))
-  (use-package ac-geiser
-    :after (auto-complete)
-    :defer))
+    (add-hook 'geiser-repl-mode-hook 'user--geiser-repl-mode-hook)))
 
 
 (provide 'modes/scheme)

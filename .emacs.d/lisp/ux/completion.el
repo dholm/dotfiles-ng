@@ -12,14 +12,6 @@
     (define-key (current-local-map) (user/get-key :code :auto-complete) 'company-complete)))
 
 
-(defun user/auto-complete-p ()
-  "True if auto-complete should be used.
-auto-complete is no longer configured, so this is only true if it has
-been enabled by hand; the mode files still use it to add their sources."
-  (and (boundp 'global-auto-complete-mode)
-       global-auto-complete-mode))
-
-
 (defun user/company-mode-p ()
   "True if company should be used."
   (and (boundp 'global-company-mode)
@@ -52,24 +44,6 @@ been enabled by hand; the mode files still use it to add their sources."
    ((and (boundp 'company-mode) company-mode (user/company-check-expansion))
     #'company-complete-common)
    (t #'indent-for-tab-command)))
-
-
-(defun add-ac-sources (&rest sources)
-  "Add SOURCES for auto-complete after it has been loaded."
-  (when (user/auto-complete-p)
-    (dolist (source sources)
-      (if (boundp 'ac-sources)
-          (add-to-list 'ac-sources source)
-        (error "Declaration of ac-sources is missing!")))))
-
-
-(defun add-ac-modes (&rest major-modes)
-  "Add MAJOR-MODES for auto-complete after it has been loaded."
-  (when (user/auto-complete-p)
-    (dolist (mode major-modes)
-      (if (boundp 'ac-modes)
-          (add-to-list 'ac-modes mode)
-        (error "Declaration of ac-modes is missing!")))))
 
 
 (defun company-complete-common-or-selection ()

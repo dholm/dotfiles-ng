@@ -18,9 +18,8 @@
   (outline-minor-mode t)
 
   ;; Try to enable completion system.
-  (cond
-   ((user/auto-complete-p) (auto-complete-mode t))
-   ((user/company-mode-p) (company-mode t)))
+  (when (user/company-mode-p)
+    (company-mode t))
 
   ;;; (Bindings) ;;;
   (user/bind-key-local :code :comment (if (feature-p 'comment-dwim-2)

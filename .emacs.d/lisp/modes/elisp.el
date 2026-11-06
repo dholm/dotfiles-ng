@@ -17,12 +17,9 @@
   (with-feature 'eros
     (eros-mode t))
 
-  (cond
-   ((user/auto-complete-p)
-    (ac-emacs-lisp-mode-setup))
-   ((user/company-mode-p)
+  (when (user/company-mode-p)
     (with-feature 'company-elisp
-      (add-company-sources 'company-elisp))))
+      (add-company-sources 'company-elisp)))
 
   ;;; (Bindings) ;;;
   (with-feature 'popwin
@@ -94,10 +91,7 @@
   :config
   (use-package ielm
     :init
-    (add-hook 'ielm-mode-hook 'user--ielm-mode-hook)
-    :config
-    ;; Use auto-completion even in inferior elisp mode.
-    (add-ac-modes 'inferior-emacs-lisp-mode))
+    (add-hook 'ielm-mode-hook 'user--ielm-mode-hook))
 
   ;;; (Packages) ;;;
   (use-package macrostep)

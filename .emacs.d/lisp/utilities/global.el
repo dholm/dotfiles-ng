@@ -58,9 +58,6 @@
        hippie-expand-try-functions-list
        (cons 'ggtags-try-complete-tag hippie-expand-try-functions-list)))
 
-    ;; Register as auto-completion source.
-    (add-ac-sources 'ac-source-gtags)
-
     (user/tags-try-enable)))
 
 

@@ -4,11 +4,7 @@
 
 (defun user--perl-mode-hook ()
   "Perl mode hook."
-  (user/gnu-global-enable)
-
-  (when (user/auto-complete-p)
-    (with-feature 'perl-completion
-      (add-ac-sources 'ac-source-perl-completion))))
+  (user/gnu-global-enable))
 
 
 (use-package perl-mode

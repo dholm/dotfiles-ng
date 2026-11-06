@@ -66,11 +66,6 @@
 
     (slime-setup '(slime-repl))
 
-    (use-package ac-slime
-      :after (auto-complete)
-      :config
-      (add-ac-modes 'slime-repl-mode))
-
     (use-package slime-repl-ansi-color
       :hook (slime-repl-mode-hook . slime-repl-ansi-color-mode)))
 

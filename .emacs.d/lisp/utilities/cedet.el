@@ -40,9 +40,6 @@
     ;; Breadcrumbs should be sticky.
     (semantic-stickyfunc-mode t)
 
-    ;; Use semantic as a source for auto complete.
-    (add-ac-sources 'ac-source-semantic)
-
     (user/tags-try-enable)
 
     ;;; (Bindings) ;;;
@@ -57,19 +54,12 @@
 
 (defun user--ede-minor-mode-hook ()
   "EDE minor mode hook."
-  (cond
-   ((user/auto-complete-p)
-    (with-feature 'auto-complete-c-headers
+  (when (user/company-mode-p)
+    (with-feature 'company-c-headers
       (setq
-       ;; Configure include path for auto completion.
-       achead:get-include-directories-function
-       'ede-object-system-include-path)))
-   ((user/company-mode-p)
-    (with-feature 'auto-complete-c-headers
-      (setq
-       ;; Configure include path for auto completion.
+       ;; Configure include path for completion.
        company-c-headers-path-system
-       'ede-object-system-include-path)))))
+       'ede-object-system-include-path))))
 
 
 (use-package cedet
