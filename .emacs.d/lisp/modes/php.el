@@ -6,10 +6,7 @@
   "PHP mode hook."
   ;; Bring in CEDET.
   (with-feature 'cedet
-    (user--cedet-hook)
-    (when (derived-mode-p 'web-mode)
-      ;; In web-mode CEDET doesn't automatically load PHP support.
-      (wisent-php-default-setup)))
+    (user--cedet-hook))
 
   (user/gnu-global-enable)
   (user/smartparens-enable)

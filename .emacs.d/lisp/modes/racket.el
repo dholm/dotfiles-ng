@@ -13,8 +13,9 @@
     (geiser-mode t))
 
   ;;; (Bindings) ;;;
-  (user/bind-key-global :nav :follow-symbol 'racket-visit-definition)
-  (user/bind-key-global :nav :go-back 'racket-unvisit)
+  ;; racket-mode navigates with xref.
+  (user/bind-key-local :nav :follow-symbol 'xref-find-definitions)
+  (user/bind-key-local :nav :go-back 'xref-go-back)
 
   (user/bind-key-local :doc :reference 'racket-doc)
   (user/bind-key-local :doc :describe-function 'racket-describe)
