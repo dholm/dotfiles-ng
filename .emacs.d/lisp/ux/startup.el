@@ -5,9 +5,13 @@
 ;; startup.el has no `provide' statement.
 (progn
   (validate-setq
-   ;; Do not show the splash screen or message
-   inhibit-startup-screen t
-   inhibit-startup-echo-area-message (getenv "USER"))
+   ;; Do not show the splash screen.
+   inhibit-startup-screen t)
+
+  ;; Do not show the startup message in the echo area. Setting
+  ;; `inhibit-startup-echo-area-message' only works when it is set to
+  ;; the literal user name in the init file itself.
+  (advice-add 'display-startup-echo-area-message :override #'ignore)
 
   (use-package dashboard
     :config
