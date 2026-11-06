@@ -10,13 +10,15 @@
    ;; Configure GNU/Emacs package repositories.
    package-archives
    '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
+     ("NonGNU ELPA"  . "https://elpa.nongnu.org/nongnu/")
      ("MELPA Stable" . "https://stable.melpa.org/packages/")
      ("MELPA"        . "https://melpa.org/packages/"))
-   ;; Prefer GNU ELPA over MELPA Stable over MELPA. GNU ELPA first, so
-   ;; packages that are in both get the GNU ELPA release, which is usually
-   ;; newer.
+   ;; Prefer GNU ELPA over NonGNU ELPA over MELPA Stable over MELPA. GNU
+   ;; ELPA first, so packages that are in both get the GNU ELPA release,
+   ;; which is usually newer.
    package-archive-priorities
    '(("GNU ELPA"     . 20)
+     ("NonGNU ELPA"  . 18)
      ("MELPA Stable" . 15)
      ("MELPA"        . 10))))
 

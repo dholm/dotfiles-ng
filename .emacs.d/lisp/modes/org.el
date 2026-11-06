@@ -145,9 +145,9 @@
    org-src-tab-acts-natively t
    ;; Don't preserve source code indentation so it can be adapted to document.
    org-src-preserve-indentation nil
-   org-edit-src-content-indentation 0
+   org-src-content-indentation 0
    ;; Prevent editing of invisible regions.
-   org-catch-invisible-edits 'error
+   org-fold-catch-invisible-edits 'error
    ;; Allow fast state transitions.
    org-use-fast-todo-selection 'auto
    ;; Do not record timestamp when using S-cursor to change state.
@@ -210,7 +210,7 @@
   (when (display-graphic-p)
     (validate-setq
      ;; Display inline images when starting up.
-     org-startup-with-inline-images t))
+     org-startup-with-link-previews t))
 
   (use-package org-refile
     :ensure nil
@@ -304,7 +304,7 @@
         (validate-setq
          org-plantuml-jar-path *user-plantuml-jar-path*))
       (add-to-list 'org-babel-load-languages '(plantuml . t)))
-    (with-executable 'python
+    (when (or (executable-find "python3") (executable-find "python"))
       (add-to-list 'org-babel-load-languages '(python . t)))
     (with-executable 'R
       (add-to-list 'org-babel-load-languages '(R . t)))
@@ -531,12 +531,12 @@
       (tags-todo "DEADLINE=\"<+0d>\""
                  ((org-agenda-overriding-header "DUE TODAY")
                   (org-agenda-skip-function
-                   '(org-agenda-skip-entry-if 'notedeadline))
+                   '(org-agenda-skip-entry-if 'notdeadline))
                   (org-agenda-sorting-strategy '(priority-down))))
       (tags-todo "DEADLINE<\"<+0d>\""
                  ((org-agenda-overriding-header "OVERDUE")
                   (org-agenda-skip-function
-                   '(org-agenda-skip-entry-if 'notedeadline))
+                   '(org-agenda-skip-entry-if 'notdeadline))
                   (org-agenda-sorting-strategy '(priority-down))))
       (agenda ""
               ((org-agenda-entry-types '(:scheduled))
@@ -688,18 +688,14 @@
 
     (org-super-agenda-mode))
 
-  (use-package org-alert
-    :after alert
-    :config
-    (org-alert-enable))
-
   (use-package org-agenda-property)
 
   (use-package org-timeline
     :hook (org-agenda-finalize-hook . org-timeline-insert-timeline)))
 
 (use-package org-annotate-file
-  :ensure org
+  ;; org-annotate-file is part of org-contrib, on NonGNU ELPA.
+  :ensure org-contrib
   :defer
   :init
   (autoload 'org-annotate-file "org-annotate-file" nil t)
