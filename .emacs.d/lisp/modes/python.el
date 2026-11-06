@@ -30,7 +30,7 @@
 
 
 (use-package python
-  :if (executable-find "python")
+  :if (or (executable-find "python3") (executable-find "python"))
   :defer
   :mode ("SCon\(struct\|script\)$" . python-mode)
   :interpreter ("python[0-9.]*" . python-mode)
