@@ -4,9 +4,6 @@
 
 (defun user--info-mode-hook ()
   "Info mode hook."
-  (when (feature-p 'info+)
-    (require 'info+))
-
   (user/bind-key-local :nav :go-forward 'Info-history-forward)
   (user/bind-key-local :nav :go-back 'Info-history-back))
 
@@ -19,14 +16,6 @@
   (user/bind-key-global :emacs :manual 'info-emacs-manual)
   :config
   ;;; (Packages) ;;;
-  (use-package info+
-    :disabled
-    :config
-    (validate-setq
-     ;; Enable breadcrumbs in header line.
-     Info-breadcrumbs-in-header-flag t
-     Info-breadcrumbs-in-mode-line-mode nil))
-
   (use-package niceify-info
     :defer
     :hook (Info-selection-hook . niceify-info))
