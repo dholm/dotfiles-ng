@@ -91,7 +91,17 @@
   (defun use-package-handler/:bind-wrap (name keyword arg rest state)
     (use-package-handler/:bind name keyword arg rest state))
   (defun use-package-handler/:bind*-wrap (name keyword arg rest state)
-    (use-package-handler/:bind name keyword arg rest state 'bind-keys*)))
+    (use-package-handler/:bind name keyword arg rest state 'bind-keys*))
+
+  ;; Process :ensure after the :requires, :if, :when and :unless
+  ;; conditions, like :quelpa, so that a package is only installed when
+  ;; it is going to be configured.
+  (let* ((keywords (remq :ensure use-package-keywords))
+         (position (1+ (seq-position keywords :unless))))
+    (setq use-package-keywords
+          (append (seq-take keywords position)
+                  '(:ensure)
+                  (seq-drop keywords position)))))
 
 
 (provide 'lib/packaging)
