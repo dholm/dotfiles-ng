@@ -34,8 +34,10 @@
 
   (with-eval-after-load 'ldap
     (validate-setq
-     ;; Default `ldapsearch' parameters.
-     ldap-ldapsearch-args '("-tt" "-LLL" "-x"))
+     ;; Default `ldapsearch' parameters. -ZZ requires StartTLS, so the
+     ;; simple bind (-x) never sends the password in cleartext. For servers
+     ;; without StartTLS, use an ldaps:// host instead.
+     ldap-ldapsearch-args '("-tt" "-LLL" "-x" "-ZZ"))
 
     ;; Treat the displayName attribute as a string.
     (add-to-list 'ldap-attribute-syntaxes-alist '(displayname . 15))

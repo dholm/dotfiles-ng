@@ -48,7 +48,6 @@
    w3m-session-file (path-join *user-w3m-cache-directory* "sessions")
    ;; Use cookies.
    w3m-use-cookies t
-   w3m-cookie-accept-bad-cookies t
    ;; Default to UTF-8 encoding.
    w3m-coding-system 'utf-8
    w3m-file-coding-system 'utf-8

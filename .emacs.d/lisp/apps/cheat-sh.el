@@ -5,7 +5,10 @@
 (use-package cheat-sh
   :defer
   :init
-  (user/bind-key-global :apps :cheat-sh 'cheat-sh))
+  (user/bind-key-global :apps :cheat-sh 'cheat-sh)
+  :config
+  ;; Look topics up over HTTPS instead of HTTP.
+  (setq cheat-sh-url "https://cheat.sh/%s?T"))
 
 
 (provide 'apps/cheat-sh)
