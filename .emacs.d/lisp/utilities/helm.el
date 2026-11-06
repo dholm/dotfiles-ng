@@ -7,12 +7,12 @@
   (interactive)
   (let ((buffer-name "*helm-apropos*"))
     (cond
-     ((derived-mode-p 'emacs-lisp-mode) (helm-apropos))
-     ((derived-mode-p 'sh-mode) (helm-other-buffer
-                                 '(helm-source-man-pages
-                                   helm-source-info-pages) buffer-name))
-     ((derived-mode-p 'c-mode-common) (helm-other-buffer
-                                       '(helm-source-man-pages) buffer-name))
+     ((derived-mode-p 'emacs-lisp-mode) (call-interactively #'helm-apropos))
+     ((derived-mode-p 'sh-mode) (helm :sources '(helm-source-man-pages
+                                                 helm-source-info-pages)
+                                      :buffer buffer-name))
+     ((derived-mode-p 'c-mode 'c++-mode) (helm :sources '(helm-source-man-pages)
+                                               :buffer buffer-name))
      ((derived-mode-p 'python-mode) (helm-pydoc))
      (t (message (format "Apropos is unavailable for %S" major-mode))))))
 
@@ -30,19 +30,11 @@
   (interactive)
   (let ((helm-sources '(helm-source-buffers-list))
         (current-file (or (buffer-file-name) default-directory)))
-    (with-feature 'helm-misc
-      ;; FIXMEs.
-      (add-to-list 'helm-sources 'helm-source-fixme)
-      ;; Emacs lisp.
-      (add-to-list 'helm-sources 'helm-source-emacs-source-defun)
-      (add-to-list 'helm-sources 'helm-source-emacs-lisp-expectations)
-      (add-to-list 'helm-sources 'helm-source-emacs-lisp-toplevels))
-
     (with-project project current-file
       ;; Bookmarks.
       (add-to-list 'helm-sources 'helm-source-bookmarks))
 
-    (helm-other-buffer helm-sources "*helm-navigate-prog*")))
+    (helm :sources helm-sources :buffer "*helm-navigate-prog*")))
 
 
 (defun user/helm-navigate-generic ()
@@ -63,9 +55,20 @@
          ((eq system-type 'gnu/linux)
           (progn
             (add-to-list 'helm-sources 'helm-source-tracker-search))))
-        (helm-other-buffer helm-sources "*helm-navigate-generic*"))
+        (helm :sources helm-sources :buffer "*helm-navigate-generic*"))
     ;; Fall back to helm-mini if an error occurs in one of the sources.
     (error (helm-mini))))
+
+
+(defun user/helm-info-elisp ()
+  "Search the Emacs Lisp manual with helm."
+  (interactive)
+  ;; The `helm-info-<manual>' commands are only defined once helm-info has
+  ;; been loaded, and only for manuals that are installed.
+  (require 'helm-info)
+  (if (fboundp 'helm-info-elisp)
+      (call-interactively #'helm-info-elisp)
+    (user-error "The Emacs Lisp manual is not installed")))
 
 
 (defun user/helm-mode ()
@@ -93,7 +96,7 @@
   :init
   (user/bind-key-global :nav :context 'user/helm-navigate)
   (user/bind-key-global :doc :apropos 'user/helm-apropos)
-  (user/bind-key-global :emacs :elisp-search 'helm-info-elisp)
+  (user/bind-key-global :emacs :elisp-search 'user/helm-info-elisp)
   :config
   (validate-setq
    ;; Idle delays.
