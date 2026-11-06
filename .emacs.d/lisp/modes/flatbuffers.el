@@ -3,8 +3,8 @@
 ;;; Code:
 
 (use-package flatbuffers-mode
-  :defer
-  :mode (("fbs\\'" . flatbuffers-mode)))
+  ;; flatbuffers-mode associates .fbs files itself.
+  :defer)
 
 
 (provide 'modes/flatbuffers)

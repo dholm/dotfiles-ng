@@ -12,9 +12,6 @@
   :mode "\\.[ds]?vh?$"
   :hook (verilog-mode-hook . user--verilog-mode-hook)
   :config
-  (when (feature-p 'polymode)
-    (add-auto-mode 'poly-verilog+perl-mode "\\.sv$" "\\.svh$"))
-
   (use-package veri-kompass
     :hook (verilog-mode-hook . veri-kompass-minor-mode)
     :bind-wrap

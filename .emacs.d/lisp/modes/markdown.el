@@ -17,9 +17,11 @@
 (use-package markdown-mode
   :defer
   :hook (markdown-mode-hook . user--markdown-mode-hook)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+  ;; use-package adds the entries in order, so the more specific README
+  ;; entry has to come last to be tried first.
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode))
   :config
   (use-package flycheck-mmark
     :if (executable-find "mmark")
