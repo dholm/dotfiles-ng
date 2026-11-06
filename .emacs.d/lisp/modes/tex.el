@@ -116,7 +116,7 @@
     (validate-setq
      ;; Use synctex to communicate with LaTeX.
      TeX-source-correlate-method 'synctex
-     LaTeX-command "latex -synctex=1 -shell-escape"
+     LaTeX-command "latex -synctex=1"
      ;; Do not ask about saving buffers before starting TeX.
      TeX-save-query nil
      ;; Use PDF rather than DVI by default.
