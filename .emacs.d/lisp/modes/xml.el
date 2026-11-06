@@ -5,8 +5,8 @@
 (defun user--xml-mode-common-hook ()
   "XML common mode hook."
   ;; Outline XML support.
-  (validate-setq
-   outline-regexp "^[ \t]*\<[a-zA-Z]+")
+  (setq-local
+   outline-regexp "^[ \t]*<[a-zA-Z]+")
 
   ;;; (Bindings) ;;;
   (user/bind-key-local :code :tidy 'user/xml-tidy-buffer-or-region))
@@ -15,11 +15,6 @@
 (defun user--nxml-mode-hook ()
   "XML mode hook."
   (user--xml-mode-common-hook)
-
-  (when (user/auto-complete-p)
-    (with-feature 'auto-complete-nxml
-      ;; Configure nxml auto completion
-      (setq nxml-slash-auto-complete-flag t)))
 
   (with-feature 'sgml-mode
     (hs-minor-mode t))
@@ -51,15 +46,18 @@
   "Pretty print XML between BEGIN and END."
   (interactive "r")
   (save-excursion
-    (nxml-mode)
-    (goto-char begin)
-    (while (search-forward-regexp "\>[ \\t]*\<" nil t)
-      (backward-char)
-      (insert "\n"))
-    (indent-region begin end)))
+    (let ((end-marker (copy-marker end)))
+      (goto-char begin)
+      ;; Put each tag that directly follows another on its own line.
+      (while (re-search-forward ">\\([ \t]*\\)<" end-marker t)
+        (replace-match "\n" t t nil 1)
+        (backward-char))
+      (indent-region begin end-marker)
+      (set-marker end-marker nil))))
 
 
-(use-package nxml
+(use-package nxml-mode
+  :ensure nil
   :defer
   ;; SVG files are left to image-mode, where C-c C-c shows the XML.
   :mode ("\\.\\(xml\\|xsd\\|xslts\\|rss\\|plist\\|rng\\|rnc\\)\\'" . nxml-mode)
@@ -78,16 +76,7 @@
      ""
      ;; Comment start.
      "<!--"
-     sgml-skip-tag-forward nil))
-
-  ;;; (Packages) ;;;
-  (use-package auto-complete-nxml
-    :after (auto-complete)
-    :config
-    (add-ac-modes 'nxml-mode))
-
-  (use-package xml-format
-    :if (executable-find "xmllint")))
+     sgml-skip-tag-forward nil)))
 
 (use-package tdtd
   :defer

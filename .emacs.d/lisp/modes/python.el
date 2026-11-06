@@ -6,10 +6,6 @@
   "Python mode hook."
   (user/tags-try-enable)
 
-  ;; Enable virtualenv support.
-  (when (feature-p 'pyvenv)
-    (pyvenv-mode t))
-
   ;; Enable smart parenthesis handling.
   (user/smartparens-enable)
 
@@ -58,17 +54,10 @@
         (switch-to-buffer "*bpython*"))))
 
   ;;; (Packages) ;;;
-  (use-package py-autopep8)
-  (use-package pylookup
-    :quelpa (pylookup
-             :fetcher github
-             :repo "tsgates/pylookup"))
-  (use-package python-environment
+  (use-package pyvenv
     :config
-    (validate-setq
-     ;; Locate of Python environment store.
-     python-environment-directory (path-join *user-cache-directory*
-                                             "python-environment")))
+    ;; Enable virtualenv support. pyvenv-mode is a global minor mode.
+    (pyvenv-mode t))
 
   (use-package pipenv
     :if (executable-find "pipenv")

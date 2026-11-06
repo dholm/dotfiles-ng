@@ -48,7 +48,6 @@
   :defer
   :hook (lisp-mode-hook . user--lisp-mode-hook)
   :config
-  :config
   (use-package slime
     :hook
     ((slime-mode-hook . user--slime-mode-hook)
@@ -73,7 +72,7 @@
       (add-ac-modes 'slime-repl-mode))
 
     (use-package slime-repl-ansi-color
-      :hook (slime-mode-hook . slime-repl-ansi-color-mode)))
+      :hook (slime-repl-mode-hook . slime-repl-ansi-color-mode)))
 
   (use-package easy-escape
     :diminish easy-escape-minor-mode))

@@ -76,7 +76,7 @@
            (help-xref-following t)
            (description (with-temp-buffer
                           (help-mode)
-                          (help-xref-interned thing)
+                          (describe-symbol thing)
                           (buffer-string))))
       (popup-tip description
                  :point (point)
