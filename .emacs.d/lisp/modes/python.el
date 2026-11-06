@@ -10,9 +10,6 @@
   (when (feature-p 'pyvenv)
     (pyvenv-mode t))
 
-  (when (feature-p 'anaconda-mode)
-    (anaconda-mode t))
-
   ;; Enable smart parenthesis handling.
   (user/smartparens-enable)
 
@@ -60,7 +57,6 @@
         (switch-to-buffer "*bpython*"))))
 
   ;;; (Packages) ;;;
-  (use-package anaconda-mode)
   (use-package py-autopep8)
   (use-package pylookup
     :quelpa (pylookup
