@@ -3,16 +3,17 @@
 ;;; Code:
 
 (defmacro try-eval (fn &optional finally)
-  "Safely evaluate expression FN and run FINALLY after."
+  "Evaluate FN, catching errors, and evaluate FINALLY afterwards.
+Return the value of FN, or (exception ERROR) if FN signalled ERROR.
+FINALLY is evaluated whether or not FN signalled an error."
   (declare (debug t)
            (indent 1))
-  `(let (retval)
-     (condition-case-unless-debug ex
-         (setq retval (progn ,fn))
-       ('error
-        (setq retval (cons 'exception (list ex)))))
-     ,@finally
-     retval))
+  (let ((err (make-symbol "err")))
+    `(unwind-protect
+         (condition-case-unless-debug ,err
+             ,fn
+           (error (list 'exception ,err)))
+       ,finally)))
 
 
 (defun feature-p (feature)

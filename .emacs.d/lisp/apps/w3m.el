@@ -25,7 +25,7 @@
   (interactive)
   (if (file-readable-p (path-abs-buffer))
       (w3m-find-file (path-abs-buffer))
-    (let ((filename (concat (make-temp-file "w3m-") ".html")))
+    (let ((filename (make-temp-file "w3m-" nil ".html")))
       (try-eval
           (progn
             (write-region (point-min) (point-max) filename)
