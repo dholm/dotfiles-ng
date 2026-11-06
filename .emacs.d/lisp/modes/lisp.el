@@ -35,20 +35,12 @@
   (user--lisp-mode-common-hook))
 
 
-(defun user--slime-mode-hook ()
-  "SLIME mode hook."
-  (when (feature-p 'ac-slime)
-    (set-up-slime-ac)))
-
 (use-package lisp-mode
   :ensure nil
   :defer
   :hook (lisp-mode-hook . user--lisp-mode-hook)
   :config
   (use-package slime
-    :hook
-    ((slime-mode-hook . user--slime-mode-hook)
-     (slime-repl-mode-hook . user--slime-mode-hook))
     :config
     (validate-setq
      slime-protocol-version 'ignore
