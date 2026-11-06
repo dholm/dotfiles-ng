@@ -21,8 +21,13 @@
      ("MELPA"        . 10))))
 
 
-;; Bootstrap `use-package'.
-(package-initialize)
+;; Bootstrap `use-package'. Startup has normally activated the installed
+;; packages before init.el is loaded, and then this does nothing; it is
+;; needed when Emacs is started with -Q, as for basic.el. Don't use
+;; `package-initialize', which also parses the index of every archive on
+;; each start. The commands that install packages read the indexes when
+;; they need them.
+(package-activate-all)
 (unless (package-installed-p 'quelpa-use-package)
   (package-refresh-contents)
   (package-install 'quelpa-use-package))
@@ -101,7 +106,22 @@
     (setq use-package-keywords
           (append (seq-take keywords position)
                   '(:ensure)
-                  (seq-drop keywords position)))))
+                  (seq-drop keywords position))))
+
+  ;; Pin packages without initializing package.el. The :pin keyword's
+  ;; `use-package-pin-package' calls `package-initialize', which parses the
+  ;; index of every archive, the first time a package is pinned. Pins only
+  ;; matter when installing, and the install commands read the indexes
+  ;; then.
+  (defun user--use-package-pin-package (package archive)
+    "Pin PACKAGE to ARCHIVE in `package-pinned-packages'."
+    (let ((archive-name (if (stringp archive) archive (symbol-name archive))))
+      (unless (assoc archive-name package-archives)
+        (error "Archive '%s' requested for package '%s' is not available"
+               archive-name package))
+      (add-to-list 'package-pinned-packages (cons package archive-name))))
+  (advice-add 'use-package-pin-package :override
+              #'user--use-package-pin-package))
 
 
 (provide 'lib/packaging)
