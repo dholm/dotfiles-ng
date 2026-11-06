@@ -16,11 +16,6 @@
       (path-dirname (getenv "XDG_DATA_HOME"))
     (path-join *user-home-directory* ".local"))
   "Path to user's local store.")
-(defconst *user-config-directory*
-  (path-join (getenv-or "XDG_CONFIG_HOME"
-                        (path-join *user-home-directory* ".config"))
-             "emacs")
-  "Path to user's local cache store.")
 (defconst *user-data-directory*
   (path-join (getenv-or "XDG_DATA_HOME"
                         (path-join *user-local-directory* "share"))

@@ -11,7 +11,7 @@
   "Path to user's url data store.")
 (defconst *user-nsm-data-directory*
   (path-join *user-data-directory* "nsm")
-  "Path to user's Wanderlust data store.")
+  "Path to user's Network Security Manager data store.")
 
 
 (with-eval-after-load 'url
