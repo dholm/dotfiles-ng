@@ -46,8 +46,9 @@
 (use-package message
   :ensure nil
   :defer
-  :mode (("\.eml$" . message-mode)
-         (".*mutt.*" . message-mode))
+  :mode (("\\.eml\\'" . message-mode)
+         ;; Messages that mutt and NeoMutt open in an editor.
+         ("/\\(neo\\)?mutt-[^/]+-[0-9]+-[0-9]+-[0-9]+\\'" . message-mode))
   :hook
   ((message-mode-hook . user--message-mode-hook)
    (message-setup-hook . user--message-setup-hook))
