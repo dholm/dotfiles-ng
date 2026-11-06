@@ -4,7 +4,8 @@
 
 (with-eval-after-load 'magit
   ;; Set up root directory where magit will find Git repositories.
-  (add-to-list 'magit-repo-dirs (path-join *user-home-directory* "Projects")))
+  (add-to-list 'magit-repository-directories
+               `(,(path-join *user-home-directory* "Projects") . 2)))
 
 (with-eval-after-load 'ede
   (when (require 'ede/cpp-root nil t)
@@ -40,9 +41,9 @@
   (user/wanderlust-set-gmail-user "John Doe" "john.doe")
   ;;; (Bindings) ;;;
   (define-key wl-summary-mode-map (kbd "b a") ;; => Archive
-    '(lambda ()
-       (interactive)
-       (user/wanderlust-summary-refile "%Archive"))))
+    (lambda ()
+      (interactive)
+      (user/wanderlust-summary-refile "%Archive"))))
 
 (with-eval-after-load 'gnus
   ;; Gnus
@@ -51,7 +52,7 @@
   ;; S/MIME
   (add-to-list
    'smime-keys
-   `(,email-address
+   `("john.doe@gmail.com"
      ,(path-join *user-home-directory* ".ssl" "certificate.pem") nil))
   (setq
    smime-ldap-host-list '("ldap.host.com")
