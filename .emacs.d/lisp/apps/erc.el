@@ -58,12 +58,13 @@
                   (string-match *user-erc-noise-regexp* msg))))))
 
 (use-package erc
-  :commands erc
+  :commands (erc erc-tls)
   :hook ((erc-connect-pre-hook . (lambda (x) (erc-update-modules)))
          (erc-insert-modify-hook . user--erc-global-notify))
   :init
   ;;; (Bindings) ;;;
-  (user/bind-key-global :apps :irc 'erc)
+  ;; Connect with TLS, so passwords aren't sent in cleartext.
+  (user/bind-key-global :apps :irc 'erc-tls)
   :config
   (validate-setq
    ;; Close ERC buffers on quit.
