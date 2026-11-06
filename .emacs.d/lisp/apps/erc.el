@@ -223,30 +223,26 @@
   (use-package erc-track
     :ensure nil
     :config
-    (use-package erc-track-score
-      :config
-      (validate-setq
-       ;; Exclude the server buffer when tracking.
-       erc-track-exclude-server-buffer t
-       ;; Non-interesting events.
-       erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-                                 "324" "329" "332" "333" "353" "477")
-       ;; Track all priority faces.
-       erc-track-priority-faces-only 'all
-       ;; List of priority faces to track.
-       erc-track-faces-priority-list
-       '(erc-error-face
-         erc-current-nick-face
-         erc-keyword-face
-         erc-nick-msg-face
-         erc-direct-msg-face
-         erc-dangerous-host-face
-         erc-notice-face
-         erc-prompt-face)
-       ;; Show channel score.
-       erc-track-showcount t)
-
-      (erc-track-score-mode t)))
+    (validate-setq
+     ;; Exclude the server buffer when tracking.
+     erc-track-exclude-server-buffer t
+     ;; Non-interesting events.
+     erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+                               "324" "329" "332" "333" "353" "477")
+     ;; Track all priority faces.
+     erc-track-priority-faces-only 'all
+     ;; List of priority faces to track.
+     erc-track-faces-priority-list
+     '(erc-error-face
+       erc-current-nick-face
+       erc-keyword-face
+       erc-nick-msg-face
+       erc-direct-msg-face
+       erc-dangerous-host-face
+       erc-notice-face
+       erc-prompt-face)
+     ;; Show the number of unseen messages in each channel.
+     erc-track-showcount t))
 
   (use-package erc-services
     :ensure nil
@@ -256,38 +252,12 @@
      ;; Don't talk to nickserv if server is unknown.
      `(Unknown nil nil ,(getenv "USER") "IDENTIFY" nil nil nil)))
 
-  (use-package erc-image
-    :if window-system
-    :config
-    ;; Render posted images inline in buffer.
-    (add-to-list 'erc-modules 'image))
-
   (use-package erc-crypt)
-
-  (use-package erc-tex
-    :if window-system
-    :quelpa (erc-tex
-             :fetcher github
-             :repo "davazp/erc-tex")
-    :config
-    ;; Render (La)TeX mathematical expressions.
-    (add-to-list 'erc-modules 'tex))
-
-  (use-package erc-scrolltoplace
-    :config
-    (add-to-list
-     'erc-modules
-     ;; Improved keep-place by fitting more unread text.
-     'scrolltoplace))
 
   (use-package erc-status-sidebar
     ;; Part of ERC since Emacs 30.
     :ensure nil
     :defer t)
-
-  (when (feature-p 'bbdb)
-    (use-package bbdb2erc
-      :hook (bbdb-notice-hook . bbdb2erc-online-status)))
 
   (with-executable 'bitlbee
     (with-eval-after-load 'prodigy
