@@ -31,9 +31,10 @@
   :config
   (validate-setq
    ;; Location of saveplace cache store.
-   save-place-file (path-join *user-cache-directory* "saveplace")
-   ;; Enable.
-   save-place-mode t))
+   save-place-file (path-join *user-cache-directory* "saveplace"))
+
+  ;; Enable. Setting the variable doesn't install the hooks.
+  (save-place-mode t))
 
 
 (provide 'ux/sessions)
