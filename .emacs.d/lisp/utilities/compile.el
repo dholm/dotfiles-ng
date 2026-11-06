@@ -17,7 +17,7 @@
 (defun user/compile ()
   "Compile current context."
   (interactive)
-  (let ((ede-proj (user/proj-from-path user/ede-proj (path-abs-buffer))))
+  (let ((ede-proj (user/proj-from-path 'user/ede-proj (path-abs-buffer))))
     (cond
      (ede-proj (user/proj-build ede-proj))
      ((feature-p 'flex-compile) (call-interactively 'flex-compile-compile))

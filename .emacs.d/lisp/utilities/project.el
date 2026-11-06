@@ -31,7 +31,7 @@
             :documentation "EDE project instance."))
       "EDE project class.")
 
-    (cl-defmethod user/proj-from-path :static ((project user/ede-proj) &rest args)
+    (cl-defmethod user/proj-from-path ((_project (subclass user/ede-proj)) &rest args)
       "Constructor for EDE project at path in ARGS."
       (when (featurep 'ede)
         (let ((ede-proj (ede-current-project (expand-file-name (first args)))))
@@ -70,7 +70,7 @@
                   :documentation "Project root path."))
       "Projectile project class.")
 
-    (cl-defmethod user/proj-from-path :static ((project user/projectile-proj) &rest args)
+    (cl-defmethod user/proj-from-path ((_project (subclass user/projectile-proj)) &rest args)
       "Constructor for projectile project at path in ARGS."
       (let ((default-directory (file-name-as-directory (first args)))
             (projectile-require-project-root nil))
@@ -87,7 +87,7 @@
                   :documentation "Project root path."))
       "VC project class.")
 
-    (cl-defmethod user/proj-from-path :static ((project user/vc-proj) &rest args)
+    (cl-defmethod user/proj-from-path ((_project (subclass user/vc-proj)) &rest args)
       "Constructor for VC project at path in ARGS."
       (let* ((vc-backend (and (fboundp 'vc-responsible-backend)
                               (ignore-errors
@@ -102,7 +102,7 @@
     (cl-defmethod user/proj-root ((project user/vc-proj))
       (oref project :root-path)))
 
-  (cl-defmethod user/proj-from-path :static ((project user/proj) &rest args)
+  (cl-defmethod user/proj-from-path ((_project (subclass user/proj)) &rest args)
     "Constructor for project at path in ARGS."
     (let ((f (lambda (proj-type)
                (when (fboundp proj-type)
@@ -115,7 +115,7 @@
   "Bind PROJECT for PATH and evaluate BODY if project exists."
   (declare (indent defun)
            (debug let))
-  `(let ((,project (user/proj-from-path user/proj (or ,path (path-abs-buffer)))))
+  `(let ((,project (user/proj-from-path 'user/proj (or ,path (path-abs-buffer)))))
      (when ,project
        ,@body)))
 
