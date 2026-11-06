@@ -68,11 +68,13 @@
   :hook (eshell-mode-hook . user--eshell-mode-hook)
   :init
   (user/bind-key-global :apps :shell 'user/raise-eshell)
-  :config
-  (validate-setq
-   ;; Set the path to the shell cache store.
-   eshell-directory-name *shell-cache-directory*)
 
+  (setq
+   ;; Set the path to the shell cache store. It is defined in esh-mode,
+   ;; which loads after eshell, so set it before Eshell loads. The
+   ;; history and other module files are named relative to it.
+   eshell-directory-name *shell-cache-directory*)
+  :config
   (use-package esh-module
     :ensure nil
     :config
