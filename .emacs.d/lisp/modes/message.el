@@ -14,11 +14,7 @@
    local-abbrev-table message-mode-abbrev-table)
 
   ;; Enable BBDB.
-  (bbdb-initialize 'message)
-
-  (when (feature-p 'google-contacts)
-    ;; Google Contacts for message mode.
-    (require 'google-contacts-message)))
+  (bbdb-initialize 'message))
 
 (defun user--org-mime-html-hook ()
   "Hook for tweaking the HTML output from org-mime."

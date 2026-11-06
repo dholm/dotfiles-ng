@@ -426,8 +426,6 @@
 
                (:music . (user/apps-prefix "m"))
 
-               (:elnode . (user/apps-prefix "E"))
-
                (:calculator . (user/apps-prefix "c"))
                (:convert-unit . (user/apps-prefix "M-c"))
                (:statistics . (user/apps-prefix "R"))

@@ -3,9 +3,7 @@
 ;;; Code:
 
 (defvar user/browser-alist
-  '((:w3m . ((:launch . w3m)
-             (:browse-url . w3m-browse-url)))
-    (:eww . ((:launch . eww)
+  '((:eww . ((:launch . eww)
              (:browse-url . eww-browse-url)))
     (:default . ((:launch . nil)
                  (:browse-url . user/browse-url-external)))))
@@ -22,7 +20,6 @@
   "Initialize web browsing in Emacs."
   (let ((browser
          (cond ((feature-p 'eww) (assq :eww user/browser-alist))
-               ((feature-p 'emacs-w3m) (assq :w3m user/browser-alist))
                (t (assq :default user/browser-alist))))
         (external-browser (assq :default user/browser-alist)))
     (validate-setq

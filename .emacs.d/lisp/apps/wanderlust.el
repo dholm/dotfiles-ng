@@ -403,12 +403,6 @@ Gmail {
        ;; Attachment formatter.
        '(?@ (user/wl-summary-line-attached)))
 
-      (when (display-graphic-p)
-        (with-feature 'wl-gravatar
-          (validate-setq
-           ;; Insert gravatar as email X-Face.
-           wl-highlight-x-face-function 'wl-gravatar-insert)))
-
       ;;; (Hooks) ;;;
       ;; Don't apply email account template when sending draft, otherwise switching
       ;; templates won't work.
@@ -505,7 +499,7 @@ Gmail {
           (elmo-search-register-engine
            'mu 'local-file
            :prog "mu"
-           :args '("find" pattern "--format" "plain" "--fields" "location")
+           :args '("find" pattern "--format" "plain" "--fields" "l")
            :charset 'utf-8)))
 
       (use-package elmo-localdir
@@ -525,14 +519,7 @@ Gmail {
         :config
         (validate-setq
          ;; Use modified UTF-8 for IMAP4.
-         elmo-imap4-use-modified-utf7 t))
-
-      (use-package wl-gravatar
-        :if window-system
-        :requires wanderlust
-        :quelpa (wl-gravatar :fetcher github :repo "dabrahams/wl-gravatar")
-        :init
-        (autoload 'wl-gravatar-insert "wl-gravatar")))))
+         elmo-imap4-use-modified-utf7 t)))))
 
 
 (provide 'apps/wanderlust)

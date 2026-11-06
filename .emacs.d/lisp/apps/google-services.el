@@ -10,15 +10,13 @@
 (use-package oauth2
   :defer
   :config
-  (let ((plstore (path-join *user-google-services-data-directory*
-                            "oauth2.plstore")))
-    (when (file-exists-p plstore)
-      (validate-setq
-       ;; Store OAuth2 token in data store.
-       oauth2-token-file plstore))))
-
-(use-package google-contacts
-  :defer)
+  ;; Store OAuth2 tokens in the data store. Create the directory, since
+  ;; the token file is only written on first use.
+  (make-directory *user-google-services-data-directory* t)
+  (set-file-modes *user-google-services-data-directory* #o0700)
+  (validate-setq
+   oauth2-token-file (path-join *user-google-services-data-directory*
+                                "oauth2.plstore")))
 
 
 (provide 'apps/google-services)

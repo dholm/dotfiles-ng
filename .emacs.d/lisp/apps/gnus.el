@@ -79,10 +79,6 @@
    ;; `bbdb-ignore-message-alist'.
    bbdb-mua-auto-update-p 'bbdb-select-message)
 
-  (when (feature-p 'google-contacts)
-    ;; Google Contacts for Gnus.
-    (require 'google-contacts-gnus))
-
   ;; Enable S/MIME via EasyPG.
   (epa-file-enable)
   (when (feature-p 'jl-smime)
@@ -519,9 +515,7 @@
        "image/.*" "message/delivery-status" "multipart/.*" "message/rfc822"
        "text/x-patch" "application/pgp-signature" "application/emacs-lisp")
      ;; HTML rendering method.
-     mm-text-html-renderer
-     (cond ((feature-p 'shr) 'mm-shr)
-           ((feature-p 'emacs-w3m) 'w3m)))
+     mm-text-html-renderer 'shr)
     ;; Don't use validate-setq due to :inline not being supported.
     (setq
      ;; Avoid spaces in filenames when saving attachments.

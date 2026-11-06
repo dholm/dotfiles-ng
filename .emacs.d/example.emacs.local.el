@@ -75,13 +75,5 @@
  wttrin-default-cities '("San Jose" "Stockholm"))
 
 
-;; Set up cryptocurrency ticker.
-(with-eval-after-load 'coin-ticker
-  (validate-setq
-   coin-ticker-price-convert "SEK"
-   coin-ticker-price-symbol ""
-   coin-ticker-syms '("BTC" "ETH" "DCR")))
-
-
 (provide '.emacs.local)
 ;;; .emacs.local.el ends here

@@ -7,13 +7,6 @@
   "Path to user's BBDB file.")
 
 
-(defun user--bbdb-configialize-hook ()
-  "BBDB initialization hook."
-  (when (feature-p 'bbdb-vcard)
-    ;; Load vCard support.
-    (require 'bbdb-vcard)))
-
-
 (defun user/bbdb-create-or-update-notes ()
   "Decide how BBDB handles the addresses in the current message.
 Create records, unless the message matches `bbdb-ignore-message-alist',
@@ -38,8 +31,7 @@ in which case only update existing records."
 (use-package bbdb
   :commands bbdb-initialize
   :defer
-  :hook ((bbdb-notice-mail-hook . bbdb-auto-notes)
-         (bbdb-initialize-hook . user--bbdb-configialize-hook))
+  :hook (bbdb-notice-mail-hook . bbdb-auto-notes)
   :config
   (validate-setq
    ;; Set up location of database.
@@ -81,11 +73,7 @@ in which case only update existing records."
     '("Xref" ("[^ ]+ \\([^ :]+\\):[0-9]+" newsgroups "\\1" nil))
     '("User-Agent" (".*" mailer identity nil))
     '("X-Mailer" (".*" mailer identity nil))
-    '("X-Newsreader" (".*" mailer identity nil))))
-
-  (use-package bbdb-vcard
-    :disabled
-    :defer))
+    '("X-Newsreader" (".*" mailer identity nil)))))
 
 
 (provide 'apps/bbdb)
