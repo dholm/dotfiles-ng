@@ -4,7 +4,8 @@
 
 (defun pkg-config-has-p (package)
   "Check if PACKAGE is available."
-  (eq (call-process-shell-command "pkg-config" nil nil nil "--exists" package) 0))
+  (and (executable-find "pkg-config")
+       (eq (call-process "pkg-config" nil nil nil "--exists" package) 0)))
 
 
 (provide 'lib/pkg-config)
