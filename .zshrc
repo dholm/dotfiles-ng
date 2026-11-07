@@ -125,6 +125,15 @@ zshrc::prompt() {
 }
 shell::is_dumb || shell::eval zshrc::prompt
 
+zshrc::completion() {
+    # The global compinit in /etc/zsh/zshrc is skipped (skip_global_compinit
+    # in .zshenv) so that completion is initialized after zinit has extended
+    # fpath, then the compdef calls zinit captured from plugins are replayed.
+    autoload -Uz compinit && compinit
+    zinit cdreplay -q
+}
+shell::is_dumb || shell::eval zshrc::completion
+
 shell::is_dumb || zinit light zsh-users/zsh-syntax-highlighting
 
 zshrc::dumb_terminal() {
