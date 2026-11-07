@@ -14,7 +14,7 @@ fi
 _EMACSCLIENT="$(path::to emacsclient)"
 _BASENAME="$(path::to basename)"
 _CP="$(path::to cp)"
-_EGREP="$(path::to egrep)"
+_GREP="$(path::to grep)"
 _MKTEMP="$(path::to mktemp)"
 
 # args
@@ -49,7 +49,7 @@ fi
 ${_EMACSCLIENT} ${_EMACSCLIENTOPTS} -a "" -e "(${_EVAL})" 2>&1
 
 # check modified file
-if [ ! $(egrep -c '^(<<<<<<<|=======|>>>>>>>|####### Ancestor)' ${_MERGED}) = 0 ]; then
+if [ ! $(${_GREP} -E -c '^(<<<<<<<|=======|>>>>>>>|####### Ancestor)' ${_MERGED}) = 0 ]; then
     _MERGEDSAVE=$(${_MKTEMP} --tmpdir `${_BASENAME} ${_MERGED}`.XXXXXXXXXX)
     ${_CP} ${_MERGED} ${_MERGEDSAVE}
     echo 1>&2 "Oops! Conflict markers detected in $_MERGED."
