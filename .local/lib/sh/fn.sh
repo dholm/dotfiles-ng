@@ -61,7 +61,11 @@ fn::foldr() {
         fn::_foldr_storer ${x}
     done
 
-    for x in $(echo ${input[@]} | rev); do
+    # Walk the elements from the last to the first (not the characters, as
+    # piping through rev did).
+    local n
+    for (( n = ${#input[@]}; n > 0; n-- )); do
+        x="${input[@]:$(( n - 1 )):1}"
         acc=$(fn::_foldr ${x} "${acc}")
     done
     echo ${acc}
@@ -94,7 +98,6 @@ fn::filtera() {
 
 fn::each() {
     local fn="${1}"; shift
-    local result=0
     fn::_each() {
         eval ${fn}
     }
@@ -104,7 +107,7 @@ fn::each() {
         local retval="${?}"
         (( ${retval} != 0 )) && return ${retval}
     done
-    return ${?}
+    return 0
 }
 
 fn::eachf() {

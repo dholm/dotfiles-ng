@@ -1,8 +1,10 @@
 keyboard::layout() {
     if [[ -n "${DISPLAY}" ]]; then
-        local x11_keymap="$(shell::exec setxkbmap -print)"
+        local x11_keymap
+        x11_keymap="$(shell::exec setxkbmap -print)"
+        local retval="${?}"
         print::debug "X11 keymap: ${x11_keymap}"
-        if [[ "${?}" -ne 0 ]]; then
+        if [[ "${retval}" -ne 0 ]]; then
             print::error "Failed to print X11 keymap!"
             return 1
         fi

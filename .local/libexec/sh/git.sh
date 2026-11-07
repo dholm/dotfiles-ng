@@ -1,7 +1,8 @@
 vcs::git::subpatch_list() {
     local base_path="${1}"
 
-    local reflist="$(shell::exec "$(path::to git)" log --oneline --reverse -- "${base_path}")"
+    local reflist
+    reflist="$(shell::exec "$(path::to git)" log --oneline --reverse -- "${base_path}")"
     if [ "${?}" -ne 0 ]; then
         print::error "Failed to generate list of refspecs for ${base_path}!"
         return 1
@@ -22,7 +23,8 @@ vcs::git::subpatch_generate() {
     local git_args; git_args=( log -p --pretty=email --stat -m )
     local refspec
     for refspec in ${refspec_list[@]}; do
-        local patch="$(shell::exec "$(path::to git)" "${git_args[@]}" "${refspec}~1..${refspec}" -- "${base_path}")"
+        local patch
+        patch="$(shell::exec "$(path::to git)" "${git_args[@]}" "${refspec}~1..${refspec}" -- "${base_path}")"
         if [ "${?}" -ne 0 ]; then
             print::warning "Failed to generate patch for ${refspec}!"
             continue

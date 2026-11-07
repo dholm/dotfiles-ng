@@ -87,34 +87,34 @@ service::has() {
     local service="${1}"
 
     if os::is_darwin; then
-        return $(service::darwin::has ${service})
+        service::darwin::has "${service}"
     elif os::is_linux; then
-        return $(service::linux::has ${service})
+        service::linux::has "${service}"
+    else
+        return 1
     fi
-
-    return 1
 }
 
 service::is_running() {
     local service="${1}"
 
     if os::is_darwin; then
-        return $(service::darwin::is_running ${service})
+        service::darwin::is_running "${service}"
     elif os::is_linux; then
-        return $(service::linux::is_running ${service})
+        service::linux::is_running "${service}"
+    else
+        return 1
     fi
-
-    return 1
 }
 
 service::restart() {
     local service="${1}"
 
     if os::is_darwin; then
-        return $(service::darwin::restart ${service})
+        service::darwin::restart "${service}"
     elif os::is_linux; then
-        return $(service::linux::restart ${service})
+        service::linux::restart "${service}"
+    else
+        return 1
     fi
-
-    return 1
 }
