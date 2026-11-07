@@ -132,7 +132,14 @@ zshrc::zinit_bundles() {
         zinit snippet OMZP::mercurial
     fi
 
-    os::is_darwin && zinit snippet OMZP::osx
+    if os::is_darwin; then
+        # OMZP::osx was renamed upstream (osx.plugin.zsh no longer exists).
+        # macos.plugin.zsh sources its music and spotify helpers from its own
+        # directory, which zinit does not fetch for a single-file snippet.
+        zinit ice atclone'local f; for f in music spotify; do curl -fsSL -o "${f}" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/macos/${f}"; done' \
+            atpull'%atclone'
+        zinit snippet OMZP::macos
+    fi
 }
 shell::is_dumb || shell::eval zshrc::zinit_bundles
 
