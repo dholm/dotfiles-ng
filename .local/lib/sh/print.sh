@@ -1,3 +1,10 @@
+# Colours and styles are plain ANSI SGR sequences, so printing a message does
+# not fork tput, and they are only used when stderr is a terminal.
+
+print::_sgr() {
+    printf '\033[%sm' "${1}"
+}
+
 print::pen_color() {
     local fg_bg="${1}"
     local color="${2}"
@@ -14,8 +21,8 @@ print::pen_color() {
     esac
 
     case "${fg_bg}" in
-        fg) tput setaf ${color};;
-        *) tput setab ${color};;
+        fg) print::_sgr "3${color}";;
+        *) print::_sgr "4${color}";;
     esac
 }
 
@@ -23,48 +30,52 @@ print::pen_style() {
     local style="${1}"
 
     case "${style}" in
-        normal) tput sgr0;;
-        standout) tput smso;;
-        bold) tput bold;;
-        dim) tput dim;;
-        reverse) tput rev;;
-        blink) tput blink;;
-        underline) tput smul;;
-        hidden) tput invis;;
+        normal) print::_sgr 0;;
+        standout) print::_sgr 7;;
+        bold) print::_sgr 1;;
+        dim) print::_sgr 2;;
+        reverse) print::_sgr 7;;
+        blink) print::_sgr 5;;
+        underline) print::_sgr 4;;
+        hidden) print::_sgr 8;;
     esac
 }
 
+print::_message() {
+    # ${1}: SGR parameters, ${2}: name of the calling function, rest: message.
+    local sgr="${1}"
+    local name="${2}"
+    shift 2
+
+    if [[ -t 2 && "${TERM:-dumb}" != "dumb" ]]; then
+        printf '\033[%sm%s:%b\033[0m\n' "${sgr}" "${name}" "${*}" 1>&2
+    else
+        printf '%s:%b\n' "${name}" "${*}" 1>&2
+    fi
+}
+
 print::error() {
-    echo -e "\
-$(print::pen_style bold)\
-$(print::pen_color fg red)\
-$(eval ${caller}):\
-${*}\
-$(print::pen_style normal)" 1>&2
+    local name
+    if [[ -n "${ZSH_VERSION}" ]]; then name="${funcstack[2]}"; else name="${FUNCNAME[1]}"; fi
+    print::_message "1;31" "${name}" "${@}"
 }
 
 print::warning() {
-    echo -e "\
-$(print::pen_color fg yellow)\
-$(eval ${caller}):\
-${*}\
-$(print::pen_style normal)" 1>&2
+    local name
+    if [[ -n "${ZSH_VERSION}" ]]; then name="${funcstack[2]}"; else name="${FUNCNAME[1]}"; fi
+    print::_message "33" "${name}" "${@}"
 }
 
 print::info() {
-    echo -e "\
-$(print::pen_color fg green)\
-$(eval ${caller}):\
-${*}\
-$(print::pen_style normal)" 1>&2
+    local name
+    if [[ -n "${ZSH_VERSION}" ]]; then name="${funcstack[2]}"; else name="${FUNCNAME[1]}"; fi
+    print::_message "32" "${name}" "${@}"
 }
 
 print::debug() {
     if ((DEBUG)); then
-        echo -e "\
-$(print::pen_color fg white)\
-$(eval ${caller}):\
-${*}\
-$(print::pen_style normal)" 1>&2
+        local name
+        if [[ -n "${ZSH_VERSION}" ]]; then name="${funcstack[2]}"; else name="${FUNCNAME[1]}"; fi
+        print::_message "37" "${name}" "${@}"
     fi
 }

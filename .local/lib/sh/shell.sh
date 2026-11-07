@@ -1,4 +1,6 @@
-. "$HOME/.local/lib/sh/print.sh"
+# Scripts such as ~/.local/bin/ediff.sh source this file on its own; .shellrc
+# has already loaded print.sh.
+typeset -f print::debug >/dev/null 2>&1 || . "$HOME/.local/lib/sh/print.sh"
 
 shell::name() {
     shell::exec /bin/ps -p $$ -ocomm=
@@ -35,11 +37,9 @@ shell::is_dumb() {
 shell::has_function() {
     local name="${1}"
     if shell::is_zsh; then
-        local t="$(type ${name})"
-        echo ${t} | grep -q function
+        (( ${+functions[${name}]} ))
     elif shell::is_bash; then
-        local t="$(shell::eval type -t "${name}")"
-        [[ "${t}" == "function" ]]
+        declare -F "${name}" >/dev/null
     fi
 }
 

@@ -1,7 +1,9 @@
+# $OSTYPE is set by both zsh and bash, so no uname fork is needed.
+
 os::is_linux() {
-    test "$(uname)" = "Linux"
+    [[ "${OSTYPE}" == linux* ]]
 }
 
 os::is_darwin() {
-    test "$(uname)" = "Darwin"
+    [[ "${OSTYPE}" == darwin* ]]
 }
