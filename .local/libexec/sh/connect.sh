@@ -47,16 +47,19 @@ connect::ssl::to() {
     fi
 
     local port="$(url::get_port ${url})"
-    if [[ -z "${host}" ]]; then
+    if [[ -z "${port}" ]]; then
         print::error "URL does not contain port: ${url}!"
         return 1
     fi
 
     local openssl_args; openssl_args=( s_client -connect "${host}:${port}" -crlf -quiet )
     local scheme; scheme=( $(string::split '+' $(url::get_scheme ${url})) )
-    if [[ "${scheme[1]}" = "tls" ]]; then
-        print::info " * TLS protocol: ${scheme[2]}"
-        openssl_args+=( -starttls "${scheme[2]}" )
+    # Index-agnostic access: zsh arrays start at 1, bash arrays at 0.
+    local protocol="${scheme[@]:0:1}"
+    local starttls="${scheme[@]:1:1}"
+    if [[ "${protocol}" = "tls" ]]; then
+        print::info " * TLS protocol: ${starttls}"
+        openssl_args+=( -starttls "${starttls}" )
     fi
 
     shell::exec "$(path::to openssl)" "${openssl_args[@]}"
@@ -79,8 +82,8 @@ connect::telnet::to() {
     telnet_args+=( "${host}" )
 
     local port="$(url::get_port ${url})"
-    if [[ -n "${host}" ]]; then
-        telnet_args+=( ${port} )
+    if [[ -n "${port}" ]]; then
+        telnet_args+=( "${port}" )
     fi
 
     shell::exec "$(path::to telnet)" "${telnet_args[@]}"
