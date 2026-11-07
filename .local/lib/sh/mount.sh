@@ -29,10 +29,7 @@ mount::sshfs() {
     sshfs_opts="${sshfs_opts},cache_timeout=60"
 
     sshfs_opts="${sshfs_opts},compression=no"
-    sshfs_opts="${sshfs_opts},large_read"
-    sshfs_opts="${sshfs_opts},Ciphers=arcfour"
 
-    sshfs_opts="${sshfs_opts},intr"
     sshfs_opts="${sshfs_opts},reconnect"
 
     shell::exec "$(path::to sshfs)" "${user}@${host}:${remote_path}" "${mount_point}" -o "${sshfs_opts}"
