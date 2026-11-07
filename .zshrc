@@ -140,6 +140,18 @@ zshrc::completion() {
     # fpath, then the compdef calls zinit captured from plugins are replayed.
     autoload -Uz compinit && compinit
     zinit cdreplay -q
+
+    # Some OMZ plugins (kubectl) truncate and regenerate their cached
+    # completion in the background on every start, so compinit can find the
+    # file empty. Register any cached completion it missed; the function is
+    # autoloaded on first use, by when the file is complete.
+    local completion
+    for completion in "${ZSH_CACHE_DIR}"/completions/_*(N:t); do
+        if (( ! ${+_comps[${completion#_}]} )); then
+            autoload -Uz "${completion}"
+            compdef "${completion}" "${completion#_}"
+        fi
+    done
 }
 shell::is_dumb || shell::eval zshrc::completion
 
