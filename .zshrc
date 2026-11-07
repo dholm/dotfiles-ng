@@ -86,19 +86,31 @@ zshrc::bookmarks() {
 }
 shell::is_dumb || shell::eval zshrc::bookmarks
 
+# Turbo mode: plugins and snippets marked with zshrc::turbo load right after
+# the first prompt is shown instead of delaying it, in the order they are
+# declared. lucid hides zinit's "Loaded ..." messages.
+zshrc::turbo() {
+    zinit ice wait lucid "${@}"
+}
+
 # Git plugins are pinned with ver"<commit>"; zinit checks it out on clone and
 # pulls exactly that commit on zinit update. Bump the hashes deliberately.
 if ! shell::is_dumb; then
-    zinit ice ver"4b23ecd62a9ad79ddf2ac03c0bd8a7b43266508c"
+    zshrc::turbo ver"4b23ecd62a9ad79ddf2ac03c0bd8a7b43266508c"
     zinit light zsh-users/zsh-completions
 fi
 
 zshrc::zinit_bundles() {
-    zinit snippet OMZP::command-not-found
-    zinit snippet OMZP::extract
-    zinit snippet OMZP::dircycle
+    local snippet
+    for snippet in command-not-found extract dircycle; do
+        zshrc::turbo
+        zinit snippet OMZP::${snippet}
+    done
     # Only useful where GNU tools are installed with a g prefix.
-    os::is_darwin && zinit snippet OMZP::gnu-utils
+    if os::is_darwin; then
+        zshrc::turbo
+        zinit snippet OMZP::gnu-utils
+    fi
 
     local binaries=(brew cp cpanm fasd gem helm keychain kubectl
                     man minikube mosh nmap node npm perl pip podman
@@ -106,29 +118,42 @@ zshrc::zinit_bundles() {
                     sudo svn systemd)
     local binary
     for binary in "${binaries[@]}"; do
-        path::has_binary "${binary}" && zinit snippet OMZP::${binary}
+        path::has_binary "${binary}" || continue
+        case "${binary}" in
+            # These start agents and may ask for passphrases, which cannot
+            # happen after the prompt is shown, so load them right away.
+            keychain|ssh-agent) ;;
+            *) zshrc::turbo;;
+        esac
+        zinit snippet OMZP::${binary}
     done
 
     if path::has_binary go; then
+        zshrc::turbo
         zinit snippet OMZP::golang
     fi
 
     if path::has_binary tmux; then
+        zshrc::turbo
         zinit snippet OMZP::tmuxinator
     fi
 
     if path::has_binary git; then
-        zinit snippet OMZP::git
-        zinit snippet OMZP::gitignore
+        for snippet in git gitignore; do
+            zshrc::turbo
+            zinit snippet OMZP::${snippet}
+        done
     fi
 
     # Completion for the GitHub CLI. (OMZP::github, for the legacy hub CLI,
     # is deprecated and warns on every start.)
     if path::has_binary gh; then
+        zshrc::turbo
         zinit snippet OMZP::gh
     fi
 
     if path::has_binary hg; then
+        zshrc::turbo
         zinit snippet OMZP::mercurial
     fi
 
@@ -136,7 +161,7 @@ zshrc::zinit_bundles() {
         # OMZP::osx was renamed upstream (osx.plugin.zsh no longer exists).
         # macos.plugin.zsh sources its music and spotify helpers from its own
         # directory, which zinit does not fetch for a single-file snippet.
-        zinit ice atclone'local f; for f in music spotify; do curl -fsSL -o "${f}" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/macos/${f}"; done' \
+        zshrc::turbo atclone'local f; for f in music spotify; do curl -fsSL -o "${f}" "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/macos/${f}"; done' \
             atpull'%atclone'
         zinit snippet OMZP::macos
     fi
@@ -175,10 +200,20 @@ zshrc::completion() {
         fi
     done
 }
-shell::is_dumb || shell::eval zshrc::completion
+
+zshrc::local_aliases() {
+    # shellcheck source=../../.zsh_aliases.local
+    # shellcheck disable=SC2091
+    $(shell::source "${HOME}/.zsh_aliases.local")
+}
 
 if ! shell::is_dumb; then
-    zinit ice ver"1d85c692615a25fe2293bdd44b34c217d5d2bf04"
+    # The last turbo item. Its atinit initializes completion once everything
+    # declared before it has loaded. zsh-syntax-highlighting must come after
+    # compinit, and the local aliases are loaded after it so that they still
+    # override the (now turbo-loaded) OMZ aliases.
+    zshrc::turbo ver"1d85c692615a25fe2293bdd44b34c217d5d2bf04" nocd \
+        atinit"zshrc::completion" atload"zshrc::local_aliases"
     zinit light zsh-users/zsh-syntax-highlighting
 fi
 
@@ -210,9 +245,8 @@ os::is_darwin && shell::eval zshrc::darwin_setup
 # shellcheck source=../../.zshrc.local
 # shellcheck disable=SC2091
 $(shell::source "${HOME}/.zshrc.local")
-# shellcheck source=../../.zsh_aliases.local
-# shellcheck disable=SC2091
-$(shell::source "${HOME}/.zsh_aliases.local")
+# In dumb terminals nothing is turbo-loaded, so load the local aliases here.
+shell::is_dumb && zshrc::local_aliases
 
 if ((PROFILE)); then
     zprof
