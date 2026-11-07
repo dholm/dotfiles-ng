@@ -10,7 +10,9 @@ perl::local_lib::setup() {
 }
 
 perl::setup() {
-    path::prepend "${HOME}/perl5/bin"
+    # Append rather than prepend, so these scripts cannot shadow ~/bin or
+    # ~/.local/bin.
+    path::append "${HOME}/perl5/bin"
 
     shell::eval perl::local_lib::setup
 

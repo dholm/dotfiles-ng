@@ -85,6 +85,8 @@ python::_setup_pip() {
 
     export PIPAPP_DIR="${HOME}/.local/libexec/pip-apps"
     $(shell::source "${HOME}/.dotfiles/external/pip-app/pip-app.sh")
+    # pip-app.sh prepends its bin directory unconditionally.
+    file::is_directory "${PIPAPP_DIR}/bin" || path::remove "${PIPAPP_DIR}/bin"
 
     path::has_binary pip2 && alias::add syspip2 "python::exec_pip_version 2"
     path::has_binary pip3 && alias::add syspip3 "python::exec_pip_version 3"

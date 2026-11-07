@@ -36,6 +36,9 @@ shellrc::path_setup() {
     path::prepend "${HOME}/.cask/bin"
     path::prepend "${HOME}/.cabal/bin"
     path::prepend "${HOME}/bin"
+
+    # Nested shells and the profile files keep re-adding entries.
+    path::dedupe
 }
 shell::eval shellrc::path_setup
 
