@@ -6,10 +6,15 @@ profile::start() {
         date="$(brew --prefix)/bin/gdate"
     fi
 
+    # A private directory instead of predictable /tmp/$USER-shellrc.$$ names,
+    # which another user could pre-create or symlink.
+    _profile_dir="$(mktemp -d "${TMPDIR:-/tmp}/shellrc-profile-XXXXXXXX")" || return 1
+    _profile_sample="${_profile_dir}/shellrc"
+
     exec 3>&2 2> >(
-        tee /tmp/${USER}-shellrc.${$}.log |
+        tee "${_profile_sample}.log" |
             ${sed} 's/^.*$/now/' |
-            ${date} -f - +%s.%N >/tmp/${USER}-shellrc.${$}.tim
+            ${date} -f - +%s.%N >"${_profile_sample}.tim"
     )
     if shell::is_bash; then
         export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
@@ -26,11 +31,13 @@ profile::stop() {
         unsetopt xtrace
     fi
     exec 2>&3 3>&-
-    print::info "Profile written to /tmp/${USER}-shellrc.${$}."
+    print::info "Profile written to ${_profile_sample}.log, run: profile::report ${_profile_sample}.log"
 }
 
 profile::report() {
-    local sample_file="${1%.*}"
+    # Accepts the sample's .log or .tim file, or the path without suffix.
+    local sample_file="${1%.log}"
+    sample_file="${sample_file%.tim}"
 
     paste <(
         while read tim ;do
