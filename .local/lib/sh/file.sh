@@ -1,7 +1,12 @@
 file::abs() {
     local file="${1}"
-    if os::is_darwin; then
-        shell::exec readlink "${file}"
+    if shell::is_zsh; then
+        # Like readlink -e: absolute, symlinks resolved, fails if missing.
+        [[ -e "${file}" ]] || return 1
+        print -r -- "${file:A}"
+    elif os::is_darwin; then
+        # BSD readlink without -f only prints a symlink's (relative) target.
+        shell::exec readlink -f "${file}"
     else
         shell::exec readlink -e "${file}"
     fi

@@ -25,24 +25,28 @@ python::exec_pip_version() {
 }
 
 python::upgrade_all() {
-    local version=$(( ${1:=2} ))
+    local version=$(( ${1:-3} ))
 
     local pyenv; pyenv=(
         PIP_REQUIRE_VIRTUALENV=false
         PYTHONPATH="$(python::path ${version})"
     )
 
+    # pip.get_installed_distributions() was removed in pip 10. Only upgrade
+    # what is installed in the user site, never the distribution's packages.
     local pybin="$(path::to python${version})"
-    print::debug "(env={${pyenv[@]}} cmd=${pybin}: Begin"
-    /usr/bin/env ${pyenv[@]} ${pybin} <(cat <<EOF
-import pip
-from subprocess import call
+    shell::exec_env $(shell::as_array pyenv) "${pybin}" - <<'EOF'
+import site
+import subprocess
+import sys
+from importlib.metadata import distributions
 
-for dist in pip.get_installed_distributions():
-    call("pip install --upgrade " + dist.project_name, shell=True)
+user_site = site.getusersitepackages()
+names = sorted({d.metadata["Name"] for d in distributions(path=[user_site])})
+if names:
+    sys.exit(subprocess.call(
+        [sys.executable, "-m", "pip", "install", "--user", "--upgrade", *names]))
 EOF
-)
-    print::debug "(env={${pyenv[@]}} cmd=${pybin}: End"
 }
 
 python::_site_path() {
@@ -59,14 +63,18 @@ python::_setup_darwin() {
     if path::has_binary brew; then
         local libdir="$(homebrew::prefix)/lib"
 
-        local site2_packages="${libdir}/$(python::_site_path $(path::to python))"
-        if file::is_directory ${site2_packages}; then
-            export PYTHON2PATH="${site2_packages}:${PYTHON2PATH}"
+        if path::has_binary python2; then
+            local site2_packages="${libdir}/$(python::_site_path "$(path::to python2)")"
+            if file::is_directory ${site2_packages}; then
+                export PYTHON2PATH="${site2_packages}:${PYTHON2PATH}"
+            fi
         fi
 
-        local site3_packages="${libdir}/$(python::_site_path $(path::to python3))"
-        if file::is_directory ${site3_packages}; then
-            export PYTHON3PATH="${site3_packages}:${PYTHON3PATH}"
+        if path::has_binary python3; then
+            local site3_packages="${libdir}/$(python::_site_path "$(path::to python3)")"
+            if file::is_directory ${site3_packages}; then
+                export PYTHON3PATH="${site3_packages}:${PYTHON3PATH}"
+            fi
         fi
     fi
 }
@@ -110,25 +118,6 @@ python::setup() {
     path::has_binary pip && python::_setup_pip
 
     shell::is_zsh && python::_setup_zsh
-
-    if path::has_binary python2; then
-        alias::add python2 "python::exec_python_version 2"
-        alias::add python2::upgrade_all "python::upgrade_all 2"
-    fi
-    if path::has_binary python3; then
-        alias::add python3 "python::exec_python_version 3"
-        alias::add python3::upgrade_all "python::upgrade_all 3"
-    fi
-
-    if path::has_binary python2; then
-        # Add Python's bin directory to the path, in case it isn't installed in
-        # one of the global paths, as pip will install binaries there.
-        path::prepend $(dirname $(file::abs $(path::to python2)))
-        alias::add python python2
-    elif path::has_binary python3; then
-        path::prepend $(dirname $(file::abs $(path::to python3)))
-        alias::add python python3
-    fi
 
     local pystartup="${HOME}/.pystartup"
     if file::is_readable "${pystartup}"; then
