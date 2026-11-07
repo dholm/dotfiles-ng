@@ -2,17 +2,15 @@ vcs::git::subpatch_list() {
     local base_path="${1}"
 
     local reflist
-    reflist="$(shell::exec "$(path::to git)" log --oneline --reverse -- "${base_path}")"
+    reflist="$(shell::exec "$(path::to git)" log --format=%h --reverse -- "${base_path}")"
     if [ "${?}" -ne 0 ]; then
         print::error "Failed to generate list of refspecs for ${base_path}!"
         return 1
     fi
 
-    local cut_args="-d ' ' -f 1 -"
-    echo "${reflist}" | while read refspec msg; do
-        echo "${refspec}"
-    done
-    return ${?}
+    if [[ -n "${reflist}" ]]; then
+        printf '%s\n' "${reflist}"
+    fi
 }
 
 vcs::git::subpatch_generate() {
@@ -30,10 +28,12 @@ vcs::git::subpatch_generate() {
             continue
         fi
         local patch_file="${out_path}/${refspec}.patch"
-        echo ${patch} >${patch_file}
+        # printf, not echo: zsh's echo interprets backslashes and bash's
+        # unquoted expansion split and globbed the patch.
+        printf '%s\n' "${patch}" >"${patch_file}"
     done
 
-    echo ${refspec_list} >${out_path}/patch.list
+    printf '%s\n' "${refspec_list[@]}" >"${out_path}/patch.list"
 }
 
 vcs::git::subpatch_apply() {
