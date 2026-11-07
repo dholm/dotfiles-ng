@@ -26,8 +26,14 @@ editor::nano() {
 }
 
 editor() {
-    local args="${*}"
-    shell::exec ${EDITOR} ${args}
+    if [[ -z "${EDITOR}" ]]; then
+        print::error "No editor configured!"
+        return 1
+    fi
+
+    # $EDITOR is a command line that may contain quoted arguments, so let the
+    # shell parse it, but pass the file arguments through unchanged.
+    eval "${EDITOR} \"\${@}\""
 }
 
 editor::setup() {

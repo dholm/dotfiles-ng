@@ -1,13 +1,11 @@
 homebrew::prefix() {
-    local args="--prefix"
-    shell::exec brew ${args}
+    shell::exec brew --prefix
 }
 
 homebrew::package_prefix() {
     local package="${1}"
 
-    local args="--prefix ${package}"
-    shell::exec brew ${args}
+    shell::exec brew --prefix "${package}"
 }
 
 homebrew::package_installed() {

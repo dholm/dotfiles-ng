@@ -6,7 +6,7 @@ connect::add() {
 
     if url::is_valid ${url}; then
         print::debug "Adding ${name} (${url}) to host table"
-        shell::eval $(alist::add _connect_host_table ${name} ${url})
+        shell::eval "$(alist::add _connect_host_table ${name} ${url})"
         return 0
     else
         print::error "Url ${url} failed validation!"
@@ -16,17 +16,16 @@ connect::add() {
 
 connect::ssh::to() {
     local url="${1}"; shift
-    local args="${*}"
 
-    local ssh_args=""
+    local ssh_args; ssh_args=()
     local user="$(url::get_user ${url})"
     if [[ -n "${user}" ]]; then
-        ssh_args="${ssh_args} -l ${user}"
+        ssh_args+=( -l "${user}" )
     fi
 
     local port="$(url::get_port ${url})"
     if [[ -n "${port}" ]]; then
-        ssh_args="${ssh_args} -p ${port}"
+        ssh_args+=( -p "${port}" )
     fi
 
     local host="$(url::get_host ${url})"
@@ -35,13 +34,11 @@ connect::ssh::to() {
         return 1
     fi
 
-    ssh_args="${ssh_args} ${args}"
-    shell::exec $(path::to ssh) ${ssh_args} ${host}
+    shell::exec "$(path::to ssh)" "${ssh_args[@]}" "${@}" "${host}"
 }
 
 connect::ssl::to() {
     local url="${1}"; shift
-    local args="${*}"
 
     local host="$(url::get_host ${url})"
     if [[ -z "${host}" ]]; then
@@ -55,24 +52,23 @@ connect::ssl::to() {
         return 1
     fi
 
-    local openssl_args="s_client -connect ${host}:${port} -crlf -quiet"
+    local openssl_args; openssl_args=( s_client -connect "${host}:${port}" -crlf -quiet )
     local scheme; scheme=( $(string::split '+' $(url::get_scheme ${url})) )
     if [[ "${scheme[1]}" = "tls" ]]; then
         print::info " * TLS protocol: ${scheme[2]}"
-        openssl_args="${openssl_args} -starttls ${scheme[2]}"
+        openssl_args+=( -starttls "${scheme[2]}" )
     fi
 
-    shell::exec $(path::to openssl) ${openssl_args}
+    shell::exec "$(path::to openssl)" "${openssl_args[@]}"
 }
 
 connect::telnet::to() {
     local url="${1}"; shift
-    local args="${*}"
 
-    local telnet_args=""
+    local telnet_args; telnet_args=()
     local user="$(url::get_user ${url})"
     if [[ -n "${user}" ]]; then
-        telnet_args="${telnet_args} -l ${user}"
+        telnet_args+=( -l "${user}" )
     fi
 
     local host="$(url::get_host ${url})"
@@ -80,29 +76,28 @@ connect::telnet::to() {
         print::error "URL does not contain hostname: ${url}!"
         return 1
     fi
-    telnet_args="${telnet_args} ${host}"
+    telnet_args+=( "${host}" )
 
     local port="$(url::get_port ${url})"
     if [[ -n "${host}" ]]; then
-        telnet_args="${telnet_args} ${port}"
+        telnet_args+=( ${port} )
     fi
 
-    shell::exec $(path::to telnet) ${telnet_args}
+    shell::exec "$(path::to telnet)" "${telnet_args[@]}"
 }
 
 connect::to() {
     local system="${1}"; shift
-    local args="${*}"
 
     local url="$(eval $(alist::get _connect_host_table ${system}))"
     if [[ -n "${url}" ]]; then
         print::info "Connecting to ${url}.."
         local scheme="$(url::get_scheme ${url})"
         case "${scheme}" in
-            ssh) connect::ssh::to ${url} ${args};;
-            ssl) connect::ssl::to ${url} ${args};;
-            telnet) connect::telnet::to ${url} ${args};;
-            tls*) connect::ssl::to ${url} ${args};;
+            ssh) connect::ssh::to "${url}" "${@}";;
+            ssl) connect::ssl::to "${url}" "${@}";;
+            telnet) connect::telnet::to "${url}" "${@}";;
+            tls*) connect::ssl::to "${url}" "${@}";;
             *) print::error "Unsupported scheme: ${scheme}!";;
         esac
     fi

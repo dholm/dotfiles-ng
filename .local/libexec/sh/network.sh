@@ -53,8 +53,8 @@ network::dns::flush() {
 network::dns::resolve::ns() {
     local host="${1}"
 
-    local dig_args="+short NS"
-    shell::exec dig ${dig_args} ${host}
+    local dig_args; dig_args=( +short NS )
+    shell::exec dig "${dig_args[@]}" "${host}"
 }
 
 network::dns::resolve() {
@@ -65,8 +65,8 @@ network::dns::resolve() {
         return 1
     fi
 
-    local dig_args="+short @${ns[1]}"
-    shell::exec dig ${dig_args} ${host}
+    local dig_args; dig_args=( +short "@${ns[1]}" )
+    shell::exec dig "${dig_args[@]}" "${host}"
 }
 
 network::protocol::statistics() {
@@ -77,5 +77,5 @@ network::dump2pcap() {
     local infile="${1}"
     local outfile="${2}"
 
-    shell::exec text2pcap <(hexdump -v -e '"%06_ax  "16/1 "%02x " "\n"' "${infile}") ${outfile}
+    shell::exec text2pcap <(hexdump -v -e '"%06_ax  "16/1 "%02x " "\n"' "${infile}") "${outfile}"
 }

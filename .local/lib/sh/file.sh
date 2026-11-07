@@ -23,14 +23,13 @@ file::is_readable() {
 }
 
 file::exists() {
-    local paths_glob="${*}"
     local retval=1
 
-    if [ -n "${paths_glob}" ]; then
-        shell::is_zsh && unsetopt nomatch
-        shell::exec ls -1 ${paths_glob} 2>/dev/null
+    if ((0 < ${#})); then
+        # The arguments are glob patterns, so expand them like bash does.
+        shell::is_zsh && setopt localoptions globsubst shwordsplit nonomatch
+        shell::exec ls -1 ${@} 2>/dev/null
         retval=${?}
-        shell::is_zsh && setopt nomatch
     fi
 
     return ${retval}

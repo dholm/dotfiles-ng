@@ -18,12 +18,12 @@ process::hangup() {
     done
     local process="${1}"
 
-    local cmd="killall"
+    local cmd; cmd=( killall )
     if ${opts[privileged]}; then
-        cmd="sudo ${cmd}"
+        cmd=( sudo "${cmd[@]}" )
     fi
 
-    shell::exec ${cmd} -HUP "${process}" &>/dev/null
+    shell::exec "${cmd[@]}" -HUP "${process}" &>/dev/null
     if ((${?} != 0)); then
         print::debug "Failed to hang up ${process}!"
         return 1

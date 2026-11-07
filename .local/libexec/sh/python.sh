@@ -7,23 +7,21 @@ python::path() {
 
 python::exec_python_version() {
     local version=$(( ${1} )); shift
-    local args="${*}"
 
     local pyenv; pyenv=( PYTHONPATH="$(python::path ${version})" )
     local pybin="$(path::to python${version})"
-    shell::exec_env $(shell::as_array pyenv) ${pybin} ${args}
+    shell::exec_env $(shell::as_array pyenv) "${pybin}" "${@}"
 }
 
 python::exec_pip_version() {
     local version=$(( ${1} )); shift
-    local args="${*}"
 
     local pipenv; pipenv=(
         PIP_REQUIRE_VIRTUALENV=false
         PYTHONPATH="$(python::path ${version})"
     )
     local pipbin="$(path::to pip${version})"
-    shell::exec_env $(shell::as_array pipenv) ${pipbin} ${args}
+    shell::exec_env $(shell::as_array pipenv) "${pipbin}" "${@}"
 }
 
 python::upgrade_all() {

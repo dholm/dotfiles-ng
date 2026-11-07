@@ -41,15 +41,15 @@ debian::dpkg::build() {
         shift
     done
 
-    local build_args="-b -us -uc"
+    local build_args; build_args=( -b -us -uc )
     if ! ${opts[clean]}; then
         print::debug "Not cleaning before build."
-        build_args="${build_args} -nc"
+        build_args+=( -nc )
     fi
 
     if ! ${opts[deps]}; then
         print::debug "Skipping dependency check."
-        build_args="${build_args} -d"
+        build_args+=( -d )
     fi
 
     local build_opts=""
@@ -73,16 +73,16 @@ debian::dpkg::build() {
     if [[ "$(uname -m)" != "${opts[arch]}" ]]; then
         print::debug "Cross compiling for ${opts[arch]}."
         build_cmd="$(path::to pdebuild)"
-        build_args="--debbuildopts \"${build_args}\""
-        build_args="--buildresult ${PWD}/.. ${build_args}"
-        build_args="--architecture ${opts[arch]} ${build_args}"
+        build_args=( --architecture "${opts[arch]}"
+                     --buildresult "${PWD}/.."
+                     --debbuildopts "${build_args[*]}" )
     fi
 
-    local build_env; build_env=( DEB_BUILD_OPTIONS="'${build_opts}'" )
-    build_env=( DEB_BUILD_PROFILES="'${build_profiles}'" )
+    local build_env; build_env=( DEB_BUILD_OPTIONS="${build_opts}" )
+    build_env=( DEB_BUILD_PROFILES="${build_profiles}" )
     # Reset local Perl settings.
     build_env+=( PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= )
-    shell::exec_env $(shell::as_array build_env) ${build_cmd} ${build_args}
+    shell::exec_env $(shell::as_array build_env) "${build_cmd}" "${build_args[@]}"
 }
 
 linux::setup() {

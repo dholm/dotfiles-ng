@@ -1,7 +1,7 @@
 darwin::package::is_installed() {
     local name="${1}"
 
-    shell::exec pkgutil --pkg-info "\"${name}\"" &>/dev/null
+    shell::exec pkgutil --pkg-info "${name}" &>/dev/null
 }
 
 darwin::package::list() {
@@ -47,7 +47,7 @@ darwin::package::info() {
     fi
 
     echo "* Summary"
-    shell::exec pkgutil --pkg-info "\"${name}\""
+    shell::exec pkgutil --pkg-info "${name}"
     echo "* Files"
     darwin::package::files "${name}"
 }
@@ -55,7 +55,7 @@ darwin::package::info() {
 darwin::package::owner() {
     local path="${1}"
 
-    shell::exec pkgutil --file-info "\"${path}\""
+    shell::exec pkgutil --file-info "${path}"
 }
 
 darwin::package::uninstall() {

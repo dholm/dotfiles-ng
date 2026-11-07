@@ -39,7 +39,7 @@ shell::has_function() {
         local t="$(type ${name})"
         echo ${t} | grep -q function
     elif shell::is_bash; then
-        local t="$(shell::eval type -t ${name})"
+        local t="$(shell::eval type -t "${name}")"
         [[ "${t}" == "function" ]]
     fi
 }
@@ -64,35 +64,36 @@ shell::from_array() {
 }
 
 shell::eval() {
-    local fn="${1}"
-    local args=
-    if ((1 < ${#})); then
-        shift 1
-        args="${*}"
+    print::debug "(${*}): Begin"
+    if ((1 == ${#})); then
+        # A single argument is shell code (or a function name) to evaluate.
+        eval "${1}"
+    else
+        # A command and its arguments are run as-is so that quoting is
+        # preserved.
+        "${@}"
     fi
-
-    print::debug "${fn}(${args}): Begin"
-    eval ${fn} ${args}
     local retval="$?"
-    print::debug "${fn}(${args}): End (${retval})"
+    print::debug "(${*}): End (${retval})"
     return ${retval}
 }
 
 shell::source() {
-    local file="${1}"
-    local args=
-    if ((1 < ${#})); then
-        shift 1
-        args="${*}"
+    local file="${1}"; shift
+    local qfile; printf -v qfile '%q' "${file}"
+    local qargs; qargs=""
+    if ((0 < ${#})); then
+        printf -v qargs ' %q' "${@}"
     fi
 
-    echo eval " \
-    if file::is_readable ${file}; then \
-        print::debug \"file=${file} args={${args}}: Begin\"; \
-        source ${file} ${args}; \
-        print::debug \"file=${file} args]{${args}}: End\"; \
-    fi \
-    "
+    # Meant to be used as $(shell::source …) so that the file is sourced in
+    # the scope of the caller. Every word is quoted with %q so that it
+    # survives the word splitting of the unquoted command substitution.
+    echo "eval if file::is_readable ${qfile}; then" \
+         "print::debug file=${qfile} args={${qargs}}: Begin;" \
+         "source ${qfile}${qargs};" \
+         "print::debug file=${qfile} args={${qargs}}: End;" \
+         "fi"
 }
 
 shell::pushd() {
@@ -103,32 +104,25 @@ shell::popd() {
 }
 
 shell::exec_env() {
-    local env; env=( $(eval $(shell::from_array 1)) ); shift
-    local cmd="${1}"
-    local args=
-    if ((1 < ${#})); then
-        shift 1
-        args="${*}"
+    # ${1} names an array of VAR=value assignments, see shell::as_array.
+    local env
+    if shell::is_zsh; then
+        env=( "${(@P)1}" )
+    else
+        env=( "${!1}" )
     fi
+    shift
 
-    print::debug "(env={${env[@]}} cmd=${cmd} args={${args}}): Begin"
-    eval /usr/bin/env "${env[@]}" ${cmd} ${args}
+    print::debug "(env={${env[*]}} cmd={${*}}): Begin"
+    /usr/bin/env "${env[@]}" "${@}"
     local retval="${?}"
-    print::debug "(env={${env[@]}} cmd=${cmd} args={${args}}): End (${retval})"
+    print::debug "(env={${env[*]}} cmd={${*}}): End (${retval})"
     return ${retval}
 }
 
 shell::exec() {
-    local cmd="${1}"
-    local args=
-    if ((1 < ${#})); then
-        shift 1
-        args="${*}"
-    fi
-
     local nil_env; nil_env=( )
-    shell::exec_env $(shell::as_array nil_env) ${cmd} ${args}
-    return ${?}
+    shell::exec_env $(shell::as_array nil_env) "${@}"
 }
 
 shell::args_parse() {

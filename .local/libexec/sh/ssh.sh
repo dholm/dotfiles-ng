@@ -11,11 +11,11 @@ ssh::authorize_host() {
 
     local retval=1
     if path::has_binary ssh-copy-id; then
-        shell::exec ssh-copy-id -i ${key} ${host}
+        shell::exec ssh-copy-id -i "${key}" "${host}"
         retval="${?}"
     else
         local ssh_remote_cmd="mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
-        shell::eval cat ${key} | ssh ${host} ${ssh_remote_cmd}
+        shell::eval cat "${key}" | ssh "${host}" "${ssh_remote_cmd}"
         retval="${?}"
     fi
 
@@ -62,10 +62,7 @@ ssh::wrapper() {
         esac
         shift
     done
-    local args="${*}"
-
-    local config_pipe=""
-    local ssh_args=""
+    local ssh_args; ssh_args=()
     if false; then
         # Currently broken on Ubuntu and Darwin.
         print::debug "Setting up configuration FIFO ${config_fifo}.."
@@ -74,38 +71,35 @@ ssh::wrapper() {
         chmod 600 "${config_fifo}"
         set +m
         cat ${_ssh_config_files[@]} >"${config_fifo}" 2>/dev/null &
-        ssh_args="${ssh_args} -F ${config_fifo}"
-        config_pipe="-F <(cat ${_ssh_config_files[*]} 2>/dev/null)"
+        ssh_args+=( -F "${config_fifo}" )
     fi
 
     if ${opts[password]}; then
-        ssh_args="${ssh_args} -o PubkeyAuthentication=no"
+        ssh_args+=( -o PubkeyAuthentication=no )
     fi
     if ${opts[x11]}; then
-        ssh_args="${ssh_args} -X -Y"
+        ssh_args+=( -X -Y )
     fi
 
-    ssh_args="${ssh_args} ${args}"
-    shell::exec ssh ${ssh_args} ${config_pipe}
+    shell::exec ssh "${ssh_args[@]}" "${@}"
 
     rm -f "${config_fifo}"
 }
 
 ssh::nohostkey() {
-    local args="${*}"
     local host="${@: -1}"
 
-    shell::exec $(path::to ssh-keygen) -f "${HOME}/.ssh/known_hosts" -R ${host}
-    shell::exec $(path::to ssh) ${args}
+    shell::exec "$(path::to ssh-keygen)" -f "${HOME}/.ssh/known_hosts" -R "${host}"
+    shell::exec "$(path::to ssh)" "${@}"
 }
 
 ssh::keychain::setup() {
     local dotssh="${HOME}/.ssh"
-    local ssh_keys="$(file::exists "${dotssh}/id_*" "${dotssh}/*.rsa" | grep -v \.pub)"
+    local ssh_keys; ssh_keys=( $(file::exists "${dotssh}/id_*" "${dotssh}/*.rsa" | grep -v '\.pub$') )
 
-    shell::eval $(keychain --eval --quiet)
-    if file::exists ${ssh_keys} 1>/dev/null; then
-        shell::exec keychain --quick --quiet "${ssh_keys}"
+    shell::eval "$(keychain --eval --quiet)"
+    if ((0 < ${#ssh_keys[@]})); then
+        shell::exec keychain --quick --quiet "${ssh_keys[@]}"
     fi
 }
 
