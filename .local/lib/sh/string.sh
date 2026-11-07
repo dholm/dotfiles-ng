@@ -48,5 +48,7 @@ string::filter_escape() {
     if os::is_darwin; then
         gsed="$(brew --prefix)/bin/gsed"
     fi
-    ${gsed} -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+    # Strip SGR (m) and erase-in-line (K) sequences with any parameters,
+    # e.g. 256-colour codes like ESC[38;5;123m.
+    ${gsed} -r "s/\x1B\[[0-9;]*[mK]//g"
 }
