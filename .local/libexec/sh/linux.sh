@@ -19,13 +19,16 @@ debian::dpkg::build() {
 "
     eval $(shell::args_parse "cj:th" "arch:,clean,no-deps,no-docs,parallel:,test,help")
 
+    # Debian architecture names (amd64, arm64, ...), not uname -m ones.
+    local host_arch="$(dpkg --print-architecture)"
+
     local opts; typeset -A opts
     opts[clean]=false
     opts[deps]=true
     opts[docs]=true
     opts[parallel]=1
     opts[test]=false
-    opts[arch]=$(uname -m)
+    opts[arch]="${host_arch}"
     while true; do
         case "${1}" in
             --arch) shift; opts[arch]="${1}";;
@@ -61,16 +64,20 @@ debian::dpkg::build() {
     local build_profiles=""
     if ! ${opts[test]}; then
         print::debug "Avoiding tests when possible."
+        # The profile drops test-only build dependencies; the option is what
+        # makes debhelper skip running the tests.
         build_profiles="nocheck ${build_profiles}"
+        build_opts="nocheck ${build_opts}"
     fi
 
     if ! ${opts[docs]}; then
         print::debug "Not building documentation."
         build_profiles="nodoc ${build_profiles}"
+        build_opts="nodoc ${build_opts}"
     fi
 
     local build_cmd="$(path::to dpkg-buildpackage)"
-    if [[ "$(uname -m)" != "${opts[arch]}" ]]; then
+    if [[ "${host_arch}" != "${opts[arch]}" ]]; then
         print::debug "Cross compiling for ${opts[arch]}."
         build_cmd="$(path::to pdebuild)"
         build_args=( --architecture "${opts[arch]}"
@@ -79,7 +86,7 @@ debian::dpkg::build() {
     fi
 
     local build_env; build_env=( DEB_BUILD_OPTIONS="${build_opts}" )
-    build_env=( DEB_BUILD_PROFILES="${build_profiles}" )
+    build_env+=( DEB_BUILD_PROFILES="${build_profiles}" )
     # Reset local Perl settings.
     build_env+=( PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= )
     shell::exec_env $(shell::as_array build_env) "${build_cmd}" "${build_args[@]}"
