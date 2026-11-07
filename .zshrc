@@ -24,19 +24,17 @@ zshrc::history() {
     # Ensure HISTFILE does not end up in the environment and
     # accidentally used by another shell, such as Bash.
     typeset +x HISTFILE
-    # Increase length of history.
-    export HISTSIZE=100000
-    export SAVEHIST=${HISTSIZE}
+    # Increase length of history. Like HISTFILE, keep these out of the
+    # environment so that Bash does not pick them up.
+    HISTSIZE=100000
+    SAVEHIST=${HISTSIZE}
+    typeset +x HISTSIZE SAVEHIST
 
     # Allow multiple terminal sessions to all append to one zsh
     # command history.
     setopt append_history
     # Save time stamp of command and duration.
     setopt extended_history
-    # Add commands as they are typed, don't wait until shell exit.
-    setopt inc_append_history
-    # When trimming history, lose oldest duplicates first.
-    setopt hist_expire_dups_first
     # Do not write events to history that are duplicates of previous
     # events.
     setopt hist_ignore_dups
@@ -55,10 +53,19 @@ zshrc::history() {
     setopt hist_reduce_blanks
     # Don't execute, just expand history.
     setopt hist_verify
-    # Imports new commands and appends typed commands to history.
+    # Imports new commands and appends typed commands to history as they
+    # are entered (this replaces inc_append_history, which the manual says
+    # to turn off together with share_history).
     setopt share_history
 
     alias zhistory="builtin history -di 1"
+
+    # Use Emacs key bindings explicitly; otherwise zle picks vi bindings
+    # whenever $EDITOR or $VISUAL contains "vi".
+    bindkey -e
+
+    # Let ^S reach zle instead of stopping terminal output.
+    unsetopt flow_control
 
     # Allow patterns in searches by default.
     bindkey '^R' history-incremental-pattern-search-backward

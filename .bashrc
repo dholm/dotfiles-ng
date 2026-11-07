@@ -29,6 +29,10 @@ shell::is_dumb || shell::eval bashrc::bash_it
 bashrc::history() {
     # Don't put duplicate lines or lines starting with space in the history.
     HISTCONTROL=ignoreboth
+    # Increase length of history, matching zsh.
+    HISTSIZE=100000
+    HISTFILESIZE=${HISTSIZE}
+    export -n HISTSIZE HISTFILESIZE
 
     # Append to the history file, don't overwrite it.
     shopt -s histappend
