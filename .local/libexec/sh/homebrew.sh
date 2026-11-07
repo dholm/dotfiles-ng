@@ -19,8 +19,10 @@ homebrew::setup() {
     path::prepend "${brew_prefix}/bin"
     path::prepend "${brew_prefix}/sbin"
 
-    # Stop running update on every command and stashing modified formulas.
-    export HOMEBREW_DEVELOPER=1
+    # Do not run brew update before install/upgrade/tap. (HOMEBREW_DEVELOPER
+    # also did that, but switches on developer mode, e.g. warnings become
+    # errors and brew update follows the latest commit instead of releases.)
+    export HOMEBREW_NO_AUTO_UPDATE=1
 
     export MANPATH="${brew_prefix}/share/man:${MANPATH}"
 
