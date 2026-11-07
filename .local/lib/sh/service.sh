@@ -10,15 +10,28 @@ service::darwin::has() {
     return 1
 }
 
+service::linux::_status() {
+    local service="${1}"
+
+    # Both systemctl and LSB init scripts exit with 0 for a running service,
+    # 1-3 for a dead or stopped one and 4 for an unknown one. Querying the
+    # status does not need root.
+    if path::has_binary systemctl && file::is_directory /run/systemd/system; then
+        shell::exec systemctl status "${service}" &>/dev/null
+    elif path::has_binary service; then
+        shell::exec service "${service}" status &>/dev/null
+    else
+        return 4
+    fi
+}
+
 service::linux::has() {
     local service="${1}"
 
-    if path::has_binary service; then
-        shell::exec sudo service ${service} status >/dev/null
-        if ((${?} == 1)); then
-            print::debug "Service ${service} exists."
-            return 0
-        fi
+    service::linux::_status "${service}"
+    if ((${?} < 4)); then
+        print::debug "Service ${service} exists."
+        return 0
     fi
 
     return 1
@@ -39,12 +52,9 @@ service::darwin::is_running() {
 service::linux::is_running() {
     local service="${1}"
 
-    if path::has_binary service; then
-        shell::exec sudo service ${service} status >/dev/null
-        if ((${?} == 0)); then
-            print::debug "Service ${service} is running."
-            return 0
-        fi
+    if service::linux::_status "${service}"; then
+        print::debug "Service ${service} is running."
+        return 0
     fi
 
     return 1

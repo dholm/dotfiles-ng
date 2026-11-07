@@ -30,7 +30,7 @@ network::ip::public() {
         shift
     done
 
-    _network::ip::public "${host}"
+    _network::ip::public "https://${host}"
 }
 
 network::dns::flush() {
@@ -38,23 +38,42 @@ network::dns::flush() {
         shell::exec dscacheutil -flushcache
         process::hangup --privileged mDNSResponder
     elif os::is_linux; then
-        if service::has dns-clean; then
+        # Only flush caches that are running; restarting a stopped cache
+        # daemon would start it.
+        if service::is_running systemd-resolved; then
+            shell::exec sudo resolvectl flush-caches
+        elif service::is_running dns-clean; then
             service::restart dns-clean
-        elif service::has nscd; then
+        elif service::is_running nscd; then
             service::restart nscd
-        elif service::has dnsmasq; then
+        elif service::is_running dnsmasq; then
             service::restart dnsmasq
-        elif service::has bind; then
+        elif service::is_running bind; then
             service::restart bind
         fi
     fi
 }
 
 network::dns::resolve::ns() {
-    local host="${1}"
+    local zone="${1%.}"
 
-    local dig_args; dig_args=( +short NS )
-    shell::exec dig "${dig_args[@]}" "${host}"
+    # NS records only exist at zone apexes, so walk up from the host name
+    # until one is found. Only accept NS records owned by the queried name,
+    # not ones reached by following a CNAME.
+    local ns
+    while [[ -n "${zone}" ]]; do
+        ns="$(shell::exec dig +noall +answer NS "${zone}" |
+              awk -v zone="${zone}." \
+                  'tolower($1) == tolower(zone) && $4 == "NS" { print $5 }')"
+        if [[ -n "${ns}" ]]; then
+            echo "${ns}"
+            return 0
+        fi
+        [[ "${zone}" == *.* ]] || break
+        zone="${zone#*.}"
+    done
+
+    return 1
 }
 
 network::dns::resolve() {
@@ -65,7 +84,7 @@ network::dns::resolve() {
         return 1
     fi
 
-    local dig_args; dig_args=( +short "@${ns[1]}" )
+    local dig_args; dig_args=( +short "@${ns[@]:0:1}" )
     shell::exec dig "${dig_args[@]}" "${host}"
 }
 
