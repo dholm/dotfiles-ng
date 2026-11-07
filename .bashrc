@@ -1,28 +1,54 @@
 . "${HOME}/.shellrc"
 
 
+# The rest only matters for interactive shells. .bash_profile also sources
+# this file for non-interactive login shells (bash -lc, commands over ssh),
+# which only need the environment set up by .shellrc.
+if shell::is_non_interactive; then
+    if ((PROFILE)); then
+        profile::stop
+    fi
+    return 0
+fi
+
+
+_bashrc_liquidprompt="${HOME}/.dotfiles/external/liquidprompt/liquidprompt"
+
+
 bashrc::bash_it() {
     # Path to the bash it configuration
     export BASH_IT="${HOME}/.bash.d/bash_it"
 
-    # Lock and Load a custom theme file
-    # location /.bash_it/themes/
-    export BASH_IT_THEME='bobby'
+    # Liquidprompt (loaded below) replaces the prompt, so only load a bash-it
+    # theme when it is missing.
+    if file::is_readable "${_bashrc_liquidprompt}"; then
+        export BASH_IT_THEME=''
+    else
+        export BASH_IT_THEME='bobby'
+    fi
 
     # Load Bash It
     $(shell::source $BASH_IT/bash_it.sh)
 
     # Load selection of bash-it plugins
     local plugins; plugins=(
-        base battery dirs fasd git osx python ssh tmux tmuxinator
+        base dirs fasd git python ssh tmux tmuxinator
     )
-    local plugins_enabled="$(bash-it show plugins | egrep '\[x')"
+    os::is_darwin && plugins+=( osx )
+
+    # Enabled plugins are symlinks named <priority>---<name>.plugin.bash.
+    # Checking for them is much faster than 'bash-it show plugins', and
+    # matches whole names only.
     local plugin
-    for plugin in ${plugins[@]}; do
-        if ( ! $(echo $plugins_enabled | grep -q $plugin) ); then
-            shell::eval bash-it enable plugin $plugin
+    for plugin in "${plugins[@]}"; do
+        if ! compgen -G "${BASH_IT}/enabled/*---${plugin}.plugin.bash" >/dev/null; then
+            shell::eval bash-it enable plugin "${plugin}"
         fi
     done
+    if ! os::is_darwin &&
+            compgen -G "${BASH_IT}/enabled/*---osx.plugin.bash" >/dev/null; then
+        shell::eval bash-it disable plugin osx
+    fi
 }
 shell::is_dumb || shell::eval bashrc::bash_it
 
@@ -42,8 +68,7 @@ shell::eval bashrc::history
 
 
 bashrc::liquidprompt() {
-    local liquidprompt="${HOME}/.dotfiles/external/liquidprompt/liquidprompt"
-    $(shell::source "${liquidprompt}")
+    $(shell::source "${_bashrc_liquidprompt}")
 }
 shell::is_dumb || shell::eval bashrc::liquidprompt
 
