@@ -18,11 +18,13 @@ vcs::git::subpatch_generate() {
     local out_path="${2}"
 
     local refspec_list; refspec_list=( $(vcs::git::subpatch_list ${base_path}) )
-    local git_args; git_args=( log -p --pretty=email --stat -m )
+    # -1 <commit> instead of <commit>~1..<commit>, which fails for a root
+    # commit.
+    local git_args; git_args=( log -p --pretty=email --stat -m -1 )
     local refspec
+    local patch
     for refspec in ${refspec_list[@]}; do
-        local patch
-        patch="$(shell::exec "$(path::to git)" "${git_args[@]}" "${refspec}~1..${refspec}" -- "${base_path}")"
+        patch="$(shell::exec "$(path::to git)" "${git_args[@]}" "${refspec}" -- "${base_path}")"
         if [ "${?}" -ne 0 ]; then
             print::warning "Failed to generate patch for ${refspec}!"
             continue
