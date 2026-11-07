@@ -48,7 +48,7 @@ print::warning() {
 $(print::pen_color fg yellow)\
 $(eval ${caller}):\
 ${*}\
-${print::pen_style normal}" 1>&2
+$(print::pen_style normal)" 1>&2
 }
 
 print::info() {
