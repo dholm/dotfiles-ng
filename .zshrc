@@ -95,6 +95,7 @@ zshrc::zinit_bundles() {
                     man minikube mosh nmap node npm perl pip podman
                     python redis-cli rsync ruby sbt scala ssh-agent
                     sudo svn systemd)
+    local binary
     for binary in "${binaries[@]}"; do
         path::has_binary "${binary}" && zinit snippet OMZP::${binary}
     done
@@ -126,8 +127,9 @@ zshrc::prompt() {
     zinit ice pick"async.zsh" src"pure.zsh"
     zinit light sindresorhus/pure
 
-    # Single line prompt.
-    export prompt_newline='%666v'
+    # Single line prompt. Pure only reads this in the current shell, so keep
+    # it out of the environment.
+    typeset -g +x prompt_newline='%666v'
     PROMPT=" $PROMPT"
 }
 shell::is_dumb || shell::eval zshrc::prompt

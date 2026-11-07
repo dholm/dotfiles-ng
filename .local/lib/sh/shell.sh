@@ -12,9 +12,8 @@ shell::is_bash() {
     test -n "${BASH_VERSION}"
 }
 
-export callee
-export caller
-export this
+# Not exported: they are only evaluated by this shell, e.g. $(eval ${caller}).
+typeset +x callee caller this
 if shell::is_zsh; then
     callee='echo ${funcstack[2]}'
     caller='echo ${funcstack[3]}'
@@ -30,7 +29,7 @@ shell::is_non_interactive() {
 }
 
 shell::is_dumb() {
-    shell::is_non_interactive || [[ "${TERM:=dumb}" == "dumb" ]]
+    shell::is_non_interactive || [[ "${TERM:-dumb}" == "dumb" ]]
 }
 
 shell::has_function() {

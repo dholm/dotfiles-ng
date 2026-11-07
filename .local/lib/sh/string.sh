@@ -3,7 +3,7 @@ string::split() {
     local str="${2}"
 
     if shell::is_zsh; then
-        setopt shwordsplit
+        setopt localoptions shwordsplit
     fi
 
     local old_ifs="${IFS}"
@@ -32,7 +32,7 @@ string::join() {
     local array; array=( $(eval $(shell::from_array 2)) )
 
     if shell::is_zsh; then
-        setopt shwordsplit
+        setopt localoptions shwordsplit
     fi
 
     local old_ifs="${IFS}"

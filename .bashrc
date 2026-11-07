@@ -17,6 +17,7 @@ bashrc::bash_it() {
         base battery dirs fasd git osx python ssh tmux tmuxinator
     )
     local plugins_enabled="$(bash-it show plugins | egrep '\[x')"
+    local plugin
     for plugin in ${plugins[@]}; do
         if ( ! $(echo $plugins_enabled | grep -q $plugin) ); then
             shell::eval bash-it enable plugin $plugin

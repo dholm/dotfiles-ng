@@ -3,6 +3,7 @@ fn::map() {
     fn::_map() {
         eval echo ${fn}
     }
+    local x
     for x in ${@}; do
         fn::_map ${x}
     done
@@ -25,6 +26,7 @@ fn::fold() {
     fn::_fold_helper() {
         acc=$(fn::_fold "${acc}" "${1}")
     }
+    local x
     for x in ${@}; do
         fn::_fold_helper ${x}
     done
@@ -54,6 +56,7 @@ fn::foldr() {
     fn::_foldr_storer() {
         input+=( ${1} )
     }
+    local x
     for x in ${@}; do
         fn::_foldr_storer ${x}
     done
@@ -72,6 +75,7 @@ fn::filter() {
         local x="${1}"
         eval "${fn}" && echo "${x}"
     }
+    local x
     for x in ${@}; do
         fn::_filter ${x}
     done
@@ -94,6 +98,7 @@ fn::each() {
     fn::_each() {
         eval ${fn}
     }
+    local x
     for x in ${@}; do
         fn::_each ${x}
         local retval="${?}"

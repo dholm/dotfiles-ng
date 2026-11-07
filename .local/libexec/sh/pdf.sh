@@ -11,6 +11,7 @@ pdf::to_eps() {
     local cropped=".${name%.*}.tmp.pdf"
 
     shell::exec pdfcrop "${pdf}" "${cropped}" >/dev/null
+    local page
     for (( page = 1; page <= ${pages}; page++ )); do
         shell::exec pdftops -eps -level3 -f ${page} -l ${page} "${cropped}" "${name%.*}.${page}.eps"
     done

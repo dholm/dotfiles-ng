@@ -2,6 +2,7 @@ array::find() {
     local haystack; haystack=( $(eval $(shell::from_array 1)) ); shift
     local needle="${1}"
 
+    local i
     for ((i = 0; i < ${#haystack[@]}; ++i)); do
         if [ "${needle}" = "${haystack[${i}]}" ]; then
             break

@@ -20,6 +20,7 @@ vcs::git::subpatch_generate() {
 
     local refspec_list; refspec_list=( $(vcs::git::subpatch_list ${base_path}) )
     local git_args; git_args=( log -p --pretty=email --stat -m )
+    local refspec
     for refspec in ${refspec_list[@]}; do
         local patch="$(shell::exec "$(path::to git)" "${git_args[@]}" "${refspec}~1..${refspec}" -- "${base_path}")"
         if [ "${?}" -ne 0 ]; then
@@ -40,6 +41,7 @@ vcs::git::subpatch_apply() {
     local patch_path="$(shell::exec "$(path::to dirname)" "${patch_list_file}")"
     local patch_list; patch_list=( $(cat "${patch_list_file}") )
     local git_args; git_args=( am -3 "-p${strip_prefix}" )
+    local refspec
     for refspec in ${patch_list[@]}; do
         local patch_file="${patch_path}/${refspec}.patch"
         shell::exec "$(path::to git)" "${git_args[@]}" "${patch_file}"
