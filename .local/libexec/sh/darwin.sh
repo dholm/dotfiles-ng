@@ -53,9 +53,11 @@ darwin::package::info() {
 }
 
 darwin::package::owner() {
-    local path="${1}"
+    # Not "path": in zsh that is tied to $PATH, so a local named path would
+    # replace the command search path inside this function.
+    local file="${1}"
 
-    shell::exec pkgutil --file-info "${path}"
+    shell::exec pkgutil --file-info "${file}"
 }
 
 darwin::package::uninstall() {
