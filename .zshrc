@@ -119,8 +119,13 @@ zshrc::zinit_bundles() {
 
     if path::has_binary git; then
         zinit snippet OMZP::git
-        zinit snippet OMZP::github
         zinit snippet OMZP::gitignore
+    fi
+
+    # Completion for the GitHub CLI. (OMZP::github, for the legacy hub CLI,
+    # is deprecated and warns on every start.)
+    if path::has_binary gh; then
+        zinit snippet OMZP::gh
     fi
 
     if path::has_binary hg; then
