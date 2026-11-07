@@ -1,5 +1,32 @@
+perl::_archname() {
+    # Sets REPLY to perl's archname. Running perl for it costs a few ms on
+    # every shell start, and the archname of a given perl binary does not
+    # change, so it is cached per perl path. Delete the cache file to refresh.
+    local perl_bin
+    if shell::is_zsh; then
+        perl_bin="${commands[perl]}"
+    else
+        hash perl 2>/dev/null
+        perl_bin="${BASH_CMDS[perl]}"
+    fi
+
+    local cache="${XDG_CACHE_HOME:-${HOME}/.cache}/shellrc/perl-archname"
+    local cached_bin cached_arch
+    if [[ -r "${cache}" ]] &&
+           IFS=$'\t' read -r cached_bin cached_arch <"${cache}" &&
+           [[ "${cached_bin}" == "${perl_bin}" && -n "${cached_arch}" ]]; then
+        REPLY="${cached_arch}"
+        return 0
+    fi
+
+    REPLY="$(perl -MConfig -e 'print $Config{archname}')" || return 1
+    mkdir -p "${cache%/*}" &&
+        printf '%s\t%s\n' "${perl_bin}" "${REPLY}" >"${cache}"
+}
+
 perl::local_lib::setup() {
-    local arch_name="$(perl -MConfig -e'print $Config{archname}')"
+    perl::_archname
+    local arch_name="${REPLY}"
 
     export PERL_LOCAL_LIB_ROOT="${HOME}/.local"
     export PERL_MB_OPT="--install_base ${PERL_LOCAL_LIB_ROOT}"
