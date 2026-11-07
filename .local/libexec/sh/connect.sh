@@ -1,4 +1,6 @@
-eval $(alist::typeset _connect_host_table)
+# Maps names to connection URLs. Global even when this file is sourced from
+# a function.
+typeset -gA _connect_host_table
 
 connect::add() {
     local name="${1}"
@@ -6,7 +8,7 @@ connect::add() {
 
     if url::is_valid ${url}; then
         print::debug "Adding ${name} (${url}) to host table"
-        shell::eval "$(alist::add _connect_host_table ${name} ${url})"
+        _connect_host_table[${name}]="${url}"
         return 0
     else
         print::error "Url ${url} failed validation!"
@@ -92,7 +94,7 @@ connect::telnet::to() {
 connect::to() {
     local system="${1}"; shift
 
-    local url="$(eval $(alist::get _connect_host_table ${system}))"
+    local url="${_connect_host_table[${system}]}"
     if [[ -n "${url}" ]]; then
         print::info "Connecting to ${url}.."
         local scheme="$(url::get_scheme ${url})"

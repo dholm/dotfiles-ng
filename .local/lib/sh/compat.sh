@@ -1,3 +1,6 @@
+# These libraries need zsh or bash >= 4.2 (associative arrays, typeset -g).
+# There is no fallback for older bash versions such as macOS' /bin/bash 3.2.
+
 compat::version() {
     echo "$@" | awk -F. '{ printf("%d.%d.%d\n", $1,$2,$3); }'
 }
@@ -13,15 +16,16 @@ compat::version_norm() {
     echo "$(string::join . $(shell::as_array vnorm))"
 }
 
-compat::shell::has_associative_arrays() {
-    if shell::is_zsh; then
-        return 0
-    elif shell::is_bash; then
-        if [[ "$(compat::version ${BASH_VERSION})" < "$(compat::version 4.0.0)" ]]; then
-            return 1
-        fi
-        return 0
+compat::shell::is_supported() {
+    if shell::is_bash; then
+        (( BASH_VERSINFO[0] > 4 ||
+           (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] >= 2) ))
+    else
+        shell::is_zsh
     fi
-
-    return 1
 }
+
+if ! compat::shell::is_supported; then
+    echo "compat.sh: Unsupported shell (bash ${BASH_VERSION:-?});" \
+         "these libraries need zsh or bash >= 4.2." 1>&2
+fi
