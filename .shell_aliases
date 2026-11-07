@@ -8,17 +8,19 @@ alias dotfiles='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
 
 
 ###
-# Use colors for coreutils.
-if ( ls --color 1>/dev/null 2>&1 )
+# Use colors for coreutils. Test with -d / so that the probe does not list
+# the current directory, which can be large or on a slow mount.
+if ( ls --color -d / 1>/dev/null 2>&1 )
 then
     alias ls='ls --color=auto'
-elif ( ls -G 1>/dev/null 2>&1 )
+elif ( ls -G -d / 1>/dev/null 2>&1 )
 then
     alias ls='ls -G'
 fi
 alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# egrep and fgrep are obsolescent (GNU grep >= 3.8 warns on every call).
+alias fgrep='grep -F --color=auto'
+alias egrep='grep -E --color=auto'
 
 
 ###

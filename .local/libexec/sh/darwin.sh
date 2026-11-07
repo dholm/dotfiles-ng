@@ -16,8 +16,8 @@ darwin::package::files() {
         return 1
     fi
 
-    local volume="$(pkgutil --pkg-info "${name}" | egrep '^volume:' | cut -d' ' -f 2-)"
-    local location="$(pkgutil --pkg-info "${name}" | egrep '^location:' | cut -d' ' -f 2-)"
+    local volume="$(pkgutil --pkg-info "${name}" | grep -E '^volume:' | cut -d' ' -f 2-)"
+    local location="$(pkgutil --pkg-info "${name}" | grep -E '^location:' | cut -d' ' -f 2-)"
     while read -r file; do
         echo "${volume}${location}/${file}"
     done <<< $(pkgutil --only-files --files "${name}")
@@ -31,8 +31,8 @@ darwin::package::directories() {
         return 1
     fi
 
-    local volume="$(pkgutil --pkg-info "${name}" | egrep '^volume:' | cut -d' ' -f 2-)"
-    local location="$(pkgutil --pkg-info "${name}" | egrep '^location:' | cut -d' ' -f 2-)"
+    local volume="$(pkgutil --pkg-info "${name}" | grep -E '^volume:' | cut -d' ' -f 2-)"
+    local location="$(pkgutil --pkg-info "${name}" | grep -E '^location:' | cut -d' ' -f 2-)"
     while read -r file; do
         echo "${volume}${location}/${file}"
     done <<< $(pkgutil --only-dirs --files "${name}")

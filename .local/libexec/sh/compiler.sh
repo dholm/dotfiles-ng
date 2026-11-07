@@ -31,7 +31,7 @@ compiler::find_typedef() {
     local name="${1}"
     local search_path="${2:-/usr/include}"
 
-    shell::exec egrep -r "typedef.*${name};" "${search_path}"
+    shell::exec grep -E -r "typedef.*${name};" "${search_path}"
 }
 
 compiler::disassemble_functions() {

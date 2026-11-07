@@ -2,7 +2,7 @@ service::darwin::has() {
     local service="${1}"
 
     local has_exp="^([-[:digit:]]+[[:space:]]+){2}${service}$"
-    if shell::exec launchctl list | egrep -q ${has_exp}; then
+    if shell::exec launchctl list | grep -E -q ${has_exp}; then
         print::debug "Service ${service} exists."
         return 0
     fi
@@ -41,7 +41,7 @@ service::darwin::is_running() {
     local service="${1}"
 
     local running_exp="^[AD][[:space:]]+${service}$"
-    if shell::exec launchctl bslist | egrep -q ${running_exp}; then
+    if shell::exec launchctl bslist | grep -E -q ${running_exp}; then
         print::debug "Service ${service} is running."
         return 0
     fi
