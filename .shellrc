@@ -41,10 +41,20 @@ shell::eval shellrc::path_setup
 
 shellrc::coding_setup() {
     local locale; locale="en_US.UTF-8"
-    local measurement; measurement=( en_DK.UTF-8 en_IE.UTF-8 ${locale} C )
+    local candidates; candidates=( en_DK.UTF-8 en_IE.UTF-8 ${locale} C )
 
-    local locales; locales=( $(shell::exec locale -a) )
-    measurement=( $(fn::filter 'array::find $(shell::as_array locales) $1 >/dev/null' ${measurement[@]}) )
+    # Pick the first installed candidate. glibc lists locales with a
+    # normalized codeset (e.g. en_DK.utf8), so check for both spellings.
+    local available; available=" $(locale -a 2>/dev/null | tr '\n' ' ') "
+    local measurement; measurement="C"
+    local candidate
+    for candidate in "${candidates[@]}"; do
+        if [[ "${available}" == *" ${candidate} "* ||
+              "${available}" == *" ${candidate/.UTF-8/.utf8} "* ]]; then
+            measurement="${candidate}"
+            break
+        fi
+    done
 
     ###
     # Standard settings.
@@ -63,18 +73,18 @@ shellrc::coding_setup() {
     export LC_COLLATE="C"
     # Set the short date to ISO 8601 (YYYY-MM-DD, test with "date +%c") but use
     # English names.
-    export LC_TIME="${measurement[1]}"
+    export LC_TIME="${measurement}"
 
     ###
     # GNU extensions.
     # Units of measurement.
-    export LC_MEASUREMENT="${measurement[1]}"
+    export LC_MEASUREMENT="${measurement}"
     # Telephone numbers.
-    export LC_TELEPHONE="${measurement[1]}"
+    export LC_TELEPHONE="${measurement}"
     # Address formatting.
-    export LC_ADDRESS="${measurement[1]}"
+    export LC_ADDRESS="${measurement}"
     # Paper size.
-    export LC_PAPER="${measurement[1]}"
+    export LC_PAPER="${measurement}"
     # Person name formatting.
     export LC_NAME="${locale}"
 
