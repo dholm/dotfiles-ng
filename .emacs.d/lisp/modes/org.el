@@ -118,6 +118,9 @@
   (make-directory *user-org-cache-directory* t)
   ;; Fix for EIN if org hasn't been setup yet.
   (autoload 'org-add-link-type "org" "" t)
+  ;; Bound here rather than in org-capture's :init below, which only runs
+  ;; once Org has loaded. `org-capture' is autoloaded.
+  (user/bind-key-global :apps :capture-task 'org-capture)
   :hook
   (org-mode-hook . user--org-mode-hook)
   :bind
@@ -232,8 +235,6 @@
 
   (use-package org-capture
     :ensure nil
-    :init
-    (user/bind-key-global :apps :capture-task 'org-capture)
     :config
     ;; Incompatible with validate-setq.
     (setq
