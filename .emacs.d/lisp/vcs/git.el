@@ -96,7 +96,9 @@
 
   (when (feature-p 'helm)
     (use-package helm-ls-git
-      :defer)
+      :defer
+      ;; MELPA Stable only has 1.9.4, which doesn't load with helm 4.
+      :pin "MELPA")
     (use-package helm-git-grep
       :defer
       :pin "MELPA"
