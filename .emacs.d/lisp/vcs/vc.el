@@ -12,12 +12,14 @@
 
 (defun user--vc-log-edit-hook ()
   "Version control log editing hook."
-  ;; Limited whitespace style.
+  ;; Limited whitespace style and maximum line length. whitespace-mode is
+  ;; already on from the text-mode hook, so restart it to apply them.
   (setq-local whitespace-style '(face lines-tail))
-
-  ;; Set maximum line length.
   (setq fill-column 72)
   (setq-local whitespace-line-column 72)
+  (when (bound-and-true-p whitespace-mode)
+    (whitespace-mode -1)
+    (whitespace-mode 1))
 
   ;; Enable org minor mode editing tools.
   (orgtbl-mode t))
@@ -39,6 +41,9 @@
     (validate-setq auto-revert-remote-files t)))
 
 (add-hook 'find-file-hook 'user--vc-find-file-hook)
+;; Commit messages written with VC (C-x v v). Magit's commit buffers run
+;; the same hook through `user--git-commit-mode-hook'.
+(add-hook 'log-edit-mode-hook 'user--vc-log-edit-hook)
 
 
 (provide 'vcs/vc)
