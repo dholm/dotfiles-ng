@@ -36,12 +36,14 @@
    ;; Put session backups into the cache directory.
    auto-save-list-file-prefix (path-join *user-auto-save-directory* ".saves-"))
 
-  (use-package async-backup
-    :hook (after-save-hook . async-backup)
-    :config
-    (validate-setq
-     ;; Put the backups in the cache folder.
-     async-backup-location (path-join *user-cache-directory* "async-backup"))))
+  ;; Make a numbered backup on every save, not only the first save of a
+  ;; session. `kept-new-versions' and `kept-old-versions' bound their number.
+  (add-hook 'before-save-hook #'user--backups-before-save-hook))
+
+
+(defun user--backups-before-save-hook ()
+  "Back up the file again when it is saved."
+  (setq buffer-backed-up nil))
 
 
 (user--backups-config)
