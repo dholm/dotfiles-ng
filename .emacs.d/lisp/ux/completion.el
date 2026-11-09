@@ -3,47 +3,10 @@
 ;;; Code:
 
 
-(defun user--company-mode-hook ()
-  "Company mode hook."
-  (user/complete-at-point-install)
-
-  ;;; (Bindings) ;;;
-  (when (current-local-map)
-    (define-key (current-local-map) (user/get-key :code :auto-complete) 'company-complete)))
-
-
 (defun user/company-mode-p ()
   "True if company should be used."
   (and (boundp 'global-company-mode)
        global-company-mode))
-
-
-(defun user/complete-at-point-install ()
-  "Install completion backend in complete-at-point."
-  (setq
-   ;; Insert completion backend into `completion-at-point'.
-   completion-at-point-functions
-   (cons 'user/complete-at-point
-         (remove 'user/complete-at-point completion-at-point-functions))))
-
-
-(defun user/company-check-expansion ()
-  "Check if expression can be expanded by company."
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "->") t nil)))))
-
-
-(defun user/complete-at-point ()
-  "Complete thing at point using completion backend."
-  (cond
-   ((minibufferp) (minibuffer-complete))
-   ((and (boundp 'company-mode) company-mode (user/company-check-expansion))
-    #'company-complete-common)
-   (t #'indent-for-tab-command)))
 
 
 (defun company-complete-common-or-selection ()
@@ -81,7 +44,10 @@
   ;;; (Packages) ;;;
   (use-package company
     :diminish company-mode
-    :hook (company-mode-hook . user--company-mode-hook)
+    ;; Load company and enable it everywhere once init is done. The global
+    ;; mode can't be enabled from :config, which only runs once something
+    ;; loads company.
+    :hook (after-init-hook . global-company-mode)
     :config
     (validate-setq
      ;; Do not trigger completion automatically.
@@ -106,6 +72,8 @@
       (user/get-key :basic :forward-line) 'company-select-next)
     (define-key company-active-map
       (user/get-key :basic :backward-line) 'company-select-previous)
+    (define-key company-mode-map
+      (user/get-key :code :auto-complete) 'company-complete)
 
     (use-package company-dabbrev-code
       :ensure company
@@ -127,9 +95,7 @@
        company-quickhelp-delay 0.5))
     (use-package company-box
       :if (display-graphic-p)
-      :hook (company-mode-hook . company-box-mode))
-
-    (global-company-mode t)))
+      :hook (company-mode-hook . company-box-mode))))
 
 (user--completion-config)
 
