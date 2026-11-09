@@ -16,7 +16,10 @@
     (rainbow-delimiters-mode t))
 
   (with-feature 'paredit
-    (enable-paredit-mode))
+    ;; Paredit's RET and C-j would shadow evaluation in IELM and in
+    ;; *scratch*.
+    (unless (derived-mode-p 'inferior-emacs-lisp-mode 'lisp-interaction-mode)
+      (enable-paredit-mode)))
 
   (with-feature 'easy-escape
     (easy-escape-minor-mode t))
