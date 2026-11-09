@@ -361,11 +361,16 @@
     (use-package gnus-recent
       ;; Tracks articles through hooks that are added when it is loaded.
       :demand
-      :bind-wrap
-      (:map gnus-summary-mode-map
-            ((:key :nav :go-back) . gnus-recent-goto-previous)
-            :map gnus-group-mode-map
-            ((:key :nav :go-back) . gnus-recent-goto-previous)))
+      :config
+      (with-eval-after-load 'gnus-sum
+        ;; C-l is the navigation prefix, which the summary buffer binds to
+        ;; `gnus-recenter' (recenter is on C-l l).
+        (define-key gnus-summary-mode-map (kbd "C-l") nil)
+        (define-key gnus-summary-mode-map (user/get-key :nav :go-back)
+          'gnus-recent-goto-previous))
+      (with-eval-after-load 'gnus-group
+        (define-key gnus-group-mode-map (user/get-key :nav :go-back)
+          'gnus-recent-goto-previous)))
 
     ;;; (Bindings) ;;;
     (with-eval-after-load 'gnus

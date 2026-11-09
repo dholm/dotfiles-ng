@@ -51,11 +51,15 @@
         (let ((x (car arg)))
           (cond
            ;; ((:key :category :function) . COMMAND)
+           ;; `user/get-key' returns a parsed key. Pass it as a vector,
+           ;; since `bind-key' parses string keys again, which turns keys
+           ;; containing C-l, TAB, C-j or SPC into different keys.
            ((and (consp x)
                  (consp (car x))
                  (equal (caar x) :key))
             (setq args* (nconc args*
-                               (list (cons (apply 'user/get-key (cdar x))
+                               (list (cons (vconcat
+                                            (apply 'user/get-key (cdar x)))
                                      (cdar arg)))))
             (setq arg (cdr arg)))
            ;; (KEY . COMMAND)
