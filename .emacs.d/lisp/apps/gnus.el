@@ -81,10 +81,6 @@
 
   ;; Enable S/MIME via EasyPG.
   (epa-file-enable)
-  (when (feature-p 'jl-smime)
-    ;; S/MIME LDAP support.
-    (require 'ldap)
-    (load "jl-smime"))
 
   (with-feature 'gnus-dired
     ;; Attach files using dired.
@@ -594,22 +590,16 @@
 
   (with-executable 'gpgsm
     (use-package jl-encrypt
-      ;; DefaultEncrypt, which also contains jl-smime.
+      ;; DefaultEncrypt. It has no autoloads and adds its Gnus and message
+      ;; hooks when it is loaded, so load it with Gnus.
       :vc (:url "https://gitlab.com/lechten/defaultencrypt"
            :main-file "jl-encrypt.el")
-      :defer t)
-    (use-package jl-smime
-      ;; Part of the jl-encrypt package.
-      :ensure nil
-      :requires jl-encrypt
-      :init
-      (with-eval-after-load 'gnus
-        (load "jl-smime"))
-      ;; Enable S/MIME via EasyPG.
+      :config
+      ;; S/MIME via EasyPG, with certificate lookups over LDAP. jl-smime is
+      ;; part of the same package but doesn't provide a feature.
       (require 'epa-file)
-      ;; S/MIME LDAP support.
       (require 'ldap)
-      (load "jl-smime")))
+      (load "jl-smime" nil t)))
 
   (use-package gnus-search
     :ensure nil
