@@ -38,6 +38,11 @@
   :type 'key-sequence
   :group 'user)
 
+(defcustom user/debug-prefix (kbd "C-c g")
+  "Keyboard prefix to use for debugger commands."
+  :type 'key-sequence
+  :group 'user)
+
 (defcustom user/vcs-prefix (kbd "C-c v")
   "Keyboard prefix to use for version control commands."
   :type 'key-sequence
@@ -333,24 +338,24 @@
                (:virtual . (user/code-prefix "v"))))
 
      ;;; (Debugging) ;;;
-     (:debug . ((:start . (user/code-prefix "d"))
+     (:debug . ((:start . (user/debug-prefix "d"))
 
-                (:break . (user/code-prefix "b"))
-                (:trace . (user/code-prefix "T"))
-                (:break-temporary . (user/code-prefix "t"))
-                (:watch . (user/code-prefix "w"))
+                (:break . (user/debug-prefix "b"))
+                (:trace . (user/debug-prefix "T"))
+                (:break-temporary . (user/debug-prefix "t"))
+                (:watch . (user/debug-prefix "w"))
 
-                (:run . (user/code-prefix "r"))
-                (:continue . (user/code-prefix "c"))
-                (:continue-stack . (user/code-prefix "f"))
-                (:continue-until . (user/code-prefix "u"))
-                (:step . (user/code-prefix "s"))
-                (:step-instruction . (user/code-prefix "i"))
-                (:next . (user/code-prefix "n"))
+                (:run . (user/debug-prefix "r"))
+                (:continue . (user/debug-prefix "c"))
+                (:continue-stack . (user/debug-prefix "f"))
+                (:continue-until . (user/debug-prefix "u"))
+                (:step . (user/debug-prefix "s"))
+                (:step-instruction . (user/debug-prefix "i"))
+                (:next . (user/debug-prefix "n"))
 
-                (:stack-up . (user/code-prefix "p"))
-                (:stack-down . (user/code-prefix "n"))
-                (:show-value . (user/code-prefix "p"))))
+                (:stack-up . (user/debug-prefix "p"))
+                (:stack-down . (user/debug-prefix "n"))
+                (:show-value . (user/debug-prefix "p"))))
 
      ;;; (Version Control) ;;;
      (:vcs . ((:clone . (user/vcs-prefix "c"))

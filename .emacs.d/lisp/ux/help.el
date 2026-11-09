@@ -106,6 +106,7 @@
     user/documentation-prefix "doc"
     user/code-prefix          "code"
     user/code-eval-prefix     "eval"
+    user/debug-prefix         "debug"
     user/vcs-prefix           "vcs"
     user/utilities-prefix     "utils"
     user/apps-prefix          "apps")
