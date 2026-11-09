@@ -1,5 +1,8 @@
-;;; org.el --- Org mode support -*- lexical-binding: t; -*-
+;;; org-mode.el --- Org mode support -*- lexical-binding: t; -*-
 ;;; Commentary:
+;; Not named org.el since `(eval-after-load "org" ...)' forms, such as the one
+;; in ob-translate's autoloads, match any file of that name and would run when
+;; this file is loaded, before Org itself.
 ;;; Code:
 
 (defconst *user-org-data-directory*
@@ -718,4 +721,4 @@
 
 
 (provide 'modes/org)
-;;; org.el ends here
+;;; org-mode.el ends here
