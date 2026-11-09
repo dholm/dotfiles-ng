@@ -10,7 +10,10 @@
 
 
 (use-package flycheck
-  :hook (flycheck-mode-hook . user--flycheck-mode-hook)
+  ;; Enable the global mode once init is done. Its :config only runs when
+  ;; something loads flycheck, so the global mode can't be enabled there.
+  :hook ((flycheck-mode-hook . user--flycheck-mode-hook)
+         (after-init-hook . global-flycheck-mode))
   :config
   (validate-setq
    ;; Wait five seconds before starting checker
@@ -30,9 +33,7 @@
   (use-package flycheck-indicator
     :hook (flycheck-mode-hook . flycheck-indicator-mode))
 
-  (use-package helm-flycheck)
-
-  (global-flycheck-mode t))
+  (use-package helm-flycheck))
 
 
 (provide 'utilities/flycheck)
