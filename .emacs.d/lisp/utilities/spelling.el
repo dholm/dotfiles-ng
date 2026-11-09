@@ -79,7 +79,7 @@
          ispell-program-name "aspell"
          ispell-really-aspell t
          ;; Improve performance by reducing suggestions.
-         ispell-extra-args '("--sug-mode=ultra" "--dont-suggest"))
+         ispell-extra-args '("--sug-mode=ultra"))
         (when (boundp 'flyspell-list-command)
           (validate-setq
            flyspell-list-command "--list")))))
