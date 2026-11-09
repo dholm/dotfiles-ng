@@ -24,18 +24,19 @@
   (with-feature 'easy-escape
     (easy-escape-minor-mode t))
 
-  (turn-on-eldoc-mode)
-
-  ;;; (Bindings) ;;;
-  (user/bind-key-local :code :eval-buffer 'eval-buffer)
-  (user/bind-key-local :code :eval-function 'eval-defun)
-  (user/bind-key-local :code :eval-selection 'eval-region)
-  (user/bind-key-local :code :eval-expression 'eval-last-sexp))
+  (turn-on-eldoc-mode))
 
 
 (defun user--lisp-mode-hook ()
   "Lisp mode hook."
-  (user--lisp-mode-common-hook))
+  (user--lisp-mode-common-hook)
+
+  ;;; (Bindings) ;;;
+  ;; Evaluate in the inferior Lisp through SLIME, not as Emacs Lisp.
+  (user/bind-key-local :code :eval-buffer 'slime-eval-buffer)
+  (user/bind-key-local :code :eval-function 'slime-eval-defun)
+  (user/bind-key-local :code :eval-selection 'slime-eval-region)
+  (user/bind-key-local :code :eval-expression 'slime-eval-last-expression))
 
 
 (use-package lisp-mode

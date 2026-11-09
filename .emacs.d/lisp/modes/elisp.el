@@ -34,7 +34,14 @@
   (user/bind-key-local :debug :break 'edebug-defun)
   (user/bind-key-local :debug :trace 'trace-function-background)
   (user/bind-key-local :debug :continue 'debugger-continue)
-  (user/bind-key-local :debug :step 'debugger-step-through))
+  (user/bind-key-local :debug :step 'debugger-step-through)
+
+  ;; Evaluate as Emacs Lisp. Kept out of `user--lisp-mode-common-hook',
+  ;; which also runs for Common Lisp.
+  (user/bind-key-local :code :eval-buffer 'eval-buffer)
+  (user/bind-key-local :code :eval-function 'eval-defun)
+  (user/bind-key-local :code :eval-selection 'eval-region)
+  (user/bind-key-local :code :eval-expression 'eval-last-sexp))
 
 
 (defun user--elisp-flycheck-mode-hook ()
