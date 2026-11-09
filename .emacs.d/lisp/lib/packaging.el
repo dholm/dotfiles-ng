@@ -114,6 +114,11 @@
   (advice-add 'use-package-pin-package :override
               #'user--use-package-pin-package))
 
+;; Needed by the :diminish keyword, which does nothing when diminish isn't
+;; installed. Autoloaded, so nothing is loaded until a mode is diminished.
+(use-package diminish
+  :defer t)
+
 
 (provide 'lib/packaging)
 ;;; packaging.el ends here
