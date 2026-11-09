@@ -167,6 +167,20 @@
   :hook ((gnus-startup-hook . user--gnus-startup-hook)
          (gnus-message-setup-hook . user--gnus-message-setup-hook))
   :init
+  ;; Gnus and message compute many file names from these when their
+  ;; libraries load, so set them first. Otherwise the startup and dribble
+  ;; files, the nnmail cache and message's auto-save directory end up in
+  ;; HOME.
+  (setq
+   gnus-home-directory (file-name-as-directory *user-gnus-data-directory*)
+   gnus-directory (file-name-as-directory *user-gnus-data-directory*)
+   message-directory (file-name-as-directory
+                      (path-join *user-gnus-data-directory* "mail")))
+  (with-eval-after-load 'message
+    (validate-setq
+     message-auto-save-directory
+     (file-name-as-directory (path-join *user-gnus-data-directory* "mail" "drafts"))))
+
   ;; Create data and cache stores.
   (let ((article-dir (path-join *user-gnus-data-directory* "articles")))
     (make-directory article-dir t)
@@ -186,8 +200,10 @@
    ;; Default method should be mail spooler.
    gnus-select-method '(nnml "")
    ;; Gnus data store.
-   gnus-directory *user-gnus-data-directory*
    gnus-article-save-directory (path-join *user-gnus-data-directory* "articles")
+   ;; Kill, score and ADAPT files. Computed from $SAVEDIR or ~/News/ when
+   ;; gnus.el loads, not from `gnus-directory'.
+   gnus-kill-files-directory (file-name-as-directory *user-gnus-data-directory*)
    ;; Default method.
    gnus-select-method '(nnml "mail")
    ;; Suppress startup message.
@@ -204,10 +220,6 @@
    ;;; (Scoring) ;;;
    ;; Use adaptive scoring.
    gnus-use-adaptive-scoring '(word line))
-
-  (with-eval-after-load 'message
-    (validate-setq
-     message-directory (path-join *user-gnus-data-directory* "mail")))
 
   (let ((archive-directory (path-join *user-gnus-data-directory* "mail" "archive")))
     (validate-setq
@@ -226,6 +238,8 @@
     :ensure gnus
     :config
     (validate-setq
+     ;; Startup file, next to which Gnus also keeps the dribble file.
+     gnus-startup-file (path-join *user-gnus-data-directory* ".newsrc")
      ;; Disable newsreader features.
      gnus-save-newsrc-file nil
      gnus-read-newsrc-file nil
@@ -467,6 +481,9 @@
     :ensure nil
     :config
     (validate-setq
+     ;; Message-ID cache for splitting followups.
+     nnmail-message-id-cache-file (path-join *user-gnus-data-directory*
+                                             ".nnmail-cache")
      ;; Stop splitting at first matching rule.
      nnmail-crosspost nil
      ;; Use the same function to split nnmail and nnimap.
