@@ -30,13 +30,12 @@
   :hook ((sh-base-mode-hook . user--sh-mode-hook)
          (shell-mode-hook . user--shell-mode-hook))
   :config
-  ;; Set when shell loads, before `shell' starts the first shell; the mode
-  ;; hook runs only after the process has been started.
+  ;; Set when shell loads, before `shell' starts the first shell. Bash's
+  ;; default arguments in Emacs (--noediting -i) and comint's own echo
+  ;; handling are used; `comint-process-echoes' would also apply to every
+  ;; other comint mode and make Emacs wait for echoes that don't come.
   (validate-setq
-   ;; Set up to use Bash with input echoing.
-   explicit-shell-file-name "bash"
-   explicit-bash-args '("-c" "export EMACS=; stty echo; bash")
-   comint-process-echoes t)
+   explicit-shell-file-name "bash")
 
   ;;; (Packages) ;;;
   ;; shell is loaded during startup (by helm-mode), so defer the packages
