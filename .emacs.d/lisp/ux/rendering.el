@@ -23,12 +23,6 @@
    font-lock-maximum-decoration t
    ;; Always use JIT mode for font-lock.
    font-lock-support-mode 'jit-lock-mode
-   ;; Set up font-lock JIT mode to do background parsing.
-   jit-lock-stealth-time 1.0
-   jit-lock-stealth-nice 0.03
-   jit-lock-stealth-load 200
-   jit-lock-stealth-verbose nil
-   jit-lock-chunk-size 500
    ;; Don't look for bidirectional parentheses, which is slow in long
    ;; lines.
    bidi-inhibit-bpa t)
