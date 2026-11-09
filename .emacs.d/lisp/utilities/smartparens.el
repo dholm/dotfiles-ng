@@ -84,7 +84,6 @@ Only the current and the next line are searched."
         ((:key :basic :forward-expr) . sp-forward-sexp)
         ((:key :basic :backward-expr) . sp-backward-sexp)
         ((:key :code :unwrap-expr) . sp-unwrap-sexp)
-        ((:key :code :comment) . sp-comment)
         ((:key :basic :cut-expr) . sp-kill-sexp)
         ((:key :basic :copy-expr) . sp-copy-sexp))
   :config
