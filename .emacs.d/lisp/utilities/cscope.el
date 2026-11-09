@@ -15,14 +15,17 @@
 
 
 (defun user/cscope-enable ()
-  "Activate CScope in current major mode."
-  (with-feature 'xcscope
-    (with-project-root project-root nil
-      (cscope-set-initial-directory project-root))
-    (cscope-setup))
+  "Activate CScope in current buffer, if cscope is installed."
+  (when (executable-find "cscope")
+    (with-feature 'xcscope
+      (with-project-root project-root nil
+        (cscope-set-initial-directory project-root))
+      ;; Turn the minor mode on here instead of calling `cscope-setup',
+      ;; which adds it to the C, C++ and dired mode hooks globally.
+      (cscope-minor-mode t))
 
-  (with-feature 'helm-cscope
-    (helm-cscope-mode t)))
+    (with-feature 'helm-cscope
+      (helm-cscope-mode t))))
 
 
 (use-package xcscope

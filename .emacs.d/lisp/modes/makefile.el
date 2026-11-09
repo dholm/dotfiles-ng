@@ -20,9 +20,6 @@
   (user/whitespace-disable-style '(indentation space-after-tab))
   ;; Separate camel-case into separate words.
   (subword-mode t)
-  ;; Support for documentation in Doxygen format.
-  (with-feature 'doxymacs
-    (doxymacs-mode t))
 
   (with-feature 'makefile-executor
     (makefile-executor-mode t)))

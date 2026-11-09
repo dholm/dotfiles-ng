@@ -23,9 +23,6 @@
    '((user/c-mode-font-lock-if0 (0 font-lock-comment-face prepend)))
    'add-to-end)
 
-  ;; Enable Doxygen support.
-  (doxygen-mode t)
-
   ;; Separate camel-case into separate words.
   (subword-mode t)
 
