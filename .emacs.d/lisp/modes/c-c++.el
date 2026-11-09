@@ -4,9 +4,10 @@
 
 (defun user--c-mode-common-hook ()
   "C-like languages mode hook."
-  (setq
-   ;; Indent using four spaces.
-   c-basic-offset 4)
+  ;; Indent using four spaces, unless dtrt-indent (run from the prog-mode
+  ;; hook, before this one) has detected the file's own offset.
+  (unless (bound-and-true-p dtrt-indent-original-indent)
+    (setq c-basic-offset 4))
 
   ;; Override the indentation level of case labels in the K&R- and
   ;; Stroustrup styles so that they are indented one level beyond
