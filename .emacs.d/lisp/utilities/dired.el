@@ -33,13 +33,14 @@
     :config
     ;;; (Bindings) ;;;
     (define-key dired-mode-map [R] 'dired-efap)
-    (when (display-graphic-p)
-      (define-key dired-mode-map [down-mouse-1] 'dired-efap-click))
+    ;; Mouse bindings are harmless in terminal frames, and graphical frames
+    ;; may only be created later (daemon).
+    (define-key dired-mode-map [down-mouse-1] 'dired-efap-click)
     (with-eval-after-load 'dired
       ;; Load dired-efap when dired is loaded.
       (require 'dired-efap)))
   (use-package all-the-icons-dired
-    :if window-system)
+    :defer t)
   (use-package dired-rsync
     :if (executable-find "rsync")
     :bind (:map dired-mode-map
@@ -58,8 +59,7 @@
   (define-key dired-mode-map (kbd "^") (lambda ()
                                          (interactive)
                                          (find-alternate-file "..")))
-  (when (display-graphic-p)
-    (define-key dired-mode-map [double-mouse-1] 'dired-find-file)))
+  (define-key dired-mode-map [double-mouse-1] 'dired-find-file))
 
 
 (provide 'utilities/dired)

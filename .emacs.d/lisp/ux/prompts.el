@@ -12,12 +12,10 @@
    ;; Don't also ask about running processes when killing Emacs.
    confirm-kill-processes nil
    ;; Use shorter y/n prompts instead of yes/no.
-   use-short-answers t)
-
-  (when (display-graphic-p)
-    (validate-setq
-     ;; Don't use graphical dialog boxes when prompting.
-     use-dialog-box nil)))
+   use-short-answers t
+   ;; Don't use graphical dialog boxes when prompting. Harmless on
+   ;; terminals, and graphical frames may only appear later (daemon).
+   use-dialog-box nil))
 
 (user--prompts-config)
 

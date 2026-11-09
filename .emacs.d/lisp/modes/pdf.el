@@ -7,7 +7,9 @@
   (user/bind-key-local :nav :goto-line 'pdf-view-goto-page))
 
 (use-package pdf-tools
-  :if (and window-system (pkg-config-has-p "poppler-glib"))
+  ;; `window-system' is nil while the daemon starts, but its client frames
+  ;; can be graphical.
+  :if (and (or (daemonp) window-system) (pkg-config-has-p "poppler-glib"))
   :defer t
   :hook (pdf-view-mode-hook . user--pdf-view-mode-hook)
   :init

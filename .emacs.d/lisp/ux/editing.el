@@ -39,6 +39,15 @@ mode that sets `syntax-ppss' properly."
            (skip-chars-backward " \t"))
           (t (move-end-of-line arg)))))
 
+
+(defun user--unicode-fonts-setup ()
+  "Set up unicode-fonts once a graphical frame exists.
+`pcache-directory' is set in ux/cache before this can run."
+  (when (display-graphic-p)
+    (remove-hook 'server-after-make-frame-hook #'user--unicode-fonts-setup)
+    (require 'persistent-soft)
+    (unicode-fonts-setup)))
+
 (defun user--editing-config ()
   "Initialize editing in Emacs."
   (validate-setq
@@ -88,11 +97,13 @@ mode that sets `syntax-ppss' properly."
   (use-package unicode-fonts
     :if (eq default-terminal-coding-system 'utf-8)
     :pin "MELPA"
-    ;; Ensure `pcache-directory' has been set first.
-    :after ux/cache
-    :config
-    (require 'persistent-soft)
-    (unicode-fonts-setup))
+    :defer t
+    :init
+    ;; Font setup only applies to graphical frames. Under the daemon, do it
+    ;; for the first graphical client frame instead of at startup.
+    (if (daemonp)
+        (add-hook 'server-after-make-frame-hook #'user--unicode-fonts-setup)
+      (add-hook 'emacs-startup-hook #'user--unicode-fonts-setup)))
 
   (when (feature-p 'helm)
     (use-package helm-unicode

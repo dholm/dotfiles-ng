@@ -14,11 +14,15 @@
   (with-feature 'server
     ;; The daemon starts its server itself after init.
     (unless (or (daemonp) (server-running-p))
-      (server-start)
+      (server-start)))
 
-      (when (and (display-graphic-p)
-                 (feature-p 'edit-server))
-        (edit-server-start)))))
+  ;; Edit-with-Emacs browser extension server. The daemon can show its
+  ;; edit frames on graphical displays that are connected later. Starting
+  ;; fails if the port is taken, which shouldn't abort `after-init-hook'.
+  (when (and (or (daemonp) (display-graphic-p))
+             (feature-p 'edit-server))
+    (with-demoted-errors "Could not start edit-server: %S"
+      (edit-server-start))))
 
 
 (use-package server
@@ -28,7 +32,7 @@
   :hook (after-init-hook . user--server-after-init-hook)
   :config
   (use-package edit-server
-    :if window-system))
+    :defer t))
 
 
 (provide 'ux/server)

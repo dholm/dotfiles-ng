@@ -84,7 +84,9 @@
     :defer
     :config
     (use-package git-gutter-fringe
-      :if window-system
+      ;; The daemon starts without a window system but serves graphical
+      ;; frames.
+      :if (or (daemonp) window-system)
       :defer
       :config
       (validate-setq git-gutter-fr:side 'left-fringe)))

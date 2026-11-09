@@ -9,6 +9,14 @@
        global-company-mode))
 
 
+(defun user--company-graphic-popups ()
+  "Use the popups that need a graphical frame, if this buffer is in one.
+Checked per buffer, since the daemon serves both kinds of frames."
+  (when (and company-mode (display-graphic-p))
+    (company-box-mode t)
+    (company-quickhelp-local-mode t)))
+
+
 (defun company-complete-common-or-selection ()
   "Insert the common part of all candidates, or the selection."
   (interactive)
@@ -86,16 +94,14 @@
       :config
       (company-flx-mode t))
     (use-package company-quickhelp
-      :if window-system
-      :after (company)
-      :hook (company-mode-hook . company-quickhelp-mode)
+      :defer t
       :config
       (validate-setq
        ;; Show quick help popup after half a second.
        company-quickhelp-delay 0.5))
     (use-package company-box
-      :if (display-graphic-p)
-      :hook (company-mode-hook . company-box-mode))))
+      :defer t)
+    (add-hook 'company-mode-hook #'user--company-graphic-popups)))
 
 (user--completion-config)
 
