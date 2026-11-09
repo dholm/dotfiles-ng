@@ -9,16 +9,16 @@
 
 ;;; (Bindings) ;;;
 (user/bind-key-global :basic :undo 'undo)
+(user/bind-key-global :basic :redo 'undo-redo)
 
 (use-package undo-tree
   ;; The global mode has to be enabled at startup.
   :demand
+  ;; Only the visualizer is bound here. `undo-tree-map' remaps undo and redo
+  ;; in buffers where the mode is on; binding them globally makes them fail
+  ;; elsewhere and stops `global-undo-tree-mode' from turning itself on.
   :bind-wrap
-  (([remap undo] . undo-tree-undo)
-   ([remap redo] . undo-tree-redo)
-   ((:key :basic :undo) . undo-tree-undo)
-   ((:key :basic :redo) . undo-tree-redo)
-   ((:key :util :undo-tree) . undo-tree-visualize))
+  (((:key :util :undo-tree) . undo-tree-visualize))
   :config
   ;; Ensure that cache store exists.
   (make-directory *user-undo-tree-cache-directory* t)

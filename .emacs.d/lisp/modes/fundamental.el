@@ -4,9 +4,6 @@
 
 (defun user--fundamental-mode-hook ()
   "Fundamental mode hook."
-  (with-feature 'undo-tree
-    (undo-tree-mode t))
-
   ;; Break long lines automatically, but outside of text modes only in
   ;; comments, so that code and configuration lines aren't split.
   (unless (derived-mode-p 'text-mode)
