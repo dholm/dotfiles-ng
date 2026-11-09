@@ -50,7 +50,6 @@
    (message-setup-hook . user--message-setup-hook))
   :bind-wrap
   (:map message-mode-map
-        ((:key :code :try-complete) . user/eudc-expand-inline)
         ((:key :basic :server-edit) . user/server-save))
   :config
   (validate-setq

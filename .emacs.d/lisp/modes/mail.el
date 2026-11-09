@@ -26,7 +26,8 @@
   (bbdb-initialize 'mail)
 
   ;;; (Bindings) ;;;
-  (user/bind-key-local :code :try-complete 'user/eudc-expand-inline)
+  ;; TAB is left to the mode: in message-mode `message-tab' expands names
+  ;; through EUDC in the headers and indents in the body.
   (user/bind-key-local :code :compile 'org-mime-htmlize))
 
 (use-package sendmail
