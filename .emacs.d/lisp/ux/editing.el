@@ -4,7 +4,7 @@
 
 (defun beginning-or-indentation ()
   "Move cursor to beginning of line or to its indentation."
-  (interactive)
+  (interactive "^")
   (if (bolp)
       (back-to-indentation)
     (beginning-of-line)))
@@ -21,17 +21,21 @@
 (defun end-of-line-or-code (arg)
   "Move point to end of line or forward ARG.
 
-If already there, move back to end of code.  By 'end of code' we
+If already there, move back to end of code.  By `end of code' we
 mean before a possible comment.  Comments are recognized in any
 mode that sets `syntax-ppss' properly."
-  (interactive "P")
+  (interactive "^p")
   (let ((eol (save-excursion
                (move-end-of-line arg)
                (point))))
     (cond ((= (point) eol)
            (move-end-of-line arg)
-           (while (point-in-comment)
-             (backward-char))
+           ;; Go to the start of a comment that ends the line. A comment
+           ;; that started on an earlier line has no code before it here.
+           (let ((syn (syntax-ppss)))
+             (when (and (nth 4 syn)
+                        (>= (nth 8 syn) (line-beginning-position)))
+               (goto-char (nth 8 syn))))
            (skip-chars-backward " \t"))
           (t (move-end-of-line arg)))))
 
