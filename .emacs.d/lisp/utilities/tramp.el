@@ -7,6 +7,11 @@
   :commands
   (tramp-tramp-file-p
    tramp-check-proper-method-and-host)
+  :init
+  (setq
+   ;; Persistency file. tramp-cache reads it when it is loaded, so it has
+   ;; to be set before TRAMP loads (helm-mode loads it during startup).
+   tramp-persistency-file-name (path-join *user-cache-directory* "tramp"))
   :config
   (validate-setq
    ;; Auto save storage.
@@ -42,14 +47,6 @@ In Emacs, (split-string \"/foo/bar\" \"/\") returns (\"foo\" \"bar\").
 This is, the first, empty, element is omitted.  In XEmacs, the first
 element is not omitted."
       (split-string string pattern 'omit)))
-
-  (use-package tramp-cache
-    :ensure tramp
-    :config
-    (validate-setq
-     ;; Persistency files.
-     tramp-persistency-file-name
-     (path-join *user-cache-directory* "tramp")))
 
   (use-package helm-tramp
     :init
