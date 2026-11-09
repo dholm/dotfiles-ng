@@ -2,7 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package intel-hex-mode)
+(use-package intel-hex-mode
+  :defer t)
 
 
 (provide 'modes/intel-hex)

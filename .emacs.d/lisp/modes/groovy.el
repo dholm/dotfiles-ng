@@ -3,9 +3,10 @@
 ;;; Code:
 
 (use-package groovy-mode
-  :config
-  (use-package jenkinsfile-mode
-    :mode "/Jenkinsfile\\'"))
+  :defer t)
+
+(use-package jenkinsfile-mode
+  :mode "/Jenkinsfile\\'")
 
 
 (provide 'modes/groovy)

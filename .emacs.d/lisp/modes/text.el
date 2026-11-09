@@ -51,7 +51,8 @@
   (use-package smog
     :if (executable-find "style"))
 
-  (use-package ftable))
+  (use-package ftable
+    :defer t))
 
 
 (provide 'modes/text)

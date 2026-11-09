@@ -4,12 +4,15 @@
 
 (use-package winring
   :pin "MELPA"
+  :defer t
+  ;; Set up the ring for the initial frame once init is done.
+  :hook (after-init-hook . winring-initialize)
   :config
-  (use-package zoom-window
-    :config
-    (define-key winring-map (kbd "z") 'zoom-window-zoom))
+  ;; `zoom-window-zoom' is autoloaded, so zoom-window loads when it's used.
+  (define-key winring-map (kbd "z") 'zoom-window-zoom))
 
-  (winring-initialize))
+(use-package zoom-window
+  :defer t)
 
 
 (provide 'apps/winring)

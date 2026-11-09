@@ -33,7 +33,8 @@
   (use-package flycheck-indicator
     :hook (flycheck-mode-hook . flycheck-indicator-mode))
 
-  (use-package helm-flycheck))
+  (use-package helm-flycheck
+    :defer t))
 
 
 (provide 'utilities/flycheck)

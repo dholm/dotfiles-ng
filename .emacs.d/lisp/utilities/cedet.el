@@ -64,13 +64,16 @@
 
 (use-package cedet
   :ensure nil
+  ;; Loaded by EDE or semantic, which require it.
+  :defer t
+  :init
+  ;; `user--cedet-hook' runs in many modes before anything loads EDE.
+  (autoload 'ede-minor-mode "ede" nil t)
+  (add-hook 'ede-minor-mode-hook 'user--ede-minor-mode-hook)
   :config
   (use-package ede
     :ensure nil
     :defer
-    :init
-    (autoload 'ede-minor-mode "ede" nil t)
-    (add-hook 'ede-minor-mode-hook 'user--ede-minor-mode-hook)
     :config
     (use-package ede/base
       :ensure nil

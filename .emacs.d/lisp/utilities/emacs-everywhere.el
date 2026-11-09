@@ -3,7 +3,8 @@
 ;;; Code:
 
 (use-package emacs-everywhere
-  :ensure t)
+  ;; Its entry point is autoloaded.
+  :defer t)
 
 
 (provide 'utilities/emacs-everywhere)

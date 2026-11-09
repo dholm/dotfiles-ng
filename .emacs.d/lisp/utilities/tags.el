@@ -189,13 +189,10 @@
   :hook ((emacs-lisp-mode-hook . elisp-def-mode)
          (ielm-mode-hook . elisp-def-mode)))
 
-(use-package xref
-  :config
-  (use-package helm-xref
-    :config
-    (validate-setq
-     xref-show-xrefs-function 'helm-xref-show-xrefs-27
-     xref-show-definitions-function 'helm-xref-show-defs-27)))
+;; helm-xref's autoloads set `xref-show-xrefs-function' and
+;; `xref-show-definitions-function', so it only needs to be installed.
+(use-package helm-xref
+  :defer t)
 
 
 (provide 'utilities/tags)

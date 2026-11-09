@@ -4,7 +4,6 @@
 
 (use-package tramp
   :ensure nil
-  :after dash
   :commands
   (tramp-tramp-file-p
    tramp-check-proper-method-and-host)
@@ -28,7 +27,7 @@
   (tramp-set-completion-function
    "ssh" (mapcar
           (lambda (x) (list 'tramp-parse-sconfig x))
-          (-remove
+          (seq-remove
            (lambda (x) (not (file-exists-p x)))
            `(,(path-join "/" "etc" "ssh_config")
              ,(path-join "/" "etc" "ssh" "ssh_config")

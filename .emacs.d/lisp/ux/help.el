@@ -2,28 +2,28 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package help-mode
+;; help-mode is loaded before this file runs, so its :config would run at
+;; once; keep these as separate deferred packages instead.
+(use-package help-fns
   :ensure nil
-  :defer
-  :config
-  (use-package help-fns
-    :ensure nil
-    :init
-    (user/bind-key-global :emacs :describe-variable 'describe-variable)
-    (user/bind-key-global :emacs :describe-syntax 'describe-syntax))
+  :defer t
+  :init
+  (user/bind-key-global :emacs :describe-variable 'describe-variable)
+  (user/bind-key-global :emacs :describe-syntax 'describe-syntax))
 
-  (use-package helpful
-    :init
-    (user/bind-key-global :emacs :describe-function 'helpful-function)
-    (user/bind-key-global :emacs :describe-macro 'helpful-macro)
-    (user/bind-key-global :emacs :describe-command 'helpful-command)
-    :config
-    (with-eval-after-load 'popwin
-      ;; Use popwin for helpful buffer.
-      (add-to-list
-       'popwin:special-display-config
-       ;; Don't select compilation window when shown
-       '(helpful-mode :position bottom :height 20)))))
+(use-package helpful
+  :defer t
+  :init
+  (user/bind-key-global :emacs :describe-function 'helpful-function)
+  (user/bind-key-global :emacs :describe-macro 'helpful-macro)
+  (user/bind-key-global :emacs :describe-command 'helpful-command)
+  :config
+  (with-eval-after-load 'popwin
+    ;; Use popwin for helpful buffer.
+    (add-to-list
+     'popwin:special-display-config
+     ;; Don't select compilation window when shown
+     '(helpful-mode :position bottom :height 20))))
 
 (use-package apropos
   :ensure nil
@@ -47,6 +47,7 @@
   (user/bind-key-global :emacs :describe-mode 'describe-mode)
 
   (use-package helm-describe-modes
+    :defer t
     :init
     (global-set-key [remap describe-mode] #'helm-describe-modes)))
 

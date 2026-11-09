@@ -13,7 +13,8 @@
     :if (executable-find "jq")))
 
 (use-package jsonnet-mode
-  :pin "MELPA")
+  :pin "MELPA"
+  :defer t)
 
 
 (provide 'modes/json)

@@ -12,6 +12,9 @@
   (local-set-key (kbd "C-c <down>")  'hs-show-all))
 
 
+(declare-function hs-show-block "hideshow")
+(declare-function hs-hide-level "hideshow")
+
 (defun user/hs-toggle-level ()
   "Toggle hide/show for level at point."
   (interactive)
@@ -20,6 +23,7 @@
 
 
 (use-package hideshow
+  :defer t
   :init
   (add-hook 'hs-minor-mode-hook 'user--hs-minor-mode-hook))
 

@@ -70,7 +70,8 @@ mode that sets `syntax-ppss' properly."
   ;; require the obsolete cl library, which current MELPA builds replace
   ;; with cl-lib.
   (use-package list-utils
-    :pin "MELPA")
+    :pin "MELPA"
+    :defer t)
   (use-package font-utils
     :pin "MELPA"
     :defer t)

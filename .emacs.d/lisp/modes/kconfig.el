@@ -2,7 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package kconfig-mode)
+(use-package kconfig-mode
+  :defer t)
 
 
 (provide 'modes/kconfig)

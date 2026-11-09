@@ -32,10 +32,14 @@
   :hook (prog-mode-hook . user--prog-mode-hook)
   :config
   ;;; (Packages) ;;;
+  ;; prog-mode is preloaded, so this :config runs at startup; defer the
+  ;; packages that are only used from the hooks.
   (use-package subword
     :ensure nil
+    :defer t
     :diminish subword-mode)
-  (use-package comment-dwim-2)
+  (use-package comment-dwim-2
+    :defer t)
   (use-package quickrun
     :bind-wrap
     (:map prog-mode-map

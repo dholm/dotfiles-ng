@@ -39,20 +39,24 @@
    comint-process-echoes t)
 
   ;;; (Packages) ;;;
-  (use-package bash-completion)
+  ;; shell is loaded during startup (by helm-mode), so defer the packages
+  ;; that are only needed in shell and script buffers.
+  (use-package bash-completion
+    :defer t)
   (use-package company-shell
     :after (company)
     :config
     (add-to-list 'company-backends '(company-shell company-shell-env)))
-  (use-package shelldoc)
+  (use-package shelldoc
+    :defer t)
   (use-package flycheck-checkbashisms
     :if (executable-find "checkbashisms")
-    :config
-    (flycheck-checkbashisms-setup))
+    :defer t
+    :hook (sh-base-mode-hook . flycheck-checkbashisms-setup))
   (use-package flycheck-bashate
     :if (executable-find "bashate")
-    :config
-    (flycheck-bashate-setup)))
+    :defer t
+    :hook (sh-base-mode-hook . flycheck-bashate-setup)))
 
 
 (provide 'modes/shell)

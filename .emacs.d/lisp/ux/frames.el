@@ -58,7 +58,8 @@ Unlike `count-lines', stop looking after line 21."
   (user/bind-key-global :emacs :shrink-horizontal 'shrink-window-horizontally)
 
   ;;; (Packages) ;;;
-  (use-package fullframe)
+  (use-package fullframe
+    :defer t)
   (use-package transpose-frame
     :defer
     :init

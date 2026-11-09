@@ -8,7 +8,8 @@
    dtrt-indent-verbosity 0
    global-mode-string (delq 'dtrt-indent-mode-line-info global-mode-string)))
 
-(use-package smart-tabs-mode)
+(use-package smart-tabs-mode
+  :defer t)
 
 
 (provide 'ux/indentation)

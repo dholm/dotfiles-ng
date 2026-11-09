@@ -4,6 +4,7 @@
 
 (use-package pcache
   :pin "MELPA"
+  :defer t
   :init
   (setq-default
    ;; pcache appends repository names to this, so it must end in a slash.
