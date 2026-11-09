@@ -59,9 +59,10 @@
 (use-package nxml-mode
   :ensure nil
   :defer
-  ;; SVG files are left to image-mode, where C-c C-c shows the XML.
+  ;; SVG files are left to image-mode, where C-c C-c shows the XML. Other
+  ;; files starting with <?xml get xml-mode, i.e. nxml-mode (see below),
+  ;; from Emacs's `magic-fallback-mode-alist'.
   :mode ("\\.\\(xml\\|xsd\\|xslts\\|rss\\|plist\\|rng\\|rnc\\)\\'" . nxml-mode)
-  :magic ("<\\?xml" . nxml-mode)
   :init
   ;; Use nxml-mode for XML
   (fset 'xml-mode 'nxml-mode)
