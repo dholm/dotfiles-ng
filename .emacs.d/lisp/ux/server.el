@@ -12,7 +12,8 @@
 (defun user--server-after-init-hook ()
   "Initialize Emacs server after init has completed."
   (with-feature 'server
-    (unless (server-running-p)
+    ;; The daemon starts its server itself after init.
+    (unless (or (daemonp) (server-running-p))
       (server-start)
 
       (when (and (display-graphic-p)
