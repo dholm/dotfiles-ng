@@ -4,10 +4,9 @@
 
 (defun user--markdown-mode-hook ()
   "Markdown mode hook."
-  (user/smartparens-enable)
-
-  ;; org-mode table editing tools.
-  (orgtbl-mode t))
+  ;; Tables are edited with markdown-mode's own table support. orgtbl-mode
+  ;; would rewrite the delimiter rows into Org syntax, which isn't GFM.
+  (user/smartparens-enable))
 
 (use-package markdown-mode
   :defer
