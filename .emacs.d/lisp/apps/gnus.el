@@ -601,6 +601,10 @@
       (require 'ldap)
       (load "jl-smime" nil t)))
 
+  ;; The sending account comes from the posting styles and smtpmail, not
+  ;; from gnus-select-account: its X-Message-SMTP-Method header made
+  ;; `message-send-mail' bypass smtpmail-multi and use the global
+  ;; `smtpmail-stream-type', and it replaced From without the display name.
   (use-package gnus-search
     :ensure nil
     :config
@@ -618,14 +622,7 @@
         (eq
          (call-process "swish-e" nil nil nil "-i" message-directory
                        "-f" (car gnus-search-swish-e-index-files) "-e")
-         0))))
-
-  (use-package gnus-select-account
-    :pin "MELPA"
-    :config
-    ;; Only ask for the account in messages composed from Gnus, not in
-    ;; every message-mode buffer.
-    (add-hook 'gnus-message-setup-hook #'gnus-select-account)))
+         0)))))
 
 
 (provide 'apps/gnus)
