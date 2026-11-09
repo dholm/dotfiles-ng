@@ -98,21 +98,12 @@ fontifies."
   nil)
 
 
-(defun user/c++-header-file-p ()
-  "Return non-nil if in a C++ header."
-  (and (string-match "\\.h$"
-                   (or (buffer-file-name)
-                      (buffer-name)))
-     (save-excursion
-       (re-search-forward "\\_<class\\_>" nil t))))
-
-
 (use-package cc-mode
   :defer
   :hook (c-mode-common-hook . user--c-mode-common-hook)
-  :init
-  ;; Detect if inside a C++ header file.
-  (add-magic-mode 'c++-mode 'user/c++-header-file-p)
+  ;; .h files use `c-or-c++-mode', which looks for C++ constructs outside
+  ;; comments. A custom check for "class" anywhere opened C headers that
+  ;; mention the word in a comment as C++.
   :config
   (add-many-to-list
    'c-default-style
