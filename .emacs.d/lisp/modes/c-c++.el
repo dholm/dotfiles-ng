@@ -39,8 +39,12 @@
     (with-feature 'company-c-headers
       (add-company-sources 'company-c-headers)))
 
-  ;; Enable LSP, if a language server is installed.
-  (user/eglot-ensure)
+  ;; Enable LSP, if a language server is installed. Only in C, C++ and
+  ;; Objective-C: other modes run this hook too (bison, flatbuffers,
+  ;; Java...), and some derive from c-mode, which clangd would then parse
+  ;; as C.
+  (when (memq major-mode '(c-mode c++-mode objc-mode))
+    (user/eglot-ensure))
 
   (user/smartparens-enable))
 
