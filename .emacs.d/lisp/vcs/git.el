@@ -2,10 +2,45 @@
 ;;; Commentary:
 ;;; Code:
 
+(defconst user--git-commit-filename-regexp
+  "/\\(\\(\\(COMMIT\\|NOTES\\|PULLREQ\\|MERGEREQ\\|TAG\\)_EDIT\\|MERGE_\\|\\)MSG\
+\\|\\(BRANCH\\|EDIT\\)_DESCRIPTION\\)\\'"
+  "Git message file names.
+A copy of `git-commit-filename-regexp', which is only defined once
+git-commit has been loaded.")
+
+
 (defun user--git-commit-mode-hook ()
   "Git commit mode hook."
   ;; Run the shared log edit hook.
   (user--vc-log-edit-hook))
+
+
+(declare-function git-commit-setup-check-buffer "git-commit")
+
+(defun user--git-commit-find-file-hook ()
+  "Set up git-commit in a Git message file opened before it is loaded.
+Magit loads git-commit, but `git commit' run from a shell with Emacs as
+the editor can open the message before Magit has been used."
+  (when (and buffer-file-name
+             (not (featurep 'git-commit))
+             (string-match-p user--git-commit-filename-regexp buffer-file-name)
+             (require 'git-commit nil :noerror))
+    ;; Loading git-commit adds `git-commit-setup-check-buffer' to
+    ;; `find-file-hook', too late for this buffer.
+    (git-commit-setup-check-buffer)))
+
+
+(defun user--git-remove-helm-ls-git-modes ()
+  "Use Magit's modes for commit messages and rebase todo files.
+helm-ls-git maps COMMIT_EDITMSG and git-rebase-todo to its own modes,
+both from its autoloads and when it is loaded. Its commit mode keeps
+git-commit, and with it the commit message settings, out of the buffer."
+  (setq auto-mode-alist
+        (seq-remove (lambda (entry)
+                      (memq (cdr entry) '(helm-ls-git-commit-mode
+                                          helm-ls-git-rebase-todo-mode)))
+                    auto-mode-alist)))
 
 
 (defun user/magit-toggle-whitespace ()
@@ -30,6 +65,8 @@
   (add-auto-mode 'gitconfig-mode "/\\.gitconfig\\.local\\'")
   (add-auto-mode 'gitignore-mode "/\\.gitignore\\.\\(local\\|core\\)\\'")
   (add-auto-mode 'gitattributes-mode "/\\.gitattributes\\.local\\'")
+
+  (add-hook 'find-file-hook #'user--git-commit-find-file-hook)
 
   (use-package git-commit
     :ensure nil
@@ -100,7 +137,11 @@
     (use-package helm-ls-git
       :defer
       ;; MELPA Stable only has 1.9.4, which doesn't load with helm 4.
-      :pin "MELPA")
+      :pin "MELPA"
+      :init
+      (user--git-remove-helm-ls-git-modes)
+      :config
+      (user--git-remove-helm-ls-git-modes))
     (use-package helm-git-grep
       :defer
       :pin "MELPA"
