@@ -70,8 +70,17 @@
   ;; Load Emacs directory client.
   (eudc-load-eudc)
 
+  (unless (or (executable-find "namazu")
+              (executable-find "mu"))
+    (message "Namazu or mu not found, mail will not be indexed."))
+
   (with-feature 'bbdb
-    (bbdb-initialize))
+    ;; Without arguments this sets up no mail reader at all. `(bbdb-initialize
+    ;; 'wl)' only adds to `wl-init-hook', which is already running here, so
+    ;; insinuate Wanderlust directly.
+    (bbdb-initialize 'message)
+    (when (require 'bbdb-wl nil :noerror)
+      (bbdb-insinuate-wl)))
 
   (when (feature-p 'org-mode)
     (with-eval-after-load 'org-mime
@@ -306,220 +315,257 @@ Gmail {
   (make-directory *user-wanderlust-cache-directory* t)
   (set-file-modes *user-wanderlust-cache-directory* #o0700)
   ;;; (Bindings) ;;;
-  (user/bind-key-global :apps :email 'wl)
+  (user/bind-key-global :apps :email 'wl))
 
-  (use-package wl
-    :ensure nil
-    :defer
-    :hook (wl-draft-mode-hook . user--wl-draft-mode-hook)
-    :config
-    (with-feature 'fullframe
-      (fullframe wl wl-exit nil))
 
-    (use-package wl-vars
-      :ensure nil
-      :hook ((wl-message-redisplay-hook . user--wl-message-redisplay-hook)
-             (wl-message-buffer-created-hook
-              . user--wl-message-buffer-created-hook)
-             ;;; (Drafts) ;;;
-             (wl-mail-setup-hook . user--wl-mail-setup-hook)
-             ;;; (Summary) ;;;
-             (wl-folder-mode-hook . user--wl-folder-mode-hook)
-             (wl-summary-mode-hook . user--wl-summary-mode-hook))
-      :config
+;; The blocks below are kept at top level instead of nested in each other's
+;; `:config'. WL and APEL libraries call `provide' several times (directly
+;; and through `product-provide'), and each call makes the after-load forms
+;; run once more, so every `:config' body here must be safe to repeat.
+(use-package wl
+  :ensure nil
+  :defer t
+  :hook (wl-draft-mode-hook . user--wl-draft-mode-hook)
+  :config
+  (with-feature 'fullframe
+    (fullframe wl wl-exit nil)))
+
+
+(use-package wl-vars
+  :ensure nil
+  :defer t
+  :hook ((wl-message-redisplay-hook . user--wl-message-redisplay-hook)
+         (wl-message-buffer-created-hook
+          . user--wl-message-buffer-created-hook)
+         ;;; (Drafts) ;;;
+         (wl-mail-setup-hook . user--wl-mail-setup-hook)
+         ;;; (Summary) ;;;
+         (wl-folder-mode-hook . user--wl-folder-mode-hook)
+         (wl-summary-mode-hook . user--wl-summary-mode-hook))
+  :config
+  (validate-setq
+   ;;; (Basic Configuration) ;;;
+   ;; Put configuration into wanderlust data directory.
+   wl-init-file (path-join *user-wanderlust-data-directory* "init.el")
+   wl-folders-file (path-join *user-wanderlust-data-directory* "folders")
+   wl-address-file (path-join *user-wanderlust-data-directory* "addresses")
+   ;; Put temporary files in cache directories.
+   wl-temporary-file-directory *user-wanderlust-cache-directory*
+   ;;; (Wanderlust) ;;;
+   ;; Mark sent mails as read.
+   wl-fcc-force-as-read t
+   ;; Check for mail when idle.
+   wl-biff-check-interval 180
+   wl-biff-use-idle-timer t
+   ;; Set notification function.
+   wl-biff-notify-hook 'user--wanderlust-notify-hook
+   ;; Let SMTP server handle Message-ID.
+   wl-insert-message-id nil
+   ;; Quit without asking.
+   wl-interactive-exit nil
+   ;;; (Messages) ;;;
+   ;; Message window size.
+   wl-message-window-size '(1 . 3)
+   ;; Field lists.
+   wl-message-ignored-field-list '("^.*")
+   wl-message-visible-field-list '("^\\(From\\|Reply-To\\):" "^\\(To\\|Cc\\):"
+                                   "^Organization:" "^Subject:"
+                                   "^X-Attribution:" "^\\(Posted\\|Date\\):"
+                                   "^\\(Posted\\|Date\\):"
+                                   "^\\(User-Agent\\|X-Mailer\\):")
+   ;; Allow sort on visible fields.
+   wl-message-sort-field-list wl-message-visible-field-list
+   ;;; (Drafts) ;;;
+   ;; Raise a new frame when creating a draft.
+   wl-draft-use-frame t
+   ;; Automatically save drafts every two minutes.
+   wl-auto-save-drafts-interval 120.0
+   ;; Sane forward tag.
+   wl-forward-subject-prefix "Fwd: "
+   ;; Automatically select the correct template based on folder.
+   wl-draft-config-matchone t
+   ;;; (Summary) ;;;
+   ;; Set verbose summary.
+   wl-summary-width nil
+   wl-summary-line-format
+   "%T%P │%Y-%M-%D %h:%m│ %17(%f%) │%-4S│%4i│%1@ %t%~%c%~%#%~%s "
+   wl-folder-summary-line-format-alist
+   '(("^+" . "%n%T%P │%Y-%M-%D %h:%m│ %17(%f%) │%-4S││%4i│%1@ %t%~%c%~%#%~%s ")
+     ("^file:" . "%T%P %17f %-5S %Y/%M/%D(%W) %h:%m %s "))
+   ;; Format of mode-line entry.
+   wl-summary-mode-line-format "WL:%n/%u/%a{%t}%f"
+   ;; Display TO rather than FROM in "Sent" folders.
+   wl-summary-showto-folder-regexp ".*Sent.*"
+   ;; Divide thread if subject has changed.
+   wl-summary-divide-thread-when-subject-changed t
+   ;; List of marks to display in summary.
+   wl-summary-incorporate-marks '("N" "U" "!" "A" "$")
+   ;; (Folders) ;;
+   ;; Show folders in a pane to the left.
+   wl-stay-folder-window nil
+   wl-folder-window-width 45
+   ;; Asynchronously update folders.
+   wl-folder-check-async t)
+
+  ;;; (Modeline) ;;;
+  ;; Show mail status in mode line.
+  (add-to-list 'global-mode-string
+               '(wl-modeline-biff-status
+                 wl-modeline-biff-state-on
+                 wl-modeline-biff-state-off))
+
+  (add-many-to-list
+   'wl-summary-line-format-spec-alist
+   ;; Email to user formatter.
+   '(?i (user/wl-summary-line-where-is-my-address))
+   ;; Attachment formatter.
+   '(?@ (user/wl-summary-line-attached)))
+
+  ;;; (Hooks) ;;;
+  ;; Don't apply email account template when sending draft, otherwise switching
+  ;; templates won't work.
+  (remove-hook 'wl-draft-send-hook 'wl-draft-config-exec))
+
+
+(use-package wl-summary
+  :ensure nil
+  :defer t
+  :config
+  ;; Sort threads based on the date of the latest reply.
+  (add-to-list 'wl-summary-sort-specs 'reply-date)
+  (setq wl-summary-default-sort-spec 'reply-date)
+
+  ;; Set up guides in summary mode.
+  (user/wanderlust-set-summary-guides))
+
+
+;; Nothing loads the `semi' feature itself, so configure the libraries that
+;; are actually used.
+(use-package mime-view
+  :ensure semi
+  :defer t
+  :hook (mime-view-mode-hook . user--mime-view-mode-hook)
+  :config
+  (validate-setq
+   ;; Decrypt encrypted emails automatically.
+   mime-pgp-decrypt-when-preview t)
+
+  ;; MIME type priorities. Only change the text entries so that the default
+  ;; scoring of nested multiparts is kept.
+  (dolist (score '(((text . plain) . 4)
+                   ((text . enriched) . 3)
+                   ((text . html) . 2)
+                   ((text . richtext) . 1)))
+    (set-alist 'mime-view-type-subtype-score-alist (car score) (cdr score)))
+
+  (cond
+   ((feature-p 'mime-shr) (user--semi-shr-config))
+   ((feature-p 'emacs-w3m) (user--semi-w3m-config)))
+
+  (ctree-set-calist-strictly
+   'mime-acting-condition
+   '((mode . "play")
+     (type . text)
+     (subtype . calendar)
+     (method . user/icalendar-import-mime-text))))
+
+
+(use-package mime-edit
+  :ensure nil
+  :defer t
+  :hook (mime-edit-mode-hook . user--mime-edit-mode-hook)
+  :config
+  (validate-setq
+   ;; Don't split large mails.
+   mime-edit-split-message nil))
+
+
+(use-package mcs-20
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   default-mime-charset
+   (if (eq default-terminal-coding-system 'utf-8) 'utf-8
+     'iso-8859-1)))
+
+
+(use-package elmo
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   ;; Maximum size of message to fetch without confirmation.
+   elmo-message-fetch-threshold (* 512 1024)))
+
+
+(use-package elmo-vars
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   ;; Put message database in data directory.
+   elmo-msgdb-directory (path-join *user-wanderlust-data-directory* "elmo")
+   ;; ELMO's cache go into the user cache directory.
+   elmo-cache-directory (path-join *user-wanderlust-cache-directory* "elmo")))
+
+
+(use-package elmo-archive
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   elmo-archive-folder-path *user-wanderlust-data-directory*))
+
+
+(use-package elmo-search
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   elmo-search-namazu-default-index-path
+   *user-wanderlust-data-directory*)
+
+  (when (executable-find "mu")
+    (validate-setq
+     ;; Use mu instead of namazu, when available.
+     elmo-search-default-engine 'mu)
+
+    (with-eval-after-load 'wl-vars
       (validate-setq
-       ;;; (Basic Configuration) ;;;
-       ;; Put configuration into wanderlust data directory.
-       wl-init-file (path-join *user-wanderlust-data-directory* "init.el")
-       wl-folders-file (path-join *user-wanderlust-data-directory* "folders")
-       wl-address-file (path-join *user-wanderlust-data-directory* "addresses")
-       ;; Put temporary files in cache directories.
-       wl-temporary-file-directory *user-wanderlust-cache-directory*
-       ;;; (Wanderlust) ;;;
-       ;; Mark sent mails as read.
-       wl-fcc-force-as-read t
-       ;; Check for mail when idle.
-       wl-biff-check-interval 180
-       wl-biff-use-idle-timer t
-       ;; Set notification function.
-       wl-biff-notify-hook 'user--wanderlust-notify-hook
-       ;; Let SMTP server handle Message-ID.
-       wl-insert-message-id nil
-       ;; Quit without asking.
-       wl-interactive-exit nil
-       ;;; (Modeline) ;;;
-       ;; Show mail status in mode line.
-       global-mode-string (cons '(wl-modeline-biff-status
-                                  wl-modeline-biff-state-on
-                                  wl-modeline-biff-state-off) global-mode-string)
-       ;;; (Messages) ;;;
-       ;; Message window size.
-       wl-message-window-size '(1 . 3)
-       ;; Field lists.
-       wl-message-ignored-field-list '("^.*")
-       wl-message-visible-field-list '("^\\(From\\|Reply-To\\):" "^\\(To\\|Cc\\):"
-                                       "^Organization:" "^Subject:"
-                                       "^X-Attribution:" "^\\(Posted\\|Date\\):"
-                                       "^\\(Posted\\|Date\\):"
-                                       "^\\(User-Agent\\|X-Mailer\\):")
-       ;; Allow sort on visible fields.
-       wl-message-sort-field-list wl-message-visible-field-list
-       ;;; (Drafts) ;;;
-       ;; Raise a new frame when creating a draft.
-       wl-draft-use-frame t
-       ;; Automatically save drafts every two minutes.
-       wl-auto-save-drafts-interval 120.0
-       ;; Sane forward tag.
-       wl-forward-subject-prefix "Fwd: "
-       ;; Automatically select the correct template based on folder.
-       wl-draft-config-matchone t
-       ;;; (Summary) ;;;
-       ;; Set verbose summary.
-       wl-summary-width nil
-       wl-summary-line-format
-       "%T%P │%Y-%M-%D %h:%m│ %17(%f%) │%-4S│%4i│%1@ %t%~%c%~%#%~%s "
-       wl-folder-summary-line-format-alist
-       '(("^+" . "%n%T%P │%Y-%M-%D %h:%m│ %17(%f%) │%-4S││%4i│%1@ %t%~%c%~%#%~%s ")
-         ("^file:" . "%T%P %17f %-5S %Y/%M/%D(%W) %h:%m %s "))
-       ;; Format of mode-line entry.
-       wl-summary-mode-line-format "WL:%n/%u/%a{%t}%f"
-       ;; Display TO rather than FROM in "Sent" folders.
-       wl-summary-showto-folder-regexp ".*Sent.*"
-       ;; Divide thread if subject has changed.
-       wl-summary-divide-thread-when-subject-changed t
-       ;; List of marks to display in summary.
-       wl-summary-incorporate-marks '("N" "U" "!" "A" "$")
-       ;; (Folders) ;;
-       ;; Show folders in a pane to the left.
-       wl-stay-folder-window nil
-       wl-folder-window-width 45
-       ;; Asynchronously update folders.
-       wl-folder-check-async t)
+       ;; Default folder name prefix.
+       wl-default-spec "["))
 
-      (add-many-to-list
-       'wl-summary-line-format-spec-alist
-       ;; Email to user formatter.
-       '(?i (user/wl-summary-line-where-is-my-address))
-       ;; Attachment formatter.
-       '(?@ (user/wl-summary-line-attached)))
+    (elmo-search-register-engine
+     'mu 'local-file
+     :prog "mu"
+     :args '("find" pattern "--format" "plain" "--fields" "l")
+     :charset 'utf-8)))
 
-      ;;; (Hooks) ;;;
-      ;; Don't apply email account template when sending draft, otherwise switching
-      ;; templates won't work.
-      (remove-hook 'wl-draft-send-hook 'wl-draft-config-exec)
 
-      (use-package wl-summary
-        :ensure nil
-        :config
-        ;; Sort threads based on the date of the latest reply.
-        (add-to-list 'wl-summary-sort-specs 'reply-date)
-        (setq wl-summary-default-sort-spec 'reply-date)
+(use-package elmo-localdir
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   elmo-localdir-folder-path *user-wanderlust-data-directory*))
 
-        ;; Set up guides in summary mode.
-        (user/wanderlust-set-summary-guides))
 
-      (use-package semi
-        :hook ((mime-view-mode-hook . user--mime-view-mode-hook)
-               (mime-edit-mode-hook . user--mime-edit-mode-hook))
-        :config
-        (validate-setq
-         ;; Don't split large mails.
-         mime-edit-split-message nil
-         ;; Decrypt encrypted emails automatically.
-         mime-pgp-decrypt-when-preview t
-         ;; MIME type priorities.
-         mime-view-type-subtype-score-alist
-         '(((text . plain) . 4)
-           ((text . enriched) . 3)
-           ((text . html) . 2)
-           ((text . richtext) . 1)))
+(use-package elmo-maildir
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   elmo-maildir-folder-path *user-wanderlust-data-directory*))
 
-        (with-eval-after-load 'mime-view
-          (cond
-           ((feature-p 'mime-shr) (user--semi-shr-config))
-           ((feature-p 'emacs-w3m) (user--semi-w3m-config)))
 
-          (set-alist 'mime-view-type-subtype-score-alist '(text . html) 3)
-
-          (ctree-set-calist-strictly
-           'mime-acting-condition
-           '((mode . "play")
-             (type . text)
-             (subtype . calendar)
-             (method . user/icalendar-import-mime-text)))))
-
-      (use-package mcs-20
-        :ensure nil
-        :config
-        (validate-setq
-         default-mime-charset
-         (if (eq default-terminal-coding-system 'utf-8) 'utf-8
-           'iso-8859-1)))
-
-      (use-package elmo
-        :ensure nil
-        :config
-        (validate-setq
-         ;; Maximum size of message to fetch without confirmation.
-         elmo-message-fetch-threshold (* 512 1024))
-
-        (unless (or (executable-find "namazu")
-                    (executable-find "mu"))
-          (message "Namazu or mu not found, mail will not be indexed.")))
-
-      (use-package elmo-vars
-        :ensure nil
-        :config
-        (validate-setq
-         ;; Put message database in data directory.
-         elmo-msgdb-directory (path-join *user-wanderlust-data-directory* "elmo")
-         ;; ELMO's cache go into the user cache directory.
-         elmo-cache-directory (path-join *user-wanderlust-cache-directory* "elmo")))
-
-      (use-package elmo-archive
-        :ensure nil
-        :config
-        (validate-setq
-         elmo-archive-folder-path *user-wanderlust-data-directory*))
-
-      (use-package elmo-search
-        :ensure nil
-        :config
-        (validate-setq
-         elmo-search-namazu-default-index-path
-         *user-wanderlust-data-directory*)
-
-        (when (executable-find "mu")
-          (validate-setq
-           ;; Use mu instead of namazu, when available.
-           elmo-search-default-engine 'mu
-           ;; Default folder name prefix.
-           wl-default-spec "[")
-
-          (elmo-search-register-engine
-           'mu 'local-file
-           :prog "mu"
-           :args '("find" pattern "--format" "plain" "--fields" "l")
-           :charset 'utf-8)))
-
-      (use-package elmo-localdir
-        :ensure nil
-        :config
-        (validate-setq
-         elmo-localdir-folder-path *user-wanderlust-data-directory*))
-
-      (use-package elmo-maildir
-        :ensure nil
-        :config
-        (validate-setq
-         elmo-maildir-folder-path *user-wanderlust-data-directory*))
-
-      (use-package elmo-imap4
-        :ensure nil
-        :config
-        (validate-setq
-         ;; Use modified UTF-8 for IMAP4.
-         elmo-imap4-use-modified-utf7 t)))))
+(use-package elmo-imap4
+  :ensure nil
+  :defer t
+  :config
+  (validate-setq
+   ;; Use modified UTF-8 for IMAP4.
+   elmo-imap4-use-modified-utf7 t))
 
 
 (provide 'apps/wanderlust)
