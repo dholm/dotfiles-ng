@@ -11,17 +11,18 @@
   (turn-off-auto-fill)
   (user/whitespace-disable-style '(lines)))
 
+(declare-function csv-guess-set-separator "csv-mode")
+
 (use-package csv-mode
   :defer
   :mode "\\.[Cc][Ss][Vv]$"
   :init
   (add-hook 'csv-mode-hook 'user--csv-mode-hook)
+  ;; Use the separator the file actually uses (`,', `;' or TAB...). All
+  ;; separators in `csv-separators' are active at the same time, so listing
+  ;; space there would split "New York" into two fields.
+  (add-hook 'csv-mode-hook #'csv-guess-set-separator)
   :config
-  ;; csv-separators needs its :set function, which derives the separator
-  ;; regexps from it, so use setopt.
-  (setopt
-   ;; Default separators for CSV files.
-   csv-separators '("," ";" "|" " " "\t"))
   (validate-setq
    ;; Number of lines to consider part of header.
    csv-header-lines 1))
