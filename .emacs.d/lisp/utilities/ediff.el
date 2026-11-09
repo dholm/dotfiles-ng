@@ -10,14 +10,19 @@
    truncate-lines t))
 
 
-(defun user--ediff-startup-hook ()
-  "Ediff startup hook."
+(defun user--ediff-before-setup-hook ()
+  "Ediff hook run before the windows are set up."
   (validate-setq
-   ;; Split window differently depending on frame width.
+   ;; Split window differently depending on frame width. This has to be
+   ;; set before `ediff-setup-windows' runs, which is before
+   ;; `ediff-startup-hook'.
    ediff-split-window-function (if (> (frame-width) (* 2 80))
                                    'split-window-horizontally
-                                 'split-window-vertically))
+                                 'split-window-vertically)))
 
+
+(defun user--ediff-startup-hook ()
+  "Ediff startup hook."
   ;; Go to the first difference on startup.
   (ediff-next-difference))
 
@@ -57,6 +62,8 @@
 (use-package ediff
   :defer
   :init
+  ;; Choose the split before the windows are set up.
+  (add-hook 'ediff-before-setup-hook 'user--ediff-before-setup-hook)
   ;; Go to first difference on start.
   (add-hook 'ediff-startup-hook 'user--ediff-startup-hook)
   :config
