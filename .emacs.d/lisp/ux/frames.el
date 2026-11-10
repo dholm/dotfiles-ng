@@ -33,6 +33,18 @@ Unlike `count-lines', stop looking after line 21."
     (forward-line 20)
     (not (eobp))))
 
+
+(defvar zoom--last-window)
+
+(defun user--zoom-forget-dead-window (&rest _)
+  "Stop zoom from selecting `zoom--last-window' once it has been deleted.
+Deleting a frame, such as an emacsclient frame, can leave the window
+there, and zoom selects it while the minibuffer is active, which fails
+on every redisplay."
+  (unless (window-live-p zoom--last-window)
+    (setq zoom--last-window (selected-window))))
+
+
 (progn
   (validate-setq
    ;; Inhibit GUI features
@@ -77,6 +89,8 @@ Unlike `count-lines', stop looking after line 21."
      '("^*calc")
      ;; Ignore predicate definitions.
      zoom-ignore-predicates '(user--zoom-ignore-p))
+
+    (advice-add 'zoom--handler :before #'user--zoom-forget-dead-window)
 
     (zoom-mode t))
 
