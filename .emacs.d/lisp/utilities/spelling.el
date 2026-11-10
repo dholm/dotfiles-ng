@@ -88,6 +88,9 @@
       :diminish auto-correct-mode)
 
     (use-package guess-language
+      ;; GNU ELPA's 0.0.1 lacks the trigram files, so language detection
+      ;; fails as soon as flyspell finds a misspelled word.
+      :pin "MELPA"
       :diminish guess-language-mode
       :config
       (validate-setq
